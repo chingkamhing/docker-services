@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  etcd:
+    image: gcr.io/etcd-development/etcd:v3.4.13
+    command: >
+      /usr/local/bin/etcd
+      --name node1
+      --initial-advertise-peer-urls http://127.0.0.1:2380
+      --listen-peer-urls http://0.0.0.0:2380
+      --advertise-client-urls http://127.0.0.1:2379
+      --listen-client-urls http://0.0.0.0:2379
+      --initial-cluster node1=http://127.0.0.1:2380
+      --debug
+    expose:
+      - 2379
+      - 2380
+    ports:
+      - "2379:2379"
+      - "3380:2380"

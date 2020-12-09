@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+ redis:
+    container_name: redis
+    image: "redis:6-alpine"
+    # FIXME, somehow fail to persist redis database content after reboot once commenting out the following line
+    # command: redis-server --requirepass My_Secret_REDIS
+    ports:
+      - "6379:6379"
+    volumes:
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+      - redisdata:/data
+
+volumes:  
+  redisdata:
