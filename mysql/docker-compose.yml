@@ -4,7 +4,7 @@ services:
   # mysql
   #
   mysql:
-    container_name: ims_customer_portal_db
+    container_name: mysql_db
     image: mysql:8
     restart: always
     ports:
