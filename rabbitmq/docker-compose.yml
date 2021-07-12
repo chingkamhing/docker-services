@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+ redis:
+    container_name: rabbitmq
+    image: "rabbitmq:3.7-management"
+    ports:
+      - "4369:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "25672:25672"
+      - "15671:15671"
+      - "15672:15672"
+      - "15675:15675"
+      - "1883:1883"
+    volumes:
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
