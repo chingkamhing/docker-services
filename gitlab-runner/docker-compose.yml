@@ -7,5 +7,8 @@ services:
     image: gitlab/gitlab-runner:latest
     restart: always
     volumes:
-      - ./gitlab-runner:/etc/gitlab-runner
+      # map config setting for gitlab chingkamhing
+      # - ./chingkamhing:/etc/gitlab-runner
+      # map config setting for private gitlab at pts
+      - ./pts:/etc/gitlab-runner
       - /var/run/docker.sock:/var/run/docker.sock
