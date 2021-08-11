@@ -6,10 +6,10 @@ This document describe:
 * How to setup GitLab CD
 
 ## Registering runners
-* invoke "docker-compose -f gitlab-runner/docker-compose.yml up"
-* on another terminal, invoke "docker exec -it gitlab-runner_runner_1 /bin/bash" to go into docker gitlab-runner_runner_1
+* invoke "docker-compose -f gitlab-cicd/docker-compose.yml up"
+* on another terminal, invoke "docker exec -it gitlab-cicd_runner_1 /bin/bash" to go into docker gitlab-cicd_runner_1
 * go to the GitLab project page; go to "Settings > CI/CD" and expand Runners
-* inside docker gitlab-runner_runner_1, invoke:
+* inside docker gitlab-cicd_runner_1, invoke:
     + for https://gitlab.com/ DinD
         ```shell
         gitlab-runner register -n \
