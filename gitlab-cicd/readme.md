@@ -50,3 +50,4 @@ This document describe:
 * tutorial
     + [Microservices based Application Deployment using Gitlab CI/CD on Docker Swarm](https://faun.pub/microservices-based-application-deployment-using-gitlab-ci-cd-on-docker-swarm-at-digital-ocean-586eefb07294)
     + [Deploy docker swarm from Gitlab CI](https://golangforall.com/en/post/go-deploy-docker-swarm-gitlab.html)
+    + [How we’re using GitLab to test and deploy our application(s) to Docker Swarm](https://medium.com/@ju5t_/how-were-using-gitlab-to-test-and-deploy-our-application-s-to-docker-swarm-e3f556dbf8fe)
