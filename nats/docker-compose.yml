@@ -11,8 +11,8 @@ services:
       # an HTTP management port for information reporting
       - 8222:8222
     volumes:
-      - "$PWD/nats-server1.conf:/etc/nats/nats-server1.conf:ro"
-      - "data1:/data/jetstream"
+      - $PWD/nats-server1.conf:/etc/nats/nats-server1.conf:ro
+      - data1:/data/jetstream
   nats2:
     image: nats:2.6.6-alpine3.14
     command: "-name nats2 -c /etc/nats/nats-server2.conf -js -D"
@@ -24,8 +24,8 @@ services:
       # an HTTP management port for information reporting
       - 8223:8222
     volumes:
-      - "$PWD/nats-server2.conf:/etc/nats/nats-server2.conf:ro"
-      - "data2:/data/jetstream"
+      - $PWD/nats-server2.conf:/etc/nats/nats-server2.conf:ro
+      - data2:/data/jetstream
   nats3:
     image: nats:2.6.6-alpine3.14
     command: "-name nats3 -c /etc/nats/nats-server3.conf -js -D"
@@ -37,8 +37,8 @@ services:
       # an HTTP management port for information reporting
       - 8224:8222
     volumes:
-      - "$PWD/nats-server3.conf:/etc/nats/nats-server3.conf:ro"
-      - "data3:/data/jetstream"
+      - $PWD/nats-server3.conf:/etc/nats/nats-server3.conf:ro
+      - data3:/data/jetstream
 
 # networks
 networks:
