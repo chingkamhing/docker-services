@@ -10,6 +10,8 @@ services:
       - 4222:4222
       # an HTTP management port for information reporting
       - 8222:8222
+      # mqtt
+      - 1883:1883
     volumes:
       - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
       - data1:/data/jetstream
