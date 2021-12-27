@@ -26,6 +26,16 @@
         - nats pub test --count=1000 --sleep 1s --creds TestUser.creds "publication #{{Count}} @ {{TimeStamp}}"
         - nats consumer next test_stream TestConsumer1 --count 1000 --creds TestUser.creds
 
+## MQTT
+
+* enable mqtt
+    + add mqtt config block in config file and add a line of "port: 1883"
+    + map the mqtt port from host to docker
+* create mqtt client connection
+    + nsc create a user and enable "Bearer Token"
+    + e.g. "nsc edit user --name MqttUser --account TestAccount --bearer"
+    + connect with an arbitrary username with the nsc user's jwt
+
 ## References
 
 * [Welcome to the Official NATS Documentation](https://docs.nats.io/)
