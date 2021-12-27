@@ -12,6 +12,8 @@ services:
       - 8222:8222
       # mqtt
       - 1883:1883
+      # websocket
+      - 8080:8080
     volumes:
       - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
       - data1:/data/jetstream
