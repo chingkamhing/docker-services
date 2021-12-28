@@ -17,6 +17,8 @@ services:
     volumes:
       - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
       - data1:/data/jetstream
+    restart:
+      unless-stopped
   nats2:
     image: nats:2.6.6-alpine3.14
     command: "-name nats2 -c /etc/nats/nats-server.conf -js -D --routes nats-route://route_user:T0pS3cr3t@nats1:6222,nats-route://route_user:T0pS3cr3t@nats3:6222"
@@ -30,6 +32,8 @@ services:
     volumes:
       - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
       - data2:/data/jetstream
+    restart:
+      unless-stopped
   nats3:
     image: nats:2.6.6-alpine3.14
     command: "-name nats3 -c /etc/nats/nats-server.conf -js -D --routes nats-route://route_user:T0pS3cr3t@nats1:6222,nats-route://route_user:T0pS3cr3t@nats2:6222"
@@ -43,6 +47,8 @@ services:
     volumes:
       - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
       - data3:/data/jetstream
+    restart:
+      unless-stopped
 
 # networks
 networks:
