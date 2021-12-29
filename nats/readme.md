@@ -56,3 +56,8 @@
 * [NATS Server Clients](https://docs.nats.io/running-a-nats-service/clients)
 * [The NATS Command Line Interface](https://github.com/nats-io/natscli)
 * [Golang client for NATS](https://github.com/nats-io/nats.go)
+* open source projects
+    + [pitaya](https://github.com/topfreegames/pitaya)
+    + [goserver](https://github.com/0990/goserver)
+    + [nats-wsmsg](https://github.com/octu0/nats-wsmsg)
+    + [golang nats.io websocket](https://github.com/blinkinglight/go-nats.io-websocket)
