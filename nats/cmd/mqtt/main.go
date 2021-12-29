@@ -23,8 +23,8 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 const broker = "127.0.0.1"
 const port = 1883
 const clientID = "go_mqtt_client"
-const username = "my_mqtt_user"
-const password = "eyJ0eXAiOiJKV1QiLCJhbGciOiJlZDI1NTE5LW5rZXkifQ.eyJqdGkiOiJERzc2RjI0Rjc3QkgyWkJUMkZQUDdXQ0RaU1VVVTRRNzY1SzdHV0pBTUZXMlNMQ0xSMkpRIiwiaWF0IjoxNjQwNTk4MDE1LCJpc3MiOiJBQlQ0RU40NUgzNU4zWDVFTk1MSkRXTkpKT05FMlpHN0ZXUFhJNENaSVM3UDY2RElDVkNXR01ZSSIsIm5hbWUiOiJNcXR0VXNlciIsInN1YiI6IlVCQVczNkZCUE9ZNkM0TFlDTDdUWUQ0WUpQSzdZVE43WkNYRzRTWE1RSUJTUlFLTjI2UDJUV1FUIiwibmF0cyI6eyJwdWIiOnt9LCJzdWIiOnt9LCJzdWJzIjotMSwiZGF0YSI6LTEsInBheWxvYWQiOi0xLCJiZWFyZXJfdG9rZW4iOnRydWUsInR5cGUiOiJ1c2VyIiwidmVyc2lvbiI6Mn19.90Vr4s0dRc7zUFF9skSWuJXIvk1rTX5cGE7dRBFIoiU_9XSFLWqibU0PH-xlof2pOXnNeKaV0g4JU42t8uCiDw"
+const username = "mqtt_user"
+const password = ""
 
 func main() {
 	log.Printf("mqtt")
