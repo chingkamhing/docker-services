@@ -2,7 +2,7 @@ version: "3.8"
 services:
   nats1:
     image: nats:2.6.6-alpine3.14
-    command: "-name nats1 -c /etc/nats/nats-server.conf -js -D --routes nats-route://route_user:T0pS3cr3t@nats2:6222,nats-route://route_user:T0pS3cr3t@nats3:6222"
+    command: "-name nats1 -c /etc/nats/nats-server.conf -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats3:6222"
     networks:
       - backend
     ports:
@@ -21,7 +21,7 @@ services:
       unless-stopped
   nats2:
     image: nats:2.6.6-alpine3.14
-    command: "-name nats2 -c /etc/nats/nats-server.conf -js -D --routes nats-route://route_user:T0pS3cr3t@nats1:6222,nats-route://route_user:T0pS3cr3t@nats3:6222"
+    command: "-name nats2 -c /etc/nats/nats-server.conf -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats3:6222"
     networks:
       - backend
     ports:
@@ -36,7 +36,7 @@ services:
       unless-stopped
   nats3:
     image: nats:2.6.6-alpine3.14
-    command: "-name nats3 -c /etc/nats/nats-server.conf -js -D --routes nats-route://route_user:T0pS3cr3t@nats1:6222,nats-route://route_user:T0pS3cr3t@nats2:6222"
+    command: "-name nats3 -c /etc/nats/nats-server.conf -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats2:6222"
     networks:
       - backend
     ports:
