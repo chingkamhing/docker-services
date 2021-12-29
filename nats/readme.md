@@ -5,6 +5,19 @@
 
 ## Add authentication
 
+### Server Configuration Authentication/Authorization
+
+* route authentication
+    + change NATS_ROUTE_USERNAME and NATS_ROUTE_PASSWORD accordingly in file ".env"
+    + --user ${NATS_ROUTE_USERNAME} --pass ${NATS_ROUTE_PASSWORD}
+* configure user(s)
+    + simply add "authorization: { ... }" block in config file
+* example usage:
+    + nats sub --user nats_user --password nats_user_scret_pssord test
+    + nats pub --user nats_user --password nats_user_scret_pssord test Message1
+
+### Decentralized JWT Authentication/Authorization
+
 * create memory resolver
     + memory resolver is easier to maintain and suitable for simple account usage
     + follow [Memory Resolver Tutorial](https://docs.nats.io/running-a-nats-service/configuration/securing_nats/auth_intro/jwt/mem_resolver)
@@ -25,6 +38,7 @@
         - nats stream add --creds TestUser.creds test_stream
         - nats pub test --count=1000 --sleep 1s --creds TestUser.creds "publication #{{Count}} @ {{TimeStamp}}"
         - nats consumer next test_stream TestConsumer1 --count 1000 --creds TestUser.creds
+* _Note: seems it cannot config mqtt user to be no_auth_user; so drop it_
 
 ## MQTT
 
