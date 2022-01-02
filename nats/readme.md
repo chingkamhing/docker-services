@@ -61,3 +61,7 @@
     + [goserver](https://github.com/0990/goserver)
     + [nats-wsmsg](https://github.com/octu0/nats-wsmsg)
     + [golang nats.io websocket](https://github.com/blinkinglight/go-nats.io-websocket)
+    + liwords - A site that allows people to play a crossword board game against each other
+        - [liwords](https://github.com/domino14/liwords)
+        - [macondo](https://github.com/domino14/macondo)
+        - [liwords-socket](https://github.com/domino14/liwords-socket)
