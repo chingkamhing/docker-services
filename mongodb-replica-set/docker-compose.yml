@@ -1,0 +1,88 @@
+version: "3.8"
+
+x-env:
+  db-mongo: &db-mongo
+    image: mongo:5.0
+    command: "mongod --config /etc/mongod.conf"
+    networks:
+      - backend
+    configs:
+      - source: mongod.conf
+        target: /etc/mongod.conf
+    secrets:
+      - source: mongodb.keyfile
+        uid: '999'
+        gid: '999'
+        mode: 0400
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+services:
+  #
+  # db-mongo
+  #
+  db-mongo1:
+    <<: *db-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+    configs:
+      - source: mongod.conf
+        target: /etc/mongod.conf
+      - source: init-mongo.sh
+        target: /docker-entrypoint-initdb.d/init-mongo.sh
+        mode: 0544
+    volumes:
+      - mongodb1:/data/db
+    deploy:
+      placement:
+        constraints:
+          # - node.labels.mongo.replica == 1
+          - node.role == manager
+
+  db-mongo2:
+    <<: *db-mongo
+    volumes:
+      - mongodb2:/data/db
+    deploy:
+      placement:
+        constraints:
+          # - node.labels.mongo.replica == 2
+          - node.role == manager
+
+  db-mongo3:
+    <<: *db-mongo
+    volumes:
+      - mongodb3:/data/db
+    deploy:
+      placement:
+        constraints:
+          # - node.labels.mongo.replica == 3
+          - node.role == manager
+
+# configs
+configs:
+  mongod.conf:
+    file: deploy/mongod.conf
+  init-mongo.sh:
+    file: deploy/init-mongo.sh
+
+# secrets
+secrets:
+  mongodb.keyfile:
+    file: deploy/mongodb.keyfile
+
+# networks
+networks:
+  backend:
+    driver: overlay
+
+# volumes
+volumes:
+  mongodb1:
+  mongodb2:
+  mongodb3:
