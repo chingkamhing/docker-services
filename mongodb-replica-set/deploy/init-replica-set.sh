@@ -17,8 +17,8 @@ mongo_servers=(
     "db-mongo2"
     "db-mongo3"
 )
-wait_count=3
-wait_interval=2s
+wait_count=10
+wait_interval=6s
 
 WaitMongosReady() {
 	local servers=$*
