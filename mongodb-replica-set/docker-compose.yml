@@ -3,14 +3,12 @@ version: "3.8"
 x-env:
   db-mongo: &db-mongo
     image: mongo:5.0
-    command: "mongod --config /etc/mongod.conf"
+    command: "mongod --replSet ${MY_MONOGO_REPLICA_SET_NAME} --keyFile /etc/mongodb.keyfile --bind_ip 0.0.0.0 --port 27017 --dbpath /data/db --timeZoneInfo /usr/share/zoneinfo"
     networks:
       - backend
-    configs:
-      - source: mongod.conf
-        target: /etc/mongod.conf
     secrets:
       - source: mongodb.keyfile
+        target: /etc/mongodb.keyfile
         uid: '999'
         gid: '999'
         mode: 0400
@@ -25,16 +23,15 @@ services:
   db-mongo1:
     <<: *db-mongo
     environment:
+      MY_MONOGO_REPLICA_SET_NAME: ${MY_MONOGO_REPLICA_SET_NAME}
       MY_INITDB_ROOT_USERNAME: ${MY_INITDB_ROOT_USERNAME}
       MY_INITDB_ROOT_PASSWORD: ${MY_INITDB_ROOT_PASSWORD}
       MY_DATABASE_NAME: ${MY_DATABASE_NAME}
       MY_DATABASE_USERNAME: ${MY_DATABASE_USERNAME}
       MY_DATABASE_PASSWORD: ${MY_DATABASE_PASSWORD}
     configs:
-      - source: mongod.conf
-        target: /etc/mongod.conf
       - source: init-mongo.sh
-        target: /docker-entrypoint-initdb.d/init-mongo.sh
+        target: /root/init-mongo.sh
         mode: 0544
     volumes:
       - mongodb1:/data/db
@@ -66,8 +63,6 @@ services:
 
 # configs
 configs:
-  mongod.conf:
-    file: deploy/mongod.conf
   init-mongo.sh:
     file: deploy/init-mongo.sh
 

@@ -5,28 +5,66 @@
 
 #
 # Note:
-# - when MONGO_INITDB_ROOT_USERNAME is set and bootup the first mongodb, always have the following exception and fail to run init-mongo.sh
 # - "uncaught exception: Error: couldn't add user: not master"
-# - may not be able to create root user until the replica set is running and in master node
-# - i.e. create root at the end of this script
+#   - when MONGO_INITDB_ROOT_USERNAME is set and bootup the first mongodb, always have the above exception and fail to run init-mongo.sh
+#   - which suggest root user cannot be created until the replica set is running and in master node
+#   - i.e. create root and/or other users at the end of this script
+# - believe the parent shell "set -e" that exit this script upon any error
 #
 
+mongo_servers=(
+    "db-mongo1"
+    "db-mongo2"
+    "db-mongo3"
+)
+wait_count=3
+wait_interval=2s
+
+WaitMongosReady() {
+	local servers=$*
+	for server in ${servers[@]}; do
+        echo "Wait for mongo server \"$server\" be ready..."
+        WaitMongoReady $server
+        if [ "$?" != "0" ]; then
+            echo "Fail to connect to server \"$server\", abort init mongo."
+            exit 1
+        else
+            echo "Server \"$server\" is ready."
+        fi
+	done
+}
+
+WaitMongoReady() {
+	local server=$1
+	for (( i=1; i<=$wait_count; i++ )); do
+        mongo --host $server --port 27017 --eval "db.runCommand( { ping: 1 } )" &>/dev/null
+        [ "$?" == "0" ] && return 0
+        sleep $wait_interval
+	done
+    return 1
+}
+
 # init mongodb replica set
+echo "------------------------------------------------------------"
+echo "Ping mongo servers..."
+WaitMongosReady ${mongo_servers[*]}
+
+echo "------------------------------------------------------------"
 echo "Init mongodb replica set..."
 mongo --host localhost --port 27017 <<EOF
 var config = {
-    "_id": "rs0",
+    "_id": "$MY_MONOGO_REPLICA_SET_NAME",
     "version": 1,
     "members": [
         {
             "_id": 1,
             "host": "db-mongo1:27017",
-            "priority": 3
+            "priority": 2
         },
         {
             "_id": 2,
             "host": "db-mongo2:27017",
-            "priority": 2
+            "priority": 1
         },
         {
             "_id": 3,
@@ -38,14 +76,3 @@ var config = {
 rs.initiate(config, { force: true });
 rs.status();
 EOF
-
-# create user permission
-echo "Create user permission..."
-if [ "$MY_DATABASE_NAME" ] && [ "$MY_DATABASE_USERNAME" ] && [ "$MY_DATABASE_PASSWORD" ]; then
-    echo 'Creating application user and db for iTMS'
-    mongo \
-        --host localhost \
-        --port 27017 \
-        admin \
-        --eval "db.getSiblingDB('${MY_DATABASE_NAME}').createUser({user: '${MY_DATABASE_USERNAME}', pwd: '${MY_DATABASE_PASSWORD}', roles:[{role:'dbOwner', db: '${MY_DATABASE_NAME}'}]});"
-fi
