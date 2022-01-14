@@ -21,17 +21,17 @@ var config = {
         {
             "_id": 1,
             "host": "db-mongo1:27017",
-            "priority": 3
+            "priority": 1
         },
         {
             "_id": 2,
             "host": "db-mongo2:27017",
-            "priority": 2
+            "priority": 0.5
         },
         {
             "_id": 3,
             "host": "db-mongo3:27017",
-            "priority": 1
+            "priority": 0.5
         }
     ]
 };
