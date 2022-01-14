@@ -17,6 +17,7 @@ Usage () {
 	echo
 	echo "Usage: $SCRIPT_NAME"
 	echo "Options:"
+	echo " -f                           Force to overwrite existing keyfile"
 	echo " -o  [filename]               Keyfile output filename"
 	echo " -n  [chars]                  Number of output characters"
 	echo " -h                           This help message"
@@ -39,6 +40,9 @@ Prompt () {
 while [ "${1:0:1}" == "-" ]; do
 	OPT=${1:1:1}
 	case "$OPT" in
+	"f")
+		FORCE_OVERWRITE="yes"
+		;;
 	"o")
 		KEYFILE_FILENAME=$2
 		shift
@@ -62,10 +66,12 @@ if [ "$#" -ne "$NUM_ARGS" ]; then
 fi
 
 if [ -f "$KEYFILE_FILENAME" ]; then
-	is_overwrite=$(Prompt "Overwrite \"$KEYFILE_FILENAME\" file?")
-	if [ "$is_overwrite" != "Y" ]; then
-		echo "Abort creating keyfile."
-		exit
+	if [ "$FORCE_OVERWRITE" != "yes" ]; then
+		is_overwrite=$(Prompt "Overwrite \"$KEYFILE_FILENAME\" file?")
+		if [ "$is_overwrite" != "Y" ]; then
+			echo "Abort creating keyfile."
+			exit
+		fi
 	fi
 	rm -f $KEYFILE_FILENAME
 fi
