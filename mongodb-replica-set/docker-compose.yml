@@ -30,8 +30,8 @@ services:
       MY_DATABASE_USERNAME: ${MY_DATABASE_USERNAME}
       MY_DATABASE_PASSWORD: ${MY_DATABASE_PASSWORD}
     configs:
-      - source: init-mongo.sh
-        target: /root/init-mongo.sh
+      - source: init-replica-set.sh
+        target: /root/init-replica-set.sh
         mode: 0544
     volumes:
       - mongodb1:/data/db
@@ -63,8 +63,8 @@ services:
 
 # configs
 configs:
-  init-mongo.sh:
-    file: deploy/init-mongo.sh
+  init-replica-set.sh:
+    file: deploy/init-replica-set.sh
 
 # secrets
 secrets:
