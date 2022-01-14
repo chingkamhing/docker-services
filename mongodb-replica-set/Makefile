@@ -45,6 +45,7 @@ docker-down:
 # docker stack-up
 .PHONY: stack-up
 stack-up:
+	./create-key-file.sh -f -o deploy/mongodb.keyfile
 	docker stack deploy --with-registry-auth -c docker-compose.yml $(project)
 
 # docker stack down
