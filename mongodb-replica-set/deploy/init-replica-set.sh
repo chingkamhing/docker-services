@@ -74,5 +74,20 @@ var config = {
     ]
 };
 rs.initiate(config, { force: true });
+EOF
+
+# wait a while to settle the primary node
+sleep 15s
+
+# create admin
+mongo --host localhost --port 27017 <<EOF
+use admin;
+admin = db.getSiblingDB("admin");
+admin.createUser({
+    user: "${MY_INITDB_ROOT_USERNAME}",
+    pwd: "${MY_INITDB_ROOT_PASSWORD}",
+    roles: [ { role: "root", db: "admin" } ]
+});
+db.getSiblingDB("admin").auth("${MY_INITDB_ROOT_USERNAME}", "${MY_INITDB_ROOT_PASSWORD}");
 rs.status();
 EOF
