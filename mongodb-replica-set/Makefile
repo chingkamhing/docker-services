@@ -47,6 +47,7 @@ docker-down:
 stack-up:
 	./create-key-file.sh -f -o deploy/mongodb.keyfile
 	docker stack deploy --with-registry-auth -c docker-compose.yml $(project)
+	docker exec -it $$(docker ps --filter name=mongors_db-mongo1 --format {{.ID}}) /root/init-replica-set.sh
 
 # docker stack down
 .PHONY: stack-down
