@@ -16,7 +16,7 @@ config:
 # docker stack-up
 .PHONY: stack-up
 stack-up:
-	@if [ "$$MY_MONOGO_REPLICA_SET_NAME" != "" ] && [ "$$MY_INITDB_ROOT_USERNAME" != "" ] && [ "$$MY_INITDB_ROOT_PASSWORD" != "" ]; then \
+	@if [ "$$MY_MONOGO_REPLICA_SET_NAME" != "" ] && [ "$$MY_INITDB_ROOT_USERNAME" != "" ]; then \
 		./create-key-file.sh -f -o deploy/mongodb.keyfile && \
 		docker stack deploy --with-registry-auth -c docker-stack.yml $(project) ; \
 	else \
