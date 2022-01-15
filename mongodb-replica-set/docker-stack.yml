@@ -22,11 +22,15 @@ services:
   #
   db-mongo1:
     <<: *db-mongo
+    command: /root/bootstrap.sh
     environment:
       MY_MONOGO_REPLICA_SET_NAME: ${MY_MONOGO_REPLICA_SET_NAME}
       MY_INITDB_ROOT_USERNAME: ${MY_INITDB_ROOT_USERNAME}
       MY_INITDB_ROOT_PASSWORD: ${MY_INITDB_ROOT_PASSWORD}
     configs:
+      - source: bootstrap.sh
+        target: /root/bootstrap.sh
+        mode: 0544
       - source: init-replica-set.sh
         target: /root/init-replica-set.sh
         mode: 0544
@@ -60,6 +64,8 @@ services:
 
 # configs
 configs:
+  bootstrap.sh:
+    file: deploy/bootstrap.sh
   init-replica-set.sh:
     file: deploy/init-replica-set.sh
 
