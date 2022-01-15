@@ -77,9 +77,13 @@ rs.initiate(config, { force: true });
 EOF
 
 # wait a while to settle the primary node
+echo "------------------------------------------------------------"
+echo "Waiting mongodb selecting for the primary node..."
 sleep 15s
 
 # create admin
+echo "------------------------------------------------------------"
+echo "Creating admin user..."
 mongo --host localhost --port 27017 <<EOF
 use admin;
 admin = db.getSiblingDB("admin");
