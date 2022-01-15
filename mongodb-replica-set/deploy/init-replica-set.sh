@@ -20,25 +20,25 @@ mongo_servers=(
 wait_count=10
 wait_interval=6s
 
-WaitMongosReady() {
-	local servers=$*
-	for server in ${servers[@]}; do
-        echo "Wait for mongo server \"$server\" be ready..."
-        WaitMongoReady $server
-        if [ "$?" != "0" ]; then
-            echo "Fail to connect to server \"$server\", abort init mongo."
-            exit 1
-        else
-            echo "Server \"$server\" is ready."
-        fi
-	done
-}
-
 WaitMongoReady() {
 	local server=$1
 	for (( i=1; i<=$wait_count; i++ )); do
-        mongo --host $server --port 27017 --eval "db.runCommand( { ping: 1 } )" &>/dev/null
-        [ "$?" == "0" ] && return 0
+        mongo --quiet --host $server --port 27017 --eval "db.runCommand( { ping: 1 } )" &>/dev/null
+        if [ "$?" == "0" ]; then
+            return 0
+        fi
+        sleep $wait_interval
+	done
+    return 1
+}
+
+IsPrimaryNode() {
+	local server=$1
+	for (( i=1; i<=$wait_count; i++ )); do
+        local is_primary=$(mongo --quiet --host $server --port 27017 --eval "db.runCommand( \"hello\" ).isWritablePrimary")
+        if [ "$is_primary" == "true" ]; then
+            return 0
+        fi
         sleep $wait_interval
 	done
     return 1
@@ -46,12 +46,21 @@ WaitMongoReady() {
 
 # init mongodb replica set
 echo "------------------------------------------------------------"
-echo "Ping mongo servers..."
-WaitMongosReady ${mongo_servers[*]}
+echo "Waiting mongo servers to be ready..."
+for server in ${mongo_servers[@]}; do
+    echo "Wait for mongo server \"$server\" be ready..."
+    WaitMongoReady $server
+    if [ "$?" != "0" ]; then
+        echo "Fail to connect to server \"$server\", abort init mongo."
+        exit 1
+    else
+        echo "Server \"$server\" is ready."
+    fi
+done
 
 echo "------------------------------------------------------------"
 echo "Init mongodb replica set..."
-mongo --host localhost --port 27017 <<EOF
+mongo --quiet --host localhost --port 27017 <<EOF
 var config = {
     "_id": "$MY_MONOGO_REPLICA_SET_NAME",
     "version": 1,
@@ -78,13 +87,20 @@ EOF
 
 # wait a while to settle the primary node
 echo "------------------------------------------------------------"
-echo "Waiting mongodb selecting for the primary node..."
-sleep 15s
+echo "Waiting mongodb electing for the primary node..."
+primary_server=localhost
+IsPrimaryNode $primary_server
+if [ "$?" != "0" ]; then
+    echo "Server \"$primary_server\" fail to be primary node! Abort init mongo."
+    exit 1
+else
+    echo "Server \"$primary_server\" is now primary node."
+fi
 
 # create admin
 echo "------------------------------------------------------------"
 echo "Creating admin user..."
-mongo --host localhost --port 27017 <<EOF
+mongo --quiet --host localhost --port 27017 <<EOF
 use admin;
 admin = db.getSiblingDB("admin");
 admin.createUser({
