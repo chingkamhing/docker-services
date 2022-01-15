@@ -22,25 +22,35 @@ wait_interval=6s
 
 WaitMongoReady() {
 	local server=$1
+    local is_slept="false"
 	for (( i=1; i<=$wait_count; i++ )); do
         mongo --quiet --host $server --port 27017 --eval "db.runCommand( { ping: 1 } )" &>/dev/null
         if [ "$?" == "0" ]; then
+            [ "$is_slept" == "true" ] && echo
             return 0
         fi
+        echo -n "."
+        is_slept="true"
         sleep $wait_interval
 	done
+    [ "$is_slept" == "true" ] && echo
     return 1
 }
 
 IsPrimaryNode() {
 	local server=$1
+    local is_slept="false"
 	for (( i=1; i<=$wait_count; i++ )); do
         local is_primary=$(mongo --quiet --host $server --port 27017 --eval "db.runCommand( \"hello\" ).isWritablePrimary")
         if [ "$is_primary" == "true" ]; then
+            [ "$is_slept" == "true" ] && echo
             return 0
         fi
+        echo -n "."
+        is_slept="true"
         sleep $wait_interval
 	done
+    [ "$is_slept" == "true" ] && echo
     return 1
 }
 
