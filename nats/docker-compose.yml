@@ -1,8 +1,8 @@
 version: "3.8"
-services:
-  nats1:
+
+x-env:
+  nats: &nats
     image: nats:2.6.6-alpine3.14
-    command: "--name nats1 -c /etc/nats/nats-server.conf --user ${NATS_ROUTE_USERNAME} --pass ${NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats3:6222"
     environment:
       - NATS_ROUTE_USERNAME=${NATS_ROUTE_USERNAME}
       - NATS_ROUTE_PASSWORD=${NATS_ROUTE_PASSWORD}
@@ -12,6 +12,13 @@ services:
       - MQTT_PASSWORD=${MQTT_PASSWORD}
     networks:
       - backend
+    restart:
+      unless-stopped
+
+services:
+  nats1:
+    <<: *nats
+    command: "--name nats1 -c /etc/nats/nats-server.conf --user ${NATS_ROUTE_USERNAME} --pass ${NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats3:6222"
     ports:
       # for clients
       - 4222:4222
@@ -24,20 +31,9 @@ services:
     volumes:
       - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
       - data1:/data/jetstream
-    restart:
-      unless-stopped
   nats2:
-    image: nats:2.6.6-alpine3.14
+    <<: *nats
     command: "--name nats2 -c /etc/nats/nats-server.conf --user ${NATS_ROUTE_USERNAME} --pass ${NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats3:6222"
-    environment:
-      - NATS_ROUTE_USERNAME=${NATS_ROUTE_USERNAME}
-      - NATS_ROUTE_PASSWORD=${NATS_ROUTE_PASSWORD}
-      - NATS_USERNAME=${NATS_USERNAME}
-      - NATS_PASSWORD=${NATS_PASSWORD}
-      - MQTT_USERNAME=${MQTT_USERNAME}
-      - MQTT_PASSWORD=${MQTT_PASSWORD}
-    networks:
-      - backend
     ports:
       # for clients
       - 4223:4222
@@ -46,20 +42,9 @@ services:
     volumes:
       - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
       - data2:/data/jetstream
-    restart:
-      unless-stopped
   nats3:
-    image: nats:2.6.6-alpine3.14
+    <<: *nats
     command: "--name nats3 -c /etc/nats/nats-server.conf --user ${NATS_ROUTE_USERNAME} --pass ${NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats2:6222"
-    environment:
-      - NATS_ROUTE_USERNAME=${NATS_ROUTE_USERNAME}
-      - NATS_ROUTE_PASSWORD=${NATS_ROUTE_PASSWORD}
-      - NATS_USERNAME=${NATS_USERNAME}
-      - NATS_PASSWORD=${NATS_PASSWORD}
-      - MQTT_USERNAME=${MQTT_USERNAME}
-      - MQTT_PASSWORD=${MQTT_PASSWORD}
-    networks:
-      - backend
     ports:
       # for clients
       - 4224:4222
@@ -68,8 +53,6 @@ services:
     volumes:
       - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
       - data3:/data/jetstream
-    restart:
-      unless-stopped
 
 # networks
 networks:
