@@ -38,7 +38,7 @@ WaitPrimaryNode() {
 	local server=$1
     local is_slept="false"
 	for (( i=1; i<=$wait_count; i++ )); do
-        local is_primary=$(mongo --quiet --host $server --port 27017 --eval "db.runCommand( \"hello\" ).isWritablePrimary")
+        local is_primary=$(mongo --quiet --host $server --port 27017 --eval "db.runCommand( 'hello' ).isWritablePrimary")
         if [ "$is_primary" == "true" ]; then
             [ "$is_slept" == "true" ] && echo
             return 0
@@ -67,7 +67,7 @@ done
 
 echo "------------------------------------------------------------"
 echo "Init mongodb replica set..."
-mongo --quiet --host localhost --port 27017 <<EOF
+output=$(mongo --quiet --host localhost --port 27017 <<EOF
 var config = {
     "_id": "$MY_MONOGO_REPLICA_SET_NAME",
     "version": 1,
@@ -91,6 +91,12 @@ var config = {
 };
 rs.initiate(config, { force: true });
 EOF
+)
+echo $output
+if [ $(echo $output | grep -E "\"ok\"\s*:\s*1" - | wc -l) -ne 1 ]; then
+    echo "Fail initialize replica set. Abort."
+    exit 1
+fi
 
 # wait a while to settle the primary node
 echo "------------------------------------------------------------"
