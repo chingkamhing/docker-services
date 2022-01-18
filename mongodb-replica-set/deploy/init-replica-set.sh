@@ -2,14 +2,11 @@
 #
 # MongoDB init script that create initial DB and user during first mongodb docker start up
 #
-
-#
 # Note:
 # - "uncaught exception: Error: couldn't add user: not master"
 #   - when MONGO_INITDB_ROOT_USERNAME is set and bootup the first mongodb, always have the above exception and fail to run init-mongo.sh
 #   - which suggest root user cannot be created until the replica set is running and in master node
 #   - i.e. create root and/or other users at the end of this script
-# - believe the parent shell "set -e" that exit this script upon any error
 #
 
 mongo_servers=(
@@ -37,7 +34,7 @@ WaitMongoReady() {
     return 1
 }
 
-IsPrimaryNode() {
+WaitPrimaryNode() {
 	local server=$1
     local is_slept="false"
 	for (( i=1; i<=$wait_count; i++ )); do
@@ -99,7 +96,7 @@ EOF
 echo "------------------------------------------------------------"
 echo "Waiting mongodb electing for the primary node..."
 primary_server=localhost
-IsPrimaryNode $primary_server
+WaitPrimaryNode $primary_server
 if [ "$?" != "0" ]; then
     echo "Server \"$primary_server\" fail to be primary node! Abort init mongo."
     exit 1
@@ -116,7 +113,7 @@ admin = db.getSiblingDB("admin");
 admin.createUser({
     user: "${MY_INITDB_ROOT_USERNAME}",
     pwd: "${MY_INITDB_ROOT_PASSWORD}",
-    roles: [ { role: "root", db: "admin" } ]
+    roles: [ {role: "userAdminAnyDatabase", db:"admin"}, "readWriteAnyDatabase", "dbAdminAnyDatabase", "clusterAdmin" ]
 });
 db.getSiblingDB("admin").auth("${MY_INITDB_ROOT_USERNAME}", "${MY_INITDB_ROOT_PASSWORD}");
 rs.status();
