@@ -9,16 +9,18 @@
 #   - i.e. create root and/or other users at the end of this script
 #
 
-mongo_servers=(
+MONGO_SERVERS=(
     "db-mongo1"
     "db-mongo2"
     "db-mongo3"
 )
-wait_count=10
-wait_interval=6s
+WAIT_COUNT=10
+WAIT_INTERVAL=6s
 
 WaitMongoReady() {
 	local server=$1
+    local wait_count=$2
+    local wait_interval=$3
     local is_slept="false"
 	for (( i=1; i<=$wait_count; i++ )); do
         mongo --quiet --host $server --port 27017 --eval "db.runCommand( { ping: 1 } )" &>/dev/null
@@ -36,6 +38,8 @@ WaitMongoReady() {
 
 WaitPrimaryNode() {
 	local server=$1
+    local wait_count=$2
+    local wait_interval=$3
     local is_slept="false"
 	for (( i=1; i<=$wait_count; i++ )); do
         local is_primary=$(mongo --quiet --host $server --port 27017 --eval "db.runCommand( 'hello' ).isWritablePrimary")
@@ -54,9 +58,9 @@ WaitPrimaryNode() {
 # init mongodb replica set
 echo "------------------------------------------------------------"
 echo "Waiting mongo servers to be ready..."
-for server in ${mongo_servers[@]}; do
+for server in ${MONGO_SERVERS[@]}; do
     echo "Wait for mongo server \"$server\" be ready..."
-    WaitMongoReady $server
+    WaitMongoReady $server $WAIT_COUNT $WAIT_INTERVAL
     if [ "$?" != "0" ]; then
         echo "Fail to connect to server \"$server\", abort init mongo."
         exit 1
@@ -102,7 +106,7 @@ fi
 echo "------------------------------------------------------------"
 echo "Waiting mongodb electing for the primary node..."
 primary_server=localhost
-WaitPrimaryNode $primary_server
+WaitPrimaryNode $primary_server $WAIT_COUNT $WAIT_INTERVAL
 if [ "$?" != "0" ]; then
     echo "Server \"$primary_server\" fail to be primary node! Abort init mongo."
     exit 1
