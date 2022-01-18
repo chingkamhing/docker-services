@@ -3,8 +3,10 @@
 # Script file print mongo server status.
 #
 
-CONTAINER_NAME="mongors_db-mongo1"
+CONTAINER_NAME="mongo1"
+CMD="\"hello\""
 NUM_ARGS=0
+OPTS=""
 DEBUG=""
 
 # Function
@@ -17,6 +19,8 @@ Usage () {
 	echo "Usage: $SCRIPT_NAME"
 	echo "Options:"
 	echo " -c  [container]              Mongo container name (default: $CONTAINER_NAME)"
+	echo " -u  [username]               Mongodb login username"
+	echo " -p  [password]               Mongodb login password"
 	echo " -h                           This help message"
 	echo
 }
@@ -27,6 +31,14 @@ while [ "${1:0:1}" == "-" ]; do
 	case "$OPT" in
 	"c")
 		CONTAINER_NAME=$2
+		shift
+		;;
+	"u")
+		OPTS="$OPTS -u $2"
+		shift
+		;;
+	"p")
+		OPTS="$OPTS -p $2"
 		shift
 		;;
 	"h")
@@ -57,4 +69,4 @@ if [ "$(echo $CONTAINER | wc -w)" != "1" ]; then
 fi
 
 # docker exec to the container
-docker exec -it $CONTAINER mongo --eval "db.runCommand( \"hello\" )"
+$DEBUG docker exec -it $CONTAINER mongo --quiet $OPTS --eval "db.runCommand( $CMD )"
