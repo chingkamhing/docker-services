@@ -16,8 +16,10 @@ config:
 # docker stack-up
 .PHONY: stack-up
 stack-up:
-	@if [ "$$MY_MONOGO_REPLICA_SET_NAME" != "" ] && [ "$$MY_INITDB_ROOT_USERNAME" != "" ]; then \
-		./script/create-key-file.sh -f -o deploy/mongodb.keyfile && \
+	@if [ "$$(docker stack ls | grep $(project) - | wc -l)" -eq "0" ]; then \
+		./script/create-key-file.sh -f -o deploy/mongodb.keyfile ; \
+	fi ; \
+	if [ "$$MY_MONOGO_REPLICA_SET_NAME" != "" ] && [ "$$MY_INITDB_ROOT_USERNAME" != "" ]; then \
 		docker stack deploy --with-registry-auth -c docker-stack.yml $(project) ; \
 	else \
 		echo "Error: .env variables is not set yet! Please source .env properly." ; \
