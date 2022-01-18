@@ -94,7 +94,7 @@ EOF
 )
 echo $output
 if [ $(echo $output | grep -E "\"ok\"\s*:\s*1" - | wc -l) -ne 1 ]; then
-    echo "Fail initialize replica set. Abort."
+    echo "Fail initialize replica set. If 'codeName' is 'Unauthorized', assume already initialized. Abort."
     exit 1
 fi
 
