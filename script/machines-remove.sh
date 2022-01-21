@@ -60,4 +60,4 @@ fi
 
 # stop and remove machine machines
 $DEBUG docker-machine stop ${machines[@]}
-$DEBUG docker-machine remove ${machines[@]}
+$DEBUG docker-machine rm ${machines[@]}
