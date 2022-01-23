@@ -6,7 +6,7 @@
 PREFIX="node"
 DRIVER="virtualbox"
 SSH_KEY_FILE="$HOME/.ssh/id_rsa"
-SSH_USENAME="root"
+SSH_USENAME="docker"
 OPTS=""
 NUM_ARGS=1
 DEBUG=""
@@ -110,18 +110,21 @@ fi
 GenerateSshKey
 
 # create machine machines
-echo "======> Creating $NUM_NODES machine machines...";
+echo "======> Creating $NUM_NODES machine machines";
 for num in $(seq 1 $NUM_NODES); do
 	index=$(( num - 1 ))
-	echo "======> Creating ${PREFIX}${num} machine...";
+	machine="${PREFIX}${num}"
+	echo "Creating ${machine} machine...";
 	case "$DRIVER" in
 	"virtualbox")
-		driver_string="-d virtualbox"
+		$DEBUG docker-machine create -d virtualbox ${machine}
+		host=$(docker-machine ip ${machine})
+		$DEBUG ssh-copy-id ${SSH_USENAME}@${host}
 		;;
 	"generic")
 		host="${HOSTS[$index]}"
-		driver_string="-d generic --generic-ip-address $host --generic-ssh-key $SSH_KEY_FILE --generic-ssh-user $SSH_USENAME"
+		$DEBUG ssh-copy-id ${SSH_USENAME}@${host}
+		$DEBUG docker-machine create -d generic --generic-ip-address $host --generic-ssh-key $SSH_KEY_FILE --generic-ssh-user $SSH_USENAME ${machine}
 		;;
 	esac
-	$DEBUG docker-machine create $driver_string ${PREFIX}${num};
 done
