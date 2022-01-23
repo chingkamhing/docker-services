@@ -3,7 +3,9 @@
 
 VM_BOX = "centos/7"
 VM_PROVIDER = "virtualbox"
-BRIDGE = ENV['VAGRANT_BRIDGE']
+VM_BRIDGE = ENV['VAGRANT_BRIDGE']
+VM_USERNAME = ENV['VM_USERNAME']
+VM_PASSWORD = ENV['VM_PASSWORD']
 
 # setup docker swarm cluster with vagrant
 # - manager: docker swarm manager node
@@ -15,16 +17,26 @@ cluster = {
 
 Vagrant.configure("2") do |config|
   config.vm.box = VM_BOX
-  config.vm.network "public_network", bridge: BRIDGE, auto_config: true
+  config.vm.network "public_network", bridge: VM_BRIDGE, auto_config: true
 
   cluster.each_with_index do |(hostname, info), index|
     (1..info[:num]).each do |i|
       config.vm.define hostname + "-#{i}" do |cfg|
         cfg.vm.provider VM_PROVIDER do |vb, override|
-          vb.name = hostname + "-#{i}"
-          vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on"]
-          override.vm.hostname = hostname + "-#{i}"
+          vb.name = "#{hostname}-#{i}"
+          vb.cpus = info[:cpus]
+          vb.memory = info[:mem]
+          override.vm.hostname = "#{hostname}-#{i}"
         end
+        config.vm.provision "shell", inline: <<-SHELL
+          sudo yum update -y
+          sudo yum upgrade -y
+          sudo yum install vim -y
+          sudo yum install git -y
+          sudo adduser #{VM_USERNAME}
+          echo #{VM_PASSWORD} | sudo passwd #{VM_USERNAME} --stdin
+          sudo usermod -aG wheel #{VM_USERNAME}
+        SHELL
       end
     end
   end
