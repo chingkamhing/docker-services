@@ -50,5 +50,12 @@ if [ "$#" -ne "$NUM_ARGS" ]; then
 	exit 1
 fi
 
-# stop machine machines
-$DEBUG docker-machine ls
+# list machine machines
+machines=$(docker-machine ls --format {{.Name}})
+for machine in ${machines[@]}; do
+	echo "$machine:"
+	echo "  IP:        $(docker-machine inspect $machine --format {{.Driver.IPAddress}})"
+	echo "  CPU:       $(docker-machine inspect $machine --format {{.Driver.CPU}})"
+	echo "  Memory:    $(docker-machine inspect $machine --format {{.Driver.Memory}})"
+	echo "  Disk Size: $(docker-machine inspect $machine --format {{.Driver.DiskSize}})"
+done
