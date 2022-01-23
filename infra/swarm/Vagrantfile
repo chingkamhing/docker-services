@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
           sudo yum upgrade -y
           sudo yum install vim -y
           sudo yum install git -y
-          sudo adduser #{VM_USERNAME}
+          sudo adduser -m -U #{VM_USERNAME}
           echo #{VM_PASSWORD} | sudo passwd #{VM_USERNAME} --stdin
           sudo usermod -aG wheel #{VM_USERNAME}
         SHELL
