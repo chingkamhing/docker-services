@@ -1,9 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# bridge of the VM connect to in order to get network access
-BRIDGE = "wlp2s0"
-
 # setup docker swarm cluster with vagrant
 # - manager: docker swarm manager node
 # - worker docker swarm worker node
@@ -14,7 +11,7 @@ cluster = {
 
 Vagrant.configure("2") do |config|
   config.vm.box = "centos/7"
-  config.vm.network "public_network", bridge: BRIDGE, auto_config: true
+  config.vm.network "public_network", auto_config: true
 
   cluster.each_with_index do |(hostname, info), index|
     (1..info[:num]).each do |i|
