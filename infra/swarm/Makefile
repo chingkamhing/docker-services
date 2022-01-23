@@ -17,7 +17,7 @@ vagrant-validate:
 # vagrant up
 .PHONY: vagrant-up
 vagrant-up:
-	@if [ "$$VAGRANT_BRIDGE" != "" ]; then \
+	@if [ "$$VAGRANT_BRIDGE" != "" ] && [ "$$VM_USERNAME" != "" ]; then \
 		vagrant up ; \
 	else \
 		echo "Error: .env variables is not set yet! Please source .env properly." ; \
