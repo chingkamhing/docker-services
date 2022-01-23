@@ -1,7 +1,7 @@
 .PHONY: help
 help:
 	@echo "Usage:"
-	@echo "    config               Validate and view the compose file"
+	@echo "    config                Validate and view the compose file"
 	@echo "    docker-up             docker-compose deploy for local development"
 	@echo "    docker-down           docker-compose remove"
 
