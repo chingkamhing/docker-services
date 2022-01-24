@@ -4,8 +4,6 @@
 VM_BOX = "centos/7"
 VM_PROVIDER = "virtualbox"
 VM_BRIDGE = ENV['VAGRANT_BRIDGE']
-VM_USERNAME = ENV['VM_USERNAME']
-VM_PASSWORD = ENV['VM_PASSWORD']
 
 # setup docker swarm cluster with vagrant
 # - manager: docker swarm manager node
@@ -31,11 +29,6 @@ Vagrant.configure("2") do |config|
         config.vm.provision "shell", inline: <<-SHELL
           sudo yum update -y
           sudo yum upgrade -y
-          sudo yum install vim -y
-          sudo yum install git -y
-          sudo adduser -m -U #{VM_USERNAME}
-          echo #{VM_PASSWORD} | sudo passwd #{VM_USERNAME} --stdin
-          sudo usermod -aG wheel #{VM_USERNAME}
         SHELL
       end
     end
