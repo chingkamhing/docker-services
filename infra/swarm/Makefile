@@ -46,4 +46,5 @@ vagrant-destroy:
 # vagrant status
 .PHONY: vagrant-status
 vagrant-status:
+	vagrant global-status
 	vagrant status
