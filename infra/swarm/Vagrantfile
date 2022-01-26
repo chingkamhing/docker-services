@@ -24,10 +24,6 @@ Vagrant.configure("2") do |config|
           vb.memory = info[:mem]
           config.vm.hostname = "#{hostname}-#{i}"
         end
-        config.vm.provision "shell", inline: <<-SHELL
-          sudo yum update -y
-          sudo yum upgrade -y
-        SHELL
       end
     end
   end
