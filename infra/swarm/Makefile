@@ -1,22 +1,22 @@
-.PHONY: vagrant-help
-vagrant-help:
+.PHONY: help
+help:
 	@echo "Usage:"
-	@echo "    vagrant-validate      Validate Vagrantfile"
-	@echo "    vagrant-up            Vagrant start and provision vagrant machines"
-	@echo "    vagrant-suspend       Vagrant suspend vagrant machines"
-	@echo "    vagrant-resume        Vagrant resume suspended vagrant machines"
-	@echo "    vagrant-halt          Vagrant stop vagrant machines"
-	@echo "    vagrant-destroy       Vagrant stop and delete vagrant machines"
-	@echo "    vagrant-status        Show vagrant machines status"
+	@echo "    validate      Validate Vagrantfile"
+	@echo "    up            Vagrant start and provision vagrant machines"
+	@echo "    suspend       Vagrant suspend vagrant machines"
+	@echo "    resume        Vagrant resume suspended vagrant machines"
+	@echo "    halt          Vagrant stop vagrant machines"
+	@echo "    destroy       Vagrant stop and delete vagrant machines"
+	@echo "    status        Show vagrant machines status"
 
 # validate Vagrantfile
-.PHONY: vagrant-validate
-vagrant-validate:
+.PHONY: validate
+validate:
 	vagrant validate
 
 # vagrant up
-.PHONY: vagrant-up
-vagrant-up:
+.PHONY: up
+up:
 	@if [ "$$VAGRANT_BRIDGE" != "" ]; then \
 		vagrant up ; \
 	else \
@@ -24,27 +24,27 @@ vagrant-up:
 	fi
 
 # vagrant suspend
-.PHONY: vagrant-suspend
-vagrant-suspend:
+.PHONY: suspend
+suspend:
 	vagrant suspend
 
 # vagrant resume
-.PHONY: vagrant-resume
-vagrant-resume:
+.PHONY: resume
+resume:
 	vagrant resume
 
 # vagrant halt
-.PHONY: vagrant-halt
-vagrant-halt:
+.PHONY: halt
+halt:
 	vagrant halt
 
 # vagrant destroy
-.PHONY: vagrant-destroy
-vagrant-destroy:
+.PHONY: destroy
+destroy:
 	vagrant destroy
 
 # vagrant status
-.PHONY: vagrant-status
-vagrant-status:
+.PHONY: status
+status:
 	vagrant global-status
 	vagrant status
