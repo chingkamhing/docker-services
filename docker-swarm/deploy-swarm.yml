@@ -1,0 +1,6 @@
+---
+- name: Init docker swarm nodes
+  hosts: all
+  roles:
+    - update-all
+    - install-git

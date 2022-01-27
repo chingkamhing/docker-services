@@ -1,0 +1,13 @@
+# ansible host file
+# - use group "all" to refer to all the nodes below
+
+# docker swarm manager nodes
+[managers]
+manager-1
+#manager-2
+
+# docker swarm worker nodes
+[workers]
+worker-1
+#worker-2
+#worker-3
