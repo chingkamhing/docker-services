@@ -1,0 +1,43 @@
+- name: set task variables
+  set_fact:
+    bashrc: '/home/vagrant/.bashrc'
+    vimrc: '/home/vagrant/.vimrc'
+
+- name: add alias ll
+  ansible.builtin.lineinfile:
+    path: "{{ bashrc }}"
+    regexp: "alias ll=.*"
+    insertafter: 'alias '
+    line: "alias ll='ls -hlF --group-directories-first'"
+    create: yes
+- name: add alias ll comment
+  ansible.builtin.lineinfile:
+    path: "{{ bashrc }}"
+    insertbefore: "alias ll=.*"
+    line: '# add some more ls aliases'
+
+- name: export DOCKER_ID
+  ansible.builtin.lineinfile:
+    path: "{{ bashrc }}"
+    regexp: "export DOCKER_ID=.*"
+    insertafter: 'export '
+    line: "export DOCKER_ID=192.168.223.27:5000/tradelink-pts"
+    create: yes
+- name: add export DOCKER_ID comment
+  ansible.builtin.lineinfile:
+    path: "{{ bashrc }}"
+    insertbefore: "export DOCKER_ID=.*"
+    line: '# default development environment settings'
+
+- name: set vimrc tabstop
+  ansible.builtin.lineinfile:
+    path: "{{ vimrc }}"
+    regexp: ":set tabstop=.*"
+    line: ":set tabstop=4"
+    create: yes
+- name: set vimrc shiftwidth
+  ansible.builtin.lineinfile:
+    path: "{{ vimrc }}"
+    regexp: ":set shiftwidth=.*"
+    line: ":set shiftwidth=4"
+    create: yes
