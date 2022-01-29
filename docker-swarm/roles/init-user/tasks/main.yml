@@ -1,7 +1,9 @@
+---
 - name: set task variables
   set_fact:
     bashrc: '/home/vagrant/.bashrc'
     vimrc: '/home/vagrant/.vimrc'
+    docker_id: '192.168.223.27:5000/tradelink-pts'
 
 - name: add alias ll
   ansible.builtin.lineinfile:
@@ -21,7 +23,7 @@
     path: "{{ bashrc }}"
     regexp: "export DOCKER_ID=.*"
     insertafter: 'export '
-    line: "export DOCKER_ID=192.168.223.27:5000/tradelink-pts"
+    line: "export DOCKER_ID={{docker_id}}"
     create: yes
 - name: add export DOCKER_ID comment
   ansible.builtin.lineinfile:
