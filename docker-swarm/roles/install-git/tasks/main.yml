@@ -33,3 +33,9 @@
   yum:
     name: git
     state: latest
+
+- name: git config https://tess.hk-tess.com:7080 sslverify to false
+  community.general.git_config:
+    name: "http.{{ repo_url }}.sslverify"
+    scope: global
+    value: false
