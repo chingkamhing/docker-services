@@ -1,4 +1,10 @@
 ---
+- name: set rc variables
+  set_fact:
+    # target user's .bashrc
+    bashrc: "/home/{{ vm_username }}/.bashrc"
+    # target user's .vimrc
+    vimrc: "/home/{{ vm_username }}/.vimrc"
 - name: add alias ll
   become: true
   become_user: root

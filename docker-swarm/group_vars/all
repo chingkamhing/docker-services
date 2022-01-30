@@ -1,12 +1,6 @@
-# target user's .bashrc
-bashrc: '/home/vagrant/.bashrc'
-
-# target user's .vimrc
-vimrc: '/home/vagrant/.vimrc'
-
 # docker id
 # docker_id: '192.168.223.27:5000/tradelink-pts'
 docker_id: 'chingkamhing'
 
 # repository url
-repo_url: https://tess.hk-tess.com:7080
+repo_url: 'https://tess.hk-tess.com:7080'
