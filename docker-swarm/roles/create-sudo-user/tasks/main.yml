@@ -4,11 +4,17 @@
     vm_username: "{{ lookup('env', 'VM_USERNAME') }}"
     vm_password: "{{ lookup('env', 'VM_PASSWORD') }}"
 
+- name: copy ssh public key
+  authorized_key:
+    user: "{{ vm_username }}"
+    key: "{{ lookup('file', '/home/' + lookup('env', 'USER') + '/.ssh/id_rsa.pub') }}"
+
 - name: create user vm_username
   become: true
   become_user: root
+  become_method: su
   user: name={{ vm_username }}
-        password={{ vm_password }}
+        password={{ vm_password | password_hash('sha512') }}
         create_home=yes
         groups=wheel
         shell=/bin/bash
@@ -18,10 +24,10 @@
 - name: add sudoer
   become: true
   become_user: root
+  become_method: su
   ansible.builtin.lineinfile:
     path: /etc/sudoers.d/{{ vm_username }}
     line: '{{ vm_username }} ALL=(ALL) NOPASSWD: ALL'
     state: present
     mode: 0440
     create: yes
-    validate: 'visudo -cf %s'

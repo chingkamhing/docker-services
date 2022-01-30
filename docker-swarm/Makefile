@@ -74,4 +74,4 @@ dry:
 # ansible deploy docker swarm nodes
 .PHONY: deploy
 deploy:
-	ansible-playbook deploy-swarm.yml
+	ansible-playbook deploy-swarm.yml --ask-pass --ask-become-pass
