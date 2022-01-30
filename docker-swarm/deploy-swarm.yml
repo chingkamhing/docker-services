@@ -1,6 +1,18 @@
 ---
-- name: Init docker swarm nodes
+- name: Prepare docker swarm nodes
   hosts: all
   roles:
-    - update-all
-    - install-git
+    - create-sudo-user
+    # - update-all
+    # - init-user
+    # - install-git
+    # - install-modules
+
+#FIXME, configure admin host
+#FIXME, configure ssh passwordless login
+#FIXME, enable firewall
+
+#FIXME, install docker
+#FIXME, install docker plugins (i.e. Loki)
+#FIXME, install docker manager and worker nodes
+#FIXME, install monitoring stack with Grafana and Prometheus
