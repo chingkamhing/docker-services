@@ -1,23 +1,34 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-VM_BOX = "centos/7"
-VM_PROVIDER = "virtualbox"
+VM_BOX = ENV['VM_BOX']
+VM_NETWORK = ENV['VM_NETWORK']
+VM_PROVIDER = ENV['VM_PROVIDER']
 VM_BRIDGE = ENV['VAGRANT_BRIDGE']
+VM_MANAGER_PREFIX = ENV['VM_MANAGER_PREFIX']
+VM_WORKER_PREFIX = ENV['VM_WORKER_PREFIX']
+NUM_MANAGER_NODES = ENV['NUM_MANAGER_NODES']
+NUM_WORKER_NODES = ENV['NUM_WORKER_NODES']
+NUM_MANAGER_CPUS = ENV['NUM_MANAGER_CPUS']
+NUM_WORKER_CPUS = ENV['NUM_WORKER_CPUS']
+NUM_MANAGER_MEMORY = ENV['NUM_MANAGER_MEMORY']
+NUM_WORKER_MEMORY = ENV['NUM_WORKER_MEMORY']
 
 # setup cluster of VMswith vagrant
 cluster = {
-  "manager" => { :num => 1, :cpus => 1, :mem => 1024 },
-  "worker" => { :num => 1, :cpus => 1, :mem => 1024 },
+  VM_MANAGER_PREFIX => { :num => NUM_MANAGER_NODES, :cpus => NUM_MANAGER_CPUS, :mem => NUM_MANAGER_MEMORY },
+  VM_WORKER_PREFIX => { :num => NUM_WORKER_NODES, :cpus => NUM_WORKER_CPUS, :mem => NUM_WORKER_MEMORY },
 }
 
 Vagrant.configure("2") do |config|
   config.vm.box = VM_BOX
-  config.vm.network "public_network", bridge: VM_BRIDGE, auto_config: true
+  config.vm.network VM_NETWORK, bridge: VM_BRIDGE, auto_config: true
 
   cluster.each_with_index do |(hostname, info), index|
-    (1..info[:num]).each do |i|
+    num = info[:num].to_i
+    (1..num).each do |i|
       config.vm.define "#{hostname}-#{i}" do |cfg|
+        # provision vm
         cfg.vm.provider VM_PROVIDER do |vb|
           vb.name = "#{hostname}-#{i}"
           vb.cpus = info[:cpus]
