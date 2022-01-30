@@ -1,11 +1,4 @@
 ---
-- name: set task variables
-  set_fact:
-    bashrc: '/home/vagrant/.bashrc'
-    vimrc: '/home/vagrant/.vimrc'
-    # docker_id: '192.168.223.27:5000/tradelink-pts'
-    docker_id: 'chingkamhing'
-
 - name: add alias ll
   ansible.builtin.lineinfile:
     path: "{{ bashrc }}"
