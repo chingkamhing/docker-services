@@ -1,16 +1,27 @@
 ---
-- name: Create Sudo User
+- name: get user info from environment variable
+  set_fact:
+    vm_username: "{{ lookup('env', 'VM_USERNAME') }}"
+    vm_password: "{{ lookup('env', 'VM_PASSWORD') }}"
+
+- name: create user vm_username
   become: true
   become_user: root
-  user: name=docker
+  user: name={{ vm_username }}
+        password={{ vm_password }}
+        create_home=yes
         groups=wheel
         shell=/bin/bash
-        generate_ssh_key=no
+        generate_ssh_key=yes
         state=present
 
-- name: Set Passwordless SSH Access for docker user
+- name: add sudoer
   become: true
   become_user: root
-  copy: src=sudoers
-        dest=/etc/sudoers.d
-        mode=0440
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/{{ vm_username }}
+    line: '{{ vm_username }} ALL=(ALL) NOPASSWD: ALL'
+    state: present
+    mode: 0440
+    create: yes
+    validate: 'visudo -cf %s'
