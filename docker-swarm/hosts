@@ -1,14 +1,30 @@
 # ansible host file
 # - use group "all" to refer to all the nodes below
 
+---
+
 # docker swarm manager nodes
-[managers]
-manager-1
-manager-2
-manager-3
+managers:
+  hosts:
+    manager1:
+      ansible_host: 192.168.8.77
+      ansible_user: user
+    manager2:
+      ansible_host: 192.168.8.70
+      ansible_user: user
+    manager3:
+      ansible_host: 192.168.8.71
+      ansible_user: user
 
 # docker swarm worker nodes
-[workers]
-worker-1
-worker-2
-worker-3
+workers:
+  hosts:
+    worker1:
+      ansible_host: 192.168.8.79
+      ansible_user: user
+    worker2:
+      ansible_host: 192.168.8.60
+      ansible_user: user
+    worker3:
+      ansible_host: 192.168.8.61
+      ansible_user: user
