@@ -8,7 +8,7 @@
 - name: add alias ll
   become: true
   become_user: root
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: "{{ bashrc }}"
     regexp: "alias ll=.*"
     insertafter: 'alias '
@@ -17,7 +17,7 @@
 - name: add alias ll comment
   become: true
   become_user: root
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: "{{ bashrc }}"
     insertbefore: "alias ll=.*"
     line: '# add some more ls aliases'
@@ -25,7 +25,7 @@
 - name: export DOCKER_ID
   become: true
   become_user: root
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: "{{ bashrc }}"
     regexp: "export DOCKER_ID=.*"
     insertafter: 'export '
@@ -34,7 +34,7 @@
 - name: add export DOCKER_ID comment
   become: true
   become_user: root
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: "{{ bashrc }}"
     insertbefore: "export DOCKER_ID=.*"
     line: '# default development environment settings'
@@ -42,7 +42,7 @@
 - name: set vimrc tabstop
   become: true
   become_user: root
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: "{{ vimrc }}"
     regexp: ":set tabstop=.*"
     line: ":set tabstop=4"
@@ -50,7 +50,7 @@
 - name: set vimrc shiftwidth
   become: true
   become_user: root
-  ansible.builtin.lineinfile:
+  lineinfile:
     path: "{{ vimrc }}"
     regexp: ":set shiftwidth=.*"
     line: ":set shiftwidth=4"

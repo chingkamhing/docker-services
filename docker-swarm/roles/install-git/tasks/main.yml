@@ -4,14 +4,14 @@
   become: true
   become_user: root
   yum:
-    name=git
-    state=absent
+    name: git
+    state: absent
 - name: remove default git-*
   become: true
   become_user: root
   yum:
-    name=git-*
-    state=absent
+    name: git-*
+    state: absent
 
 # reference: https://linuxize.com/post/how-to-install-git-on-centos-7/
 - name: copy the file from master to mwiapp02
@@ -21,12 +21,12 @@
     src: wandisco-git.repo
     dest: /etc/yum.repos.d/wandisco-git.repo
     mode: 0644
-- name: import the repository GPG keys
+- name: import git repository GPG keys
   become: true
   become_user: root
-  ansible.builtin.rpm_key:
-    state: present
+  rpm_key:
     key: http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco
+    state: present
 - name: install latest git
   become: true
   become_user: root
