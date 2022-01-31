@@ -2,6 +2,7 @@
 help:
 	@echo "Usage:"
 	@echo "VBox:"
+	@echo "    create-vm     Create VirtualBox VMs base on hosts.ini"
 	@echo "    list          VirtualBox list VMs"
 	@echo "    on            VirtualBox power on"
 	@echo "    off           VirtualBox power off"
@@ -13,6 +14,16 @@ help:
 #
 # VirtualBox
 #
+
+# Create VirtualBox VMs base on hosts.ini
+.PHONY: create-vm
+create-vm:
+	if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
+		./create-vm.sh -f hosts.ini ; \
+	else \
+		echo "Error: .env variables is not set yet! Please source .env properly." ; \
+		exit 1 ; \
+	fi
 
 # VirtualBox list VMs
 .PHONY: list
