@@ -53,7 +53,7 @@ case "$POWER" in
 esac
 
 # virtual box power on or off VMs
-IFS=$'\n' vm_list=($(VBoxManage list vms | head -n 1)) ; \
+IFS=$'\n' vm_list=($(VBoxManage list vms)) ; \
 for vm_line in "${vm_list[@]}"; do \
 	vm_name=$(echo $vm_line | awk '{ print $1 }' | tr -d '"') ; \
 	eval $cmd ; \
