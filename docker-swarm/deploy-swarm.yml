@@ -9,7 +9,12 @@
     - install-modules
     - enable-firewalld
 
-#FIXME, install docker
+- name: Install docker to all nodes
+  hosts: all
+  roles:
+    - install-docker
+    - add-user-docker-group
+
 #FIXME, install docker plugins (i.e. Loki)
 #FIXME, install docker manager and worker nodes
 #FIXME, install monitoring stack with Grafana and Prometheus

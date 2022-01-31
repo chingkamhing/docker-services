@@ -1,0 +1,42 @@
+---
+- name: install docker dependencies
+  yum:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - yum-utils
+
+- name: import docker-ce gpg key
+  become: true
+  become_user: root
+  yum_repository:
+    name: "Docker"
+    description: "import docker-ce gpg key"
+    baseurl: "https://download.docker.com/linux/centos/7/x86_64/stable"
+    gpgcheck: no
+
+- name: install docker-ce
+  become: true
+  become_user: root
+  yum:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+
+- name: starting docker service
+  become: true
+  become_user: root
+  service:
+    name: "docker"
+    state: started
+    enabled: yes
+
+- name: add docker group
+  group:
+    name: docker
+    state: present
