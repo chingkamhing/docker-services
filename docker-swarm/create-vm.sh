@@ -8,13 +8,17 @@
 #
 
 VM_DIRECTORY="$HOME/VirtualMachines"
-VM_OSTYPE="Linux26_64"
+# invoke "VBoxManage list ostypes" to get all supported OS types
+VM_OSTYPE="RedHat_64"
 VM_CPUS=1
 VM_MEMORY=1024
 VM_VRAM=16
 VM_NIC="bridged"
 VM_DISK_SIZE=100000
 VM_BRIDGE_ADAPTER=$(ip addr | awk '/state UP/ {print $2}' | head -n 1 | tr -d ':')
+VM_LOCALE="en_US"
+VM_COUNTRY="HK"
+VM_TIME_ZONE="Asia/Hong_Kong"
 # iso file that downloaded in VM_DIRECTORY
 ISO_FILENAME="CentOS-7-x86_64-Minimal-2009.iso"
 ISO_URL="http://mirror-hk.koddos.net/centos/7.9.2009/isos/x86_64/"
@@ -76,6 +80,7 @@ CreateVm () {
     VBoxManage storageattach $create_vm_name --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium ${vdi_file}
     VBoxManage storageattach $create_vm_name --storagectl "SATA Controller" --port 1 --device 0 --type dvddrive --medium ${iso_file}
     VBoxManage modifyvm $create_vm_name --boot1 dvd --boot2 disk --boot3 none --boot4 none
+	VBoxManage unattended install $create_vm_name --user=$VM_USERNAME --password=$VM_PASSWORD --locale=$VM_LOCALE --country=$VM_COUNTRY --time-zone=$VM_TIME_ZONE --iso=$iso_file --start-vm=headless
     return 0
 }
 
