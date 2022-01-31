@@ -3,14 +3,11 @@
   hosts: all
   roles:
     - create-sudo-user
-    # - update-all
-    # - init-user
-    # - install-git
-    # - install-modules
-
-#FIXME, configure admin host
-#FIXME, configure ssh passwordless login
-#FIXME, enable firewall
+    - update-all
+    - init-user
+    - install-git
+    - install-modules
+    - enable-firewalld
 
 #FIXME, install docker
 #FIXME, install docker plugins (i.e. Loki)

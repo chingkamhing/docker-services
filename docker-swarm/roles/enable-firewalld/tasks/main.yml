@@ -1,0 +1,7 @@
+---
+- name: enable firewalld
+  become: true
+  become_user: root
+  ansible.builtin.service:
+    name: firewalld
+    state: started
