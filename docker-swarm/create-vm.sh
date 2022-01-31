@@ -111,14 +111,30 @@ while [ "${1:0:1}" == "-" ]; do
 	shift
 done
 
-if [ "$#" -lt "$NUM_ARGS" ]; then
+if [ "$#" -lt "$NUM_ARGS" ] && [ "$HOST_FILENAME" == "" ]; then
     echo "Invalid parameter!"
 	Usage
 	exit 1
 fi
 
 # parse inputs
-VM_NAMES=($@)
+if [ "$HOST_FILENAME" == "" ]; then
+    VM_NAMES=($@)
+else
+    echo "Create VMs from $HOST_FILENAME"
+    VM_NAMES=()
+    while read -r line; do
+        if echo $line | grep "[ \t]*#.*" > /dev/null ; then
+            continue
+        elif echo $line | grep "^[[].*[]]$" > /dev/null ; then
+            continue
+        elif [[ $line == "" ]] ; then
+            continue
+        fi
+        line_vm=$(echo $line | awk '{ print $1 }')
+        VM_NAMES+=("$line_vm")
+    done < $HOST_FILENAME
+fi
 
 is_proceed=$(Prompt "Create VMs ${VM_NAMES[*]}?")
 if [ "$is_proceed" != "Y" ]; then
