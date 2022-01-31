@@ -10,8 +10,8 @@
 VM_DIRECTORY="$HOME/VirtualMachines"
 # invoke "VBoxManage list ostypes" to get all supported OS types
 VM_OSTYPE="RedHat_64"
-VM_CPUS=1
-VM_MEMORY=1024
+VM_CPUS=${VM_CPUS:-1}
+VM_MEMORY=${VM_MEMORY:-1024}
 VM_VRAM=16
 VM_NIC="bridged"
 VM_DISK_SIZE=100000
