@@ -41,7 +41,7 @@ fi
 POWER=$1
 case "$POWER" in
 "on")
-	cmd="VBoxHeadless --startvm \$vm_name"
+	cmd="VBoxManage startvm \$vm_name --type headless"
 	;;
 "off")
 	cmd="VBoxManage controlvm \$vm_name acpipowerbutton"
