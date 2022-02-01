@@ -28,6 +28,23 @@
     - docker-ce-cli
     - containerd.io
 
+- name: firewall open docker swarm ports
+  become: true
+  become_user: root
+  firewalld:
+    zone: public
+    port: "{{ item.port }}"
+    permanent: true
+    state: "{{ item.state }}"
+  with_items:
+    - { port: 2376/tcp, state: enabled }
+    - { port: 2377/tcp, state: enabled }
+    - { port: 7946/tcp, state: enabled }
+    - { port: 7946/udp, state: enabled }
+    - { port: 4789/udp, state: enabled }
+  notify:
+    - restart firewalld
+
 - name: starting docker service
   become: true
   become_user: root
