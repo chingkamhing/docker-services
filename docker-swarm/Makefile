@@ -37,17 +37,17 @@ status:
 # VirtualBox power on
 .PHONY: on
 on:
-	./script/power-vm.sh on
+	@./script/power-vm.sh on
 
 # VirtualBox power off
 .PHONY: off
 off:
-	./script/power-vm.sh off
+	@./script/power-vm.sh off
 
 # ssh config
 .PHONY: ssh-config
 ssh-config:
-	./script/ssh-config.sh hosts.ini
+	@./script/ssh-config.sh hosts.ini
 
 #
 # Ansible
@@ -56,12 +56,12 @@ ssh-config:
 # validate Vagrantfile
 .PHONY: validate
 validate:
-	ansible-playbook --syntax-check deploy-swarm.yml
+	@ansible-playbook --syntax-check deploy-swarm.yml
 
 # ansible dry-run deploy docker swarm nodes
 .PHONY: dry
 dry:
-	ansible-playbook --check deploy-swarm.yml
+	@ansible-playbook --check deploy-swarm.yml
 
 # ansible deploy docker swarm nodes
 .PHONY: deploy
