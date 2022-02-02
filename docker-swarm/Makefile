@@ -19,8 +19,8 @@ help:
 # Create VirtualBox VMs base on hosts.ini
 .PHONY: create-vm
 create-vm:
-	if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
-		./create-vm.sh -f hosts.ini ; \
+	@if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
+		./script/create-vm.sh -f hosts.ini ; \
 	else \
 		echo "Error: .env variables is not set yet! Please source .env properly." ; \
 		exit 1 ; \
@@ -37,12 +37,12 @@ status:
 # VirtualBox power on
 .PHONY: on
 on:
-	./power-vm.sh on
+	./script/power-vm.sh on
 
 # VirtualBox power off
 .PHONY: off
 off:
-	./power-vm.sh off
+	./script/power-vm.sh off
 
 # ssh config
 .PHONY: ssh-config
@@ -66,7 +66,7 @@ dry:
 # ansible deploy docker swarm nodes
 .PHONY: deploy
 deploy:
-	if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
+	@if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
 		ansible-playbook deploy-swarm.yml --ask-pass --ask-become-pass ; \
 	else \
 		echo "Error: .env variables is not set yet! Please source .env properly." ; \
@@ -76,7 +76,7 @@ deploy:
 # test ansible task
 .PHONY: test
 test:
-	if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
+	@if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
 		ansible-playbook deploy-swarm.yml --start-at-task="init-manager get my ip address" ; \
 	else \
 		echo "Error: .env variables is not set yet! Please source .env properly." ; \
