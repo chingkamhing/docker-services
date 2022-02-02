@@ -1,7 +1,6 @@
 #!/bin/bash
 #
 # Script file to generate ssh config file which can ssh to hostname instead of ip address.
-# Note: expect the hosts ini file in format of "[host name] ansible_host=[ip address] ..."
 #
 
 SSH_PORT=22
@@ -15,7 +14,6 @@ Usage () {
 	echo
 	echo "Description:"
 	echo "Script file to generate ssh config file which can ssh to hostname instead of ip address."
-    echo "Note: expect the hosts ini file in format of \"[host name] ansible_host=[ip address] ...\""
 	echo
 	echo "Usage: $SCRIPT_NAME [host ini file]"
 	echo "Options:"
@@ -59,34 +57,17 @@ fi
 HOST_FILENAME=$1
 
 declare -A map_name_ip=()
-while read -r line; do
-    if echo $line | grep "[ \t]*#.*" > /dev/null ; then
-        # comment line, skip
-        continue
-    elif echo $line | grep "^[[].*[]]$" > /dev/null ; then
-        # group name, skip
-        continue
-    elif [[ $line == "" ]] ; then
-        # empty line, skip
-        continue
+vms_json=$(ansible-inventory --inventory $HOST_FILENAME --list)
+vm_names=($(echo $vms_json | jq "._meta.hostvars | keys | .[]" | tr -d '"'))
+for vm_name in ${vm_names[@]}; do
+    vm_ip=$(echo $vms_json | jq ._meta.hostvars.\"$vm_name\".ansible_host | tr -d '"')
+    IsIP $vm_ip
+    if [ "$?" -ne "0" ]; then
+        echo "Invalid ip address in $HOST_FILENAME!"
+        exit 1
     fi
-    IFS=" "
-    read -a words <<< "$line"
-    vm_name="${words[0]}"
-    for word in "${words[@]}"; do
-        if [[ $word =~ ^ansible_host=* ]]; then
-            IFS="=" read -a values <<< "$word"
-            host="${values[1]}"
-            IsIP $host
-            if [ "$?" -ne "0" ]; then
-                echo "Invalid ip address in $HOST_FILENAME!"
-                exit 1
-            fi
-    		map_name_ip["$vm_name"]=$host
-        fi
-    done
-    # map_name_ip["$docker_manager_prefix-$manager_num"]=$labels
-done < $HOST_FILENAME
+    map_name_ip["$vm_name"]=$vm_ip
+done
 
 # print the ssh config to stdout
 for vm_name in ${!map_name_ip[@]}; do
