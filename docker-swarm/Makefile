@@ -66,9 +66,19 @@ dry:
 # ansible deploy docker swarm nodes
 .PHONY: deploy
 deploy:
-	ansible-playbook deploy-swarm.yml --ask-pass --ask-become-pass
+	if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
+		ansible-playbook deploy-swarm.yml --ask-pass --ask-become-pass ; \
+	else \
+		echo "Error: .env variables is not set yet! Please source .env properly." ; \
+		exit 1 ; \
+	fi
 
 # test ansible task
 .PHONY: test
 test:
-	ansible-playbook deploy-swarm.yml --start-at-task="install docker dependencies"
+	if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
+		ansible-playbook deploy-swarm.yml --start-at-task="init-manager get my ip address" ; \
+	else \
+		echo "Error: .env variables is not set yet! Please source .env properly." ; \
+		exit 1 ; \
+	fi
