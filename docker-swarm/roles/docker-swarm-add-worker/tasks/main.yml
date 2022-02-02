@@ -8,5 +8,10 @@
     init_manager_ip: "{{ hostvars[init_manager]['ansible_default_ipv4']['address'] }}"
     init_worker_token: "{{ hostvars[init_manager]['worker_token']['stdout'] }}"
 
+- name: check if this node is already a worker node
+  shell: docker info --format '{{ '{{' }} .Swarm.LocalNodeState {{ '}}' }}'
+  register: worker_status
+
 - name: add workers to the swarm
   shell: "docker swarm join --token {{ init_worker_token }} {{ init_manager_ip }}:2377"
+  when: worker_status.stdout == "inactive"
