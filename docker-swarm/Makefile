@@ -71,4 +71,4 @@ deploy:
 # test ansible task
 .PHONY: test
 test:
-	ansible-playbook deploy-swarm.yml --ask-pass --ask-become-pass --start-at-task="get user info from environment variable"
+	ansible-playbook deploy-swarm.yml --start-at-task="install docker dependencies"
