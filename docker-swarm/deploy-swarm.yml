@@ -15,6 +15,20 @@
     - install-docker
     - add-user-docker-group
 
+- name: Init docker manager
+  hosts: docker_init_manager
+  roles:
+    - docker-swarm-init
+
+- name: Add docker manager
+  hosts: docker_managers
+  roles:
+    - docker-swarm-add-manager
+
+- name: Add docker worker
+  hosts: docker_workers
+  roles:
+    - docker-swarm-add-worker
+
 #FIXME, install docker plugins (i.e. Loki)
-#FIXME, install docker manager and worker nodes
 #FIXME, install monitoring stack with Grafana and Prometheus

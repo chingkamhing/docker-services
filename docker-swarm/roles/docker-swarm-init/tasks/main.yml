@@ -1,0 +1,25 @@
+---
+#FIXME, debug print ansible facts
+- name: print inventory_hostname
+  debug:
+    var: inventory_hostname
+
+- name: check if swarm has already been initialized
+  shell: docker node ls
+  register: swarm_status
+  ignore_errors: true
+
+- name: initialize docker swarm
+  shell: >
+        docker swarm init
+        --advertise-addr={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:2377
+  when: swarm_status.rc != 0
+  run_once: true
+
+- name: get the manager join-token
+  shell: docker swarm join-token --quiet manager
+  register: manager_token
+
+- name: get the worker join-token
+  shell: docker swarm join-token --quiet worker
+  register: worker_token

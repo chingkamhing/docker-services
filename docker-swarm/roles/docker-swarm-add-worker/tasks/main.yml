@@ -1,0 +1,12 @@
+---
+- name: add-worker get docker init maanger
+  set_fact:
+    init_manager: "{{ groups['docker_init_manager'][0] }}"
+
+- name: add-worker get docker init maanger info
+  set_fact:
+    init_manager_ip: "{{ hostvars[init_manager]['ansible_default_ipv4']['address'] }}"
+    init_worker_token: "{{ hostvars[init_manager]['worker_token']['stdout'] }}"
+
+- name: add workers to the swarm
+  shell: "docker swarm join --token {{ init_worker_token }} {{ init_manager_ip }}:2377"
