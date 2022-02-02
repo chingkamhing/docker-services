@@ -127,18 +127,7 @@ if [ "$HOST_FILENAME" == "" ]; then
     VM_NAMES=($@)
 else
     echo "Create VMs from $HOST_FILENAME"
-    VM_NAMES=()
-    while read -r line; do
-        if echo $line | grep "[ \t]*#.*" > /dev/null ; then
-            continue
-        elif echo $line | grep "^[[].*[]]$" > /dev/null ; then
-            continue
-        elif [[ $line == "" ]] ; then
-            continue
-        fi
-        line_vm=$(echo $line | awk '{ print $1 }')
-        VM_NAMES+=("$line_vm")
-    done < $HOST_FILENAME
+    VM_NAMES=($(ansible-inventory --inventory $HOST_FILENAME --list | jq "._meta.hostvars | keys | .[]" | tr -d '"'))
 fi
 
 is_proceed=$(Prompt "Create VMs ${VM_NAMES[*]}?")
