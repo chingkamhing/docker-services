@@ -6,6 +6,7 @@ help:
 	@echo "    status        VirtualBox VMs status"
 	@echo "    on            VirtualBox power on"
 	@echo "    off           VirtualBox power off"
+	@echo "    ssh-config    ssh config"
 	@echo "Ansible:"
 	@echo "    validate      check ansible file"
 	@echo "    dry           Ansible dry-run deploy docker swarm nodes"
@@ -42,6 +43,11 @@ on:
 .PHONY: off
 off:
 	./power-vm.sh off
+
+# ssh config
+.PHONY: ssh-config
+ssh-config:
+	./script/ssh-config.sh hosts.ini
 
 #
 # Ansible
