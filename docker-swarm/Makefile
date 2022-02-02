@@ -3,7 +3,7 @@ help:
 	@echo "Usage:"
 	@echo "VBox:"
 	@echo "    create-vm     Create VirtualBox VMs base on hosts.ini"
-	@echo "    list          VirtualBox list VMs"
+	@echo "    status        VirtualBox VMs status"
 	@echo "    on            VirtualBox power on"
 	@echo "    off           VirtualBox power off"
 	@echo "Ansible:"
@@ -25,10 +25,13 @@ create-vm:
 		exit 1 ; \
 	fi
 
-# VirtualBox list VMs
-.PHONY: list
-list:
+# VirtualBox VMs status
+.PHONY: status
+status:
+	@echo All VMs:
 	VBoxManage list vms
+	@echo Running VMs:
+	VBoxManage list runningvms
 
 # VirtualBox power on
 .PHONY: on
