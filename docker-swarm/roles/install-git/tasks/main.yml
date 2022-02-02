@@ -1,18 +1,4 @@
 ---
-# remove default git programs
-- name: remove default git
-  become: true
-  become_user: root
-  yum:
-    name: git
-    state: absent
-- name: remove default git-*
-  become: true
-  become_user: root
-  yum:
-    name: git-*
-    state: absent
-
 # reference: https://linuxize.com/post/how-to-install-git-on-centos-7/
 - name: copy the file from master to mwiapp02
   become: true
