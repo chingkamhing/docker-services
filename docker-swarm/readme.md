@@ -28,3 +28,5 @@
     + [Ansible In Action](https://medium.com/@ahmadfarag/ansible-in-action-f2f17706931)
     + [Deploying Docker Swarm with Ansible](https://medium.com/@cantrobot/deploying-docker-swarm-with-ansible-a991c1028427)
     + [ansible-docker-swarm](https://github.com/ruanbekker/ansible-docker-swarm)
+    + [How to launch and manage Docker through Ansible playbook](https://www.linkedin.com/pulse/how-launch-manage-docker-through-ansible-playbook-abhishek-biswas)
+    + [Discovering variables: facts and magic variables](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html)
