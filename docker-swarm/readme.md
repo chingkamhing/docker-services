@@ -1,15 +1,62 @@
 # Infrastructure as Code
+What this project does
+* use virtualbox to provision VMs automatically
+* use ansible to provision docker swarm nodes
+* install software stacks (e.g. log, monitoring stack, etc.)
 
-## How to deploy
-* edit inventory.ini accordingly
+## How to provision
+* create virtual machines (i.e. VMs)
+    + edit .env accordingly
+        - set the VMs username and password
+        - set VMs hardware config (e.g. number of cpus and memory size)
+    + edit inventory.ini accordingly
+        - add/remove docker manager and worker nodes accordingly
+        - define the hostname for each docker node
+        - note: no need to set the ansible_host for now
+    + create VMs
+        - invoke "set -a; source .env; set +a" to set the environment variables
+        - invoke "make create-vm" to create the VMs accordingly to inventory.ini
+        - wait till installation done (approximately 10~15 minutes)
+        - once done, login and invoke "ip addr" to get the VM's ip address
+* provision docker swarm nodes
+    + edit inventory.ini accordingly
+        - update docker manager and worker nodes' ansible_host (i.e. VM's ip address) and ansible_user
+    + provision docker swarm
+        - invoke "set -a; source .env; set +a" to set the environment variables
+        - invoke "make provision" to provision docker swarm accordingly to inventory.ini
+        - will prompt you for the password of
+            1) username password
+            2) sudo password
+        - provision one VM alone takes approximately 10~15 minutes
+* config ssh config file
+    + to ssh to VMs passwordlessly with hostname instead of ip address (e.g. "ssh user@manager-1")
+    + when provision done, invoke "make ssh-config >> ~/.ssh/config"
+    + be noted that this will modify host user's "$HOME/.ssh/config"
+
+## How to use
+* add VMs
+    + update inventory.ini accordingly
+    + invoke "set -a; source .env; set +a"
+    + invoke "make create-vm"
+    + wait installation done, update ip address in inventory.ini accordingly
+    + invoke "make provision"
+    + wait provision done, update "~/.ssh/config" accordingly
+* remove VMs
+    + docker demote if the target node is a manager (e.g. "docker node demote NODE" in manager node)
+    + docker drain the target node (e.g. "docker node update --availability drain NODE" in manager node)
+    + docker leave the swarm (e.g. "docker swarm leave" in the target node)
+    + docker remove the docker node (e.g. "docker node rm NODE" in manager node)
+    + remove VMs in inventory.ini accordingly
+    + remove VMs in "~/.ssh/config" accordingly
+    + delete the VM from virtualbox (e.g. "VBoxManage unregistervm --delete VM")
+* power on the VMs
+    + invoke "make on"
+* power off the VMs
+    + invoke "make off"
 
 ## Vagrant
 * try many things to login with username "user" but fail; seems vagrant created vm must login with "vagrant" only
-* so, drop the idea to use vagrant; instead, use VBoxManage to create VMs and manually install CentOS7
-
-## VirtualBox
-
-## Ansible
+* so, drop the idea to use vagrant; instead, use VBoxManage to create VMs and unattended install CentOS7
 
 ## Issues
 * CentOS fail to yum update
@@ -20,9 +67,11 @@
 * "meta" module must be run unconditionally
     + "meta" module cannot be used with "when" nore in "handlers"
     + i.e. must run "meta" module unconditionally
+* occasionally stuck in upgrade all packages
+    + upon invoking "make provision", VM occasionally stuck in upgrade all packages
+    + waited for > 1 hour and failed
 
 ## Reference
-
 * vagrant
     + [Create multiple virtual machine with one Vagrantfile](https://sharadchhetri.com/create-multiple-virtual-machine-with-one-vagrantfile/)
     + [Ansible Vagrant Example – Introduction to Ansible Vagrant](https://www.middlewareinventory.com/blog/vagrant-ansible-example/)
