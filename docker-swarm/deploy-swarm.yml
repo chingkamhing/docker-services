@@ -11,7 +11,7 @@
     - enable-firewalld
 
 - name: Install docker to all nodes
-  hosts: all
+  hosts: docker_nodes
   roles:
     - install-docker
     - add-user-docker-group
