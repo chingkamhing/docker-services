@@ -11,6 +11,16 @@
 
 ## Ansible
 
+## Issues
+* CentOS fail to yum update
+    + occasionally, upon fresh installation, fail to "sudo yum upgrade" with error "Error: requested datatype primary not available"
+    + this happen intermittently with different installations
+    + don't know how to fix it
+    + quick solution is to delete the VM and create another one
+* "meta" module must be run unconditionally
+    + "meta" module cannot be used with "when" nore in "handlers"
+    + i.e. must run "meta" module unconditionally
+
 ## Reference
 
 * vagrant
