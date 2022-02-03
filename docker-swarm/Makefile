@@ -6,11 +6,11 @@ help:
 	@echo "    status        VirtualBox VMs status"
 	@echo "    on            VirtualBox power on"
 	@echo "    off           VirtualBox power off"
-	@echo "    ssh-config    ssh config"
+	@echo "    ssh-config    Print ssh config setting"
 	@echo "Ansible:"
-	@echo "    validate      check ansible file"
-	@echo "    dry           Ansible dry-run deploy docker swarm nodes"
-	@echo "    deploy        Ansible deploy docker swarm nodes"
+	@echo "    validate      Check ansible file validity"
+	@echo "    dry           Ansible dry-run provision docker swarm nodes"
+	@echo "    provision     Ansible provision docker swarm nodes"
 
 #
 # VirtualBox
@@ -56,18 +56,18 @@ ssh-config:
 # validate Vagrantfile
 .PHONY: validate
 validate:
-	@ansible-playbook --syntax-check deploy-swarm.yml
+	@ansible-playbook --syntax-check provision-swarm.yml
 
-# ansible dry-run deploy docker swarm nodes
+# ansible dry-run provision docker swarm nodes
 .PHONY: dry
 dry:
-	@ansible-playbook --check deploy-swarm.yml
+	@ansible-playbook --check provision-swarm.yml
 
-# ansible deploy docker swarm nodes
-.PHONY: deploy
-deploy:
+# ansible provision docker swarm nodes
+.PHONY: provision
+provision:
 	@if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
-		ansible-playbook deploy-swarm.yml --ask-pass --ask-become-pass ; \
+		ansible-playbook provision-swarm.yml --ask-pass --ask-become-pass ; \
 	else \
 		echo "Error: .env variables is not set yet! Please source .env properly." ; \
 		exit 1 ; \
@@ -77,7 +77,7 @@ deploy:
 .PHONY: test
 test:
 	@if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
-		ansible-playbook deploy-swarm.yml --start-at-task="init-manager get my ip address" ; \
+		ansible-playbook provision-swarm.yml --start-at-task="init-manager get my ip address" ; \
 	else \
 		echo "Error: .env variables is not set yet! Please source .env properly." ; \
 		exit 1 ; \
