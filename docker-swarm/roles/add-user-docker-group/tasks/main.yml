@@ -10,3 +10,7 @@
     name: "{{ vm_username }}"
     groups: docker
     append: yes
+
+- name: reset all ssh connection after adding user to docker group
+  # Note: this meta cannot be used with "when" nor in "handlers"
+  meta: reset_connection
