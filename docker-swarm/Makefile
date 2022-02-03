@@ -2,7 +2,7 @@
 help:
 	@echo "Usage:"
 	@echo "VBox:"
-	@echo "    create-vm     Create VirtualBox VMs base on hosts.ini"
+	@echo "    create-vm     Create VirtualBox VMs base on inventory.ini"
 	@echo "    status        VirtualBox VMs status"
 	@echo "    on            VirtualBox power on"
 	@echo "    off           VirtualBox power off"
@@ -16,11 +16,11 @@ help:
 # VirtualBox
 #
 
-# Create VirtualBox VMs base on hosts.ini
+# Create VirtualBox VMs base on inventory.ini
 .PHONY: create-vm
 create-vm:
 	@if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
-		./script/create-vm.sh -f hosts.ini ; \
+		./script/create-vm.sh -f inventory.ini ; \
 	else \
 		echo "Error: .env variables is not set yet! Please source .env properly." ; \
 		exit 1 ; \
@@ -47,7 +47,7 @@ off:
 # ssh config
 .PHONY: ssh-config
 ssh-config:
-	@./script/ssh-config.sh hosts.ini
+	@./script/ssh-config.sh inventory.ini
 
 #
 # Ansible

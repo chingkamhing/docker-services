@@ -1,7 +1,7 @@
 # Infrastructure as Code
 
 ## How to deploy
-* edit hosts.ini accordingly
+* edit inventory.ini accordingly
 
 ## Vagrant
 * try many things to login with username "user" but fail; seems vagrant created vm must login with "vagrant" only
