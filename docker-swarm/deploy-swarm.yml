@@ -3,6 +3,7 @@
   hosts: all
   roles:
     - create-sudo-user
+    - set-hostname
     - update-all
     - init-user
     - install-git

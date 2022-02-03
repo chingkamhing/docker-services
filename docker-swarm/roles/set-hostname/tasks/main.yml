@@ -1,0 +1,6 @@
+---
+- name: set hostname
+  become: true
+  hostname:
+    name: "{{ inventory_hostname }}"
+    use: systemd
