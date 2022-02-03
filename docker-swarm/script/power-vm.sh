@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script file to power on or off all virtual box VMs.
+# Script file to power on or off specified or all virtual box VMs.
 #
 
 NUM_ARGS=1
@@ -11,9 +11,9 @@ SCRIPT_NAME=${0##*/}
 Usage () {
 	echo
 	echo "Description:"
-	echo "Script file to power on or off all virtual box VMs."
+	echo "Script file to power on or off specified or all virtual box VMs."
 	echo
-	echo "Usage: $SCRIPT_NAME [on/off]"
+	echo "Usage: $SCRIPT_NAME [on/off] [optional VMs...]"
 	echo "Options:"
 	echo " -h                           This help message"
 	echo
@@ -31,7 +31,7 @@ while [ "${1:0:1}" == "-" ]; do
 	shift
 done
 
-if [ "$#" -ne "$NUM_ARGS" ]; then
+if [ "$#" -lt "$NUM_ARGS" ]; then
     echo "Invalid parameter!"
 	Usage
 	exit 1
@@ -39,6 +39,8 @@ fi
 
 # parse arguments
 POWER=$1
+shift
+VM_NAMES=($@)
 case "$POWER" in
 "on")
 	cmd="VBoxManage startvm \$vm_name --type headless"
@@ -52,9 +54,16 @@ case "$POWER" in
 	;;
 esac
 
+# if VM_NAMES is is not specified, use all virtualbox VMs
+if [ "${#VM_NAMES}" -eq "0" ]; then
+	IFS=$'\n' vm_list=($(VBoxManage list vms))
+	for vm_line in "${vm_list[@]}"; do
+		vm_name=$(echo $vm_line | awk '{ print $1 }' | tr -d '"')
+		VM_NAMES+=($vm_name)
+	done
+fi
+
 # virtual box power on or off VMs
-IFS=$'\n' vm_list=($(VBoxManage list vms)) ; \
-for vm_line in "${vm_list[@]}"; do \
-	vm_name=$(echo $vm_line | awk '{ print $1 }' | tr -d '"') ; \
-	eval $cmd ; \
+for vm_name in "${VM_NAMES[@]}"; do
+	eval $cmd
 done
