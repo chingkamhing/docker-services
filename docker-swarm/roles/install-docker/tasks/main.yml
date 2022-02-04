@@ -28,13 +28,6 @@
     - docker-ce-cli
     - containerd.io
 
-- name: install docker plugin
-  become: true
-  become_user: root
-  shell: docker plugin install {{ item.plugin }}:{{ item.tag }} --alias {{ item.alias }} {{ item.opts }} 
-  with_items:
-    - { plugin: grafana/loki-docker-driver, tag: latest, alias: loki, opts: --grant-all-permissions }
-
 - name: firewall open docker swarm ports
   become: true
   become_user: root
@@ -59,6 +52,13 @@
     name: "docker"
     state: started
     enabled: yes
+
+- name: install docker plugin
+  become: true
+  become_user: root
+  shell: docker plugin install {{ item.plugin }}:{{ item.tag }} --alias {{ item.alias }} {{ item.opts }} 
+  with_items:
+    - { plugin: grafana/loki-docker-driver, tag: latest, alias: loki, opts: --grant-all-permissions }
 
 - name: add docker group
   group:
