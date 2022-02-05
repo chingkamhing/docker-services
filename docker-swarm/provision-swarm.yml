@@ -15,6 +15,7 @@
   roles:
     - install-docker
     - add-user-docker-group
+    - install-loki
 
 - name: Init docker manager
   hosts: docker_init_manager

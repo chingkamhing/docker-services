@@ -1,0 +1,18 @@
+---
+- name: init-manager get my ip address
+  set_fact:
+    plugin: grafana/loki-docker-driver
+    tag: latest
+    alias: loki
+    opts: --grant-all-permissions
+
+- name: check if docker plugin loki has already been initialized
+  shell: docker plugin list --format '{{ '{{' }} .Name {{ '}}' }}' | grep loki
+  register: loki_status
+  ignore_errors: true
+
+- name: install docker plugin
+  become: true
+  become_user: root
+  shell: docker plugin install {{ plugin }}:{{ tag }} --alias {{ alias }} {{ item.opts }} 
+  when: loki_status.rc != 0
