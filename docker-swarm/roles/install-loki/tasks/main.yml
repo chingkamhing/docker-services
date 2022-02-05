@@ -18,3 +18,17 @@
   shell: docker plugin install {{ plugin }}:{{ tag }} --alias {{ alias }} {{ item.opts }} 
   notify:
     - restart docker service
+
+# Note:
+# - as docker plugin does not support network overlay
+# - so, it cannot refer to the loki server through docker's dns
+# - instead, modify host file to refer to the loki server
+# Reference:
+# - https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html
+- name: set loki server ip address
+  set_fact:
+    loki_ip: "{{ (hostvars | dict2items | selectattr('value.node_labels', 'contains', 'loki=true') | first).value.ansible_host }}"
+
+- name: debug print loki_ip
+  debug:
+    msg: "loki_ip: {{ loki_ip }}"
