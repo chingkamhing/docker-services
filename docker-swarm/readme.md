@@ -89,3 +89,7 @@ What this project does
     + [ansible-docker-swarm](https://github.com/ruanbekker/ansible-docker-swarm)
     + [How to launch and manage Docker through Ansible playbook](https://www.linkedin.com/pulse/how-launch-manage-docker-through-ansible-playbook-abhishek-biswas)
     + [Discovering variables: facts and magic variables](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html)
+    + [All about Ansible loops with examples](https://debugfactor.com/all-about-ansible-loops-with-examples/)
+* docker plugin: Loki
+    + [Grafana Loki Documentation](https://grafana.com/docs/loki/latest/)
+    + [running loki and grafana on docker swarm](https://drailing.net/2020/06/running-loki-and-grafana-on-docker-swarm/)
