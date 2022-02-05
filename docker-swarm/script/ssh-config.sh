@@ -57,24 +57,29 @@ fi
 HOST_FILENAME=$1
 
 declare -A map_name_ip=()
+declare -A map_name_user=()
 vms_json=$(ansible-inventory --inventory $HOST_FILENAME --list)
 vm_names=($(echo $vms_json | jq "._meta.hostvars | keys | .[]" | tr -d '"'))
 for vm_name in ${vm_names[@]}; do
     vm_ip=$(echo $vms_json | jq ._meta.hostvars.\"$vm_name\".ansible_host | tr -d '"')
+    vm_user=$(echo $vms_json | jq ._meta.hostvars.\"$vm_name\".ansible_user | tr -d '"')
     IsIP $vm_ip
     if [ "$?" -ne "0" ]; then
         echo "Invalid ip address in $HOST_FILENAME!"
         exit 1
     fi
     map_name_ip["$vm_name"]=$vm_ip
+    map_name_user["$vm_name"]=$vm_user
 done
 
 # print the ssh config to stdout
 for vm_name in ${!map_name_ip[@]}; do
     host=${map_name_ip[$vm_name]}
+    user=${map_name_user[$vm_name]}
     echo "Host $vm_name"
     echo "  HostName $host"
     echo "  Port $SSH_PORT"
+    echo "  User $user"
     echo "  IdentityFile $IDENTITYFILE"
     echo
 done
