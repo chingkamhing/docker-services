@@ -1,4 +1,8 @@
 ---
+# - name: debug print hostvars
+#   debug:
+#     var: hostvars
+
 - name: init-manager get my ip address
   set_fact:
     my_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
