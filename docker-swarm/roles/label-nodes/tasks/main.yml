@@ -1,0 +1,9 @@
+---
+- name: label docker node
+  shell: |
+    IFS=',' read -d '' -a labels <<< {{ hostvars[item]['node_labels'] }}
+    for label in "${labels[@]}"; do
+      docker node update --label-add $label {{ item }}
+    done
+  with_inventory_hostnames:
+    - docker_nodes
