@@ -14,5 +14,5 @@
   ignore_errors: true
 
 - name: add managers to the swarm
-  shell: "docker swarm join --token {{ init_manager_token }} {{ init_manager_ip }}:2377"
   when: swarm_status.rc != 0
+  shell: "docker swarm join --token {{ init_manager_token }} {{ init_manager_ip }}:2377"
