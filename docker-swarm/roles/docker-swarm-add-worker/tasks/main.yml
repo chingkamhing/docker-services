@@ -14,4 +14,4 @@
 
 - name: add workers to the swarm
   when: worker_status.stdout == "inactive"
-  shell: "docker swarm join --token {{ init_worker_token }} {{ init_manager_ip }}:2377"
+  shell: docker swarm join --token {{ init_worker_token }} {{ init_manager_ip }}:2377

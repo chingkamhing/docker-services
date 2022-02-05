@@ -15,4 +15,4 @@
 
 - name: add managers to the swarm
   when: swarm_status.rc != 0
-  shell: "docker swarm join --token {{ init_manager_token }} {{ init_manager_ip }}:2377"
+  shell: docker swarm join --token {{ init_manager_token }} {{ init_manager_ip }}:2377
