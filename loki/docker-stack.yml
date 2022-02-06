@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  grafana:
+    image: grafana/grafana:7.5.10
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks: 
+      - net
+    ports: 
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://127.0.0.1:3100/loki/api/v1/push"
+        loki-retries: "5"
+        loki-batch-size: "400"
+
+  loki:
+    image: grafana/loki:2.3.0
+    networks: 
+      - net
+    ports: 
+      - published: 3100
+        target: 3100
+        mode: host
+    volumes:
+      - loki-data:/loki
+      
+networks:
+  net:
+    driver: overlay
+
+volumes:
+  loki-data:
+    driver: local
+  grafana-data:
+    driver: local
