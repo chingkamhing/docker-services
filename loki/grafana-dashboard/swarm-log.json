@@ -16,11 +16,12 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1644164038925,
+  "iteration": 1644166813468,
   "links": [],
   "panels": [
     {
       "datasource": null,
+      "description": "",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -35,23 +36,24 @@
       "options": {
         "dedupStrategy": "none",
         "showLabels": false,
-        "showTime": false,
+        "showTime": true,
         "sortOrder": "Descending",
         "wrapLogMessage": false
       },
       "pluginVersion": "7.5.13",
       "targets": [
         {
-          "expr": "{swarm_stack=\"$swarm_stack\",swarm_service=\"$swarm_service\"}",
-          "refId": "A"
+          "expr": "{swarm_stack=~\"$swarm_stack\",swarm_service=~\"$swarm_service\"}",
+          "refId": "Docker swarm log"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Panel Title",
+      "title": "Docker swarm log",
       "type": "logs"
     }
   ],
+  "refresh": "30s",
   "schemaVersion": 27,
   "style": "dark",
   "tags": [],
@@ -61,15 +63,15 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "itms",
-          "value": "itms"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": null,
         "definition": "label_values(swarm_stack)",
         "description": "Docker swarm stack",
         "error": null,
         "hide": 0,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Docker swarm stack",
         "multi": false,
         "name": "swarm_stack",
@@ -105,20 +107,9 @@
         "label": "Docker swarm service",
         "multi": true,
         "name": "swarm_service",
-        "options": [
-          {
-            "selected": true,
-            "text": "All",
-            "value": "$__all"
-          },
-          {
-            "selected": false,
-            "text": "itms_srv-gateway",
-            "value": "itms_srv-gateway"
-          }
-        ],
+        "options": [],
         "query": "label_values(swarm_service)",
-        "refresh": 0,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
@@ -131,12 +122,12 @@
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "iTMS log",
   "uid": "-I6E-O-nk",
-  "version": 4
+  "version": 8
 }
