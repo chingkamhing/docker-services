@@ -18,5 +18,16 @@
     + goto "Explore" tab
     + in "Log browser >", enter '{host=~".+"}' and "Shift + Enter"
 
+## Install logcli
+* git clone "https://github.com/grafana/loki.git"
+* go to directory loki/cmd/logcli/ and invoke "go build *.go"
+* invoke "mv main ~/.local/bin/logcli"
+* export Loki server url (e.g. "export LOKI_ADDR=http://192.168.8.87:3100")
+* list of hosts
+    + invoke "logcli labels host"
+* list of containers
+    + invoke "logcli labels host"
+
 ## Reference
-* [Loki quick tip: How to create a Grafana dashboard for searching logs using Loki and Prometheus](https://grafana.com/blog/2020/04/08/loki-quick-tip-how-to-create-a-grafana-dashboard-for-searching-logs-using-loki-and-prometheus/)
+* [Grafana Loki Documentation](https://grafana.com/docs/loki/latest/)
+* [Grafana documentation](https://grafana.com/docs/grafana/latest/)
