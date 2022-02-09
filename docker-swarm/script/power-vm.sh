@@ -58,7 +58,7 @@ esac
 if [ "${#VM_NAMES}" -eq "0" ]; then
 	IFS=$'\n' vm_list=($(VBoxManage list vms))
 	for vm_line in "${vm_list[@]}"; do
-		vm_name=$(echo $vm_line | awk '{ print $1 }' | tr -d '"')
+		vm_name=$(echo $vm_line | awk '/".*" +{.*}/ { print $1 }' | tr -d '"')
 		VM_NAMES+=($vm_name)
 	done
 fi
