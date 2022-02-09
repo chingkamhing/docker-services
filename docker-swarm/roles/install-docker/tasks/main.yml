@@ -45,7 +45,7 @@
   notify:
     - restart firewalld
 
-- name: starting docker service
+- name: start docker service
   become: true
   become_user: root
   service:
