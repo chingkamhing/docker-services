@@ -1,5 +1,5 @@
 ---
-# - name: label docker node
+# - name: debug print hostname and node_labels
 #   debug:
 #     msg: "hostname: {{ item.0.key }} node_labels: {{ item.1 }}"
 #   loop: "{{ hostvars | dict2items | subelements('value.node_labels') }}"
