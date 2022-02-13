@@ -20,7 +20,6 @@
   hosts: docker_init_manager
   roles:
     - docker-swarm-init
-    - label-nodes
 
 - name: Add docker manager
   hosts: docker_managers
@@ -31,6 +30,11 @@
   hosts: docker_workers
   roles:
     - docker-swarm-add-worker
+
+- name: Label docker nodes
+  hosts: docker_init_manager
+  roles:
+    - label-nodes
 
 - name: Config docker swarm
   hosts: docker_nodes
