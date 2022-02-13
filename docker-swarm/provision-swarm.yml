@@ -39,6 +39,7 @@
 - name: Config docker swarm
   hosts: docker_nodes
   roles:
+    - install-dnsmasq
     - install-loki
 
 #FIXME, install monitoring stack with Grafana and Prometheus

@@ -1,5 +1,5 @@
 ---
-- name: init-manager get my ip address
+- name: install-loki preparation
   set_fact:
     plugin: grafana/loki-docker-driver
     tag: latest
@@ -29,6 +29,11 @@
   set_fact:
     loki_ip: "{{ (hostvars | dict2items | selectattr('value.node_labels', 'contains', 'loki=true') | first).value.ansible_host }}"
 
-- name: debug print loki_ip
-  debug:
-    msg: "loki_ip: {{ loki_ip }}"
+- name: dns add entry loki ip
+  become: true
+  lineinfile:
+    path: "/etc/hosts"
+    regexp: "{{ loki_ip }} loki"
+    insertafter: EOF
+    line: "{{ loki_ip }} loki"
+    create: yes

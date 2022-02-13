@@ -1,0 +1,23 @@
+---
+- name: install dnsmasq
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - dnsmasq
+- name: copy dnsmasq.conf to dnsmasq server
+  become: true
+  copy:
+    src: dnsmasq.conf
+    dest: /etc/dnsmasq.conf
+    backup: yes
+    backup_file: /etc/dnsmasq.conf.org
+    mode: 0644
+- name: start dnsmasq service
+  become: true
+  service:
+    name: dnsmasq
+    state: started
+    enabled: yes

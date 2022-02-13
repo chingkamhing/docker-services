@@ -1,0 +1,10 @@
+---
+- name: config resolv.conf add localhost dns
+  become: true
+  lineinfile:
+    path: "/etc/resolv.conf"
+    # search line of nameserver
+    regexp: "nameserver .*"
+    # replace with localhost's dnsmasq
+    line: "nameserver 127.0.0.1"
+    create: yes
