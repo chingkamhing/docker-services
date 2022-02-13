@@ -12,7 +12,7 @@ What this project does
     + edit inventory.ini accordingly
         - add/remove docker manager and worker nodes accordingly
         - define the hostname for each docker node
-        - note: no need to set the ansible_host for now
+        - note: no need to set the ansible_host for now as the VM is not even created yet
     + create VMs
         - invoke "set -a; source .env; set +a" to set the environment variables
         - invoke "make create-vm" to create the VMs accordingly to inventory.ini
@@ -20,7 +20,7 @@ What this project does
         - once done, login and invoke "ip addr" to get the VM's ip address
 * provision docker swarm nodes
     + edit inventory.ini accordingly
-        - update docker manager and worker nodes' ansible_host (i.e. VM's ip address) and ansible_user
+        - update docker manager and worker nodes' ansible_host (i.e. VM's ip address) and ansible_user accordingly
     + provision docker swarm
         - invoke "set -a; source .env; set +a" to set the environment variables
         - invoke "make provision" to provision docker swarm accordingly to inventory.ini
@@ -93,3 +93,6 @@ What this project does
 * docker plugin: Loki
     + [Grafana Loki Documentation](https://grafana.com/docs/loki/latest/)
     + [running loki and grafana on docker swarm](https://drailing.net/2020/06/running-loki-and-grafana-on-docker-swarm/)
+* dns
+    + [Resolve DNS for a docker container with dnsmasq](https://serverfault.com/questions/900105/resolve-dns-for-a-docker-container-with-dnsmasq)
+    + [Dnsmasq and local docker container](https://www.digitalocean.com/community/questions/dnsmasq-and-local-docker-container)
