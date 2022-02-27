@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  #
+  # traefik
+  #
+  traefik:
+    image: traefik:2.6
+    networks:
+      - net
+    ports:
+      # docker sends requests on this port to traefik
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro

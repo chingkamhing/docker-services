@@ -1,0 +1,32 @@
+http:
+  middlewares:
+    admin-auth:
+      basicAuth:
+        users:
+          # refer to on how to generate password: https://doc.traefik.io/traefik/middlewares/http/basicauth/#configuration-options
+          # e.g. invoke "htpasswd -nB admin"
+          # admin / <common PTS password>
+          - "admin:$2y$05$kV1fdxLx7927u8sZKSg1Y.ZGBSrhPiuUK6JfamHrurgUxJt/XWsVq"
+
+tls:
+  certificates:
+    - certFile: /certs/cms-uat.hk-tess.com/server.crt
+      keyFile: /certs/cms-uat.hk-tess.com/server.key
+    - certFile: /certs/itms-uat.hk-tess.com/server.crt
+      keyFile: /certs/itms-uat.hk-tess.com/server.key
+    - certFile: /certs/utms-uat.hk-tess.com/server.crt
+      keyFile: /certs/utms-uat.hk-tess.com/server.key
+    - certFile: /certs/tms-uat.hk-tess.com/server.crt
+      keyFile: /certs/tms-uat.hk-tess.com/server.key
+    - certFile: /certs/repo.hk-tess.com/server.crt
+      keyFile: /certs/repo.hk-tess.com/server.key
+  options:
+    default:
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+      minVersion: VersionTLS12

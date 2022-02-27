@@ -1,0 +1,100 @@
+version: '3.8'
+services:
+  #
+  # traefik
+  #
+  traefik:
+    command:
+      # docker swarm configuration
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.network=proxy_net"
+      - "--providers.file.filename=/etc/traefik/conf/dynamic.yml"
+      - "--providers.file.watch=true"
+      # configure entrypoint; redirect all http links to https
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entryPoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      # enable api and dashboard
+      - "--api.dashboard=true"
+      # enable log output
+      - "--log.level=INFO"
+    configs:
+      - source: dynamic.yml
+        target: /etc/traefik/conf/dynamic.yml
+    secrets:
+      - source: cms-uat.server.crt
+        target: /certs/cms-uat.hk-tess.com/server.crt
+      - source: cms-uat.server.key
+        target: /certs/cms-uat.hk-tess.com/server.key
+      - source: itms-uat.server.crt
+        target: /certs/itms-uat.hk-tess.com/server.crt
+      - source: itms-uat.server.key
+        target: /certs/itms-uat.hk-tess.com/server.key
+      - source: repo-uat.server.crt
+        target: /certs/repo.hk-tess.com/server.crt
+      - source: repo-uat.server.key
+        target: /certs/repo.hk-tess.com/server.key
+      - source: tms-uat.server.crt
+        target: /certs/tms-uat.hk-tess.com/server.crt
+      - source: tms-uat.server.key
+        target: /certs/tms-uat.hk-tess.com/server.key
+      - source: utms-uat.server.crt
+        target: /certs/utms-uat.hk-tess.com/server.crt
+      - source: utms-uat.server.key
+        target: /certs/utms-uat.hk-tess.com/server.key
+    deploy:
+      restart_policy:
+        condition: any
+      mode: replicated
+      replicas: 3
+      update_config:
+        delay: 2s
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        # traefik dashboard: https://cms-uat.hk-tess.com/dashboard/
+        - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+        - "traefik.http.routers.traefik-dashboard.rule=Host(`cms-uat.hk-tess.com`) && PathPrefix(`/api/`) || PathPrefix(`/dashboard/`)"
+        - "traefik.http.routers.traefik-dashboard.middlewares=admin-auth@file"
+        - "traefik.http.routers.traefik-dashboard.service=api@internal"
+        - "traefik.http.routers.traefik-dashboard.tls=true"
+        # base on https://github.com/traefik/traefik/issues/5732, seems the following dummy server port is needed
+        - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8000"
+
+# configs
+configs:
+  dynamic.yml:
+    file: ./traefik/dynamic.yml
+
+# secrets
+secrets:
+  cms-uat.server.crt:
+    file: ./certs/cms-uat.hk-tess.com/server.crt
+  cms-uat.server.key:
+    file: ./certs/cms-uat.hk-tess.com/server.key
+  itms-uat.server.crt:
+    file: ./certs/itms-uat.hk-tess.com/server.crt
+  itms-uat.server.key:
+    file: ./certs/itms-uat.hk-tess.com/server.key
+  repo-uat.server.crt:
+    file: ./certs/repo.hk-tess.com/server.crt
+  repo-uat.server.key:
+    file: ./certs/repo.hk-tess.com/server.key
+  tms-uat.server.crt:
+    file: ./certs/tms-uat.hk-tess.com/server.crt
+  tms-uat.server.key:
+    file: ./certs/tms-uat.hk-tess.com/server.key
+  utms-uat.server.crt:
+    file: ./certs/utms-uat.hk-tess.com/server.crt
+  utms-uat.server.key:
+    file: ./certs/utms-uat.hk-tess.com/server.key
+
+networks:
+  net:
+    driver: overlay
