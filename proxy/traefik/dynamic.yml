@@ -5,21 +5,15 @@ http:
         users:
           # refer to on how to generate password: https://doc.traefik.io/traefik/middlewares/http/basicauth/#configuration-options
           # e.g. invoke "htpasswd -nB admin"
-          # admin / <common PTS password>
-          - "admin:$2y$05$kV1fdxLx7927u8sZKSg1Y.ZGBSrhPiuUK6JfamHrurgUxJt/XWsVq"
+          # admin / <common admin password>
+          - "admin:$2y$05$.rKcxUD3Ge/nGWimjQYf2.u5LoFEEEyv16QVCJ1/q/1RPE7cLzVdS"
+    user-auth:
+      basicAuth:
+        users:
+          # user / <common user password>
+          - "user:$2y$05$n.mHzR7pIM9eqMuRTWAQCew2s7VXgmqThMfvjv2LFtVNF8RJk/ZUa"
 
 tls:
-  certificates:
-    - certFile: /certs/cms-uat.hk-tess.com/server.crt
-      keyFile: /certs/cms-uat.hk-tess.com/server.key
-    - certFile: /certs/itms-uat.hk-tess.com/server.crt
-      keyFile: /certs/itms-uat.hk-tess.com/server.key
-    - certFile: /certs/utms-uat.hk-tess.com/server.crt
-      keyFile: /certs/utms-uat.hk-tess.com/server.key
-    - certFile: /certs/tms-uat.hk-tess.com/server.crt
-      keyFile: /certs/tms-uat.hk-tess.com/server.key
-    - certFile: /certs/repo.hk-tess.com/server.crt
-      keyFile: /certs/repo.hk-tess.com/server.key
   options:
     default:
       cipherSuites:

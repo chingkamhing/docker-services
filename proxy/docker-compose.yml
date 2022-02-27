@@ -17,21 +17,29 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entryPoint.permanent=true"
       - "--entrypoints.websecure.address=:443"
+      # acme configurations
+      - "--certificatesresolvers.ddns.acme.email=kam_ching@hotmail.com"
+      - "--certificatesresolvers.ddns.acme.storage=/etc/traefik/acme/acme.json"
+      # - "--certificatesresolvers.ddns.acme.dnschallenge=true"
+      # - "--certificatesresolvers.ddns.acme.dnschallenge.provider=freemyip"
+      - "--certificatesresolvers.ddns.acme.httpchallenge.entrypoint=web"
       # enable api and dashboard
       - "--api.dashboard=true"
       # enable log output
       - "--log.level=INFO"
     volumes:
       - ./traefik/dynamic.yml:/etc/traefik/conf/dynamic.yml:ro
+      - ./acme:/etc/traefik/acme
     restart: always
     labels:
       - "traefik.enable=true"
-        # traefik dashboard: https://cms-uat.hk-tess.com/dashboard/
+        # traefik dashboard: https://proxy.kamching.freemyip.com/dashboard/
       - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`cms-uat.hk-tess.com`) && PathPrefix(`/api/`) || PathPrefix(`/dashboard/`)"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`proxy.kamching.freemyip.com`)"
       - "traefik.http.routers.traefik-dashboard.middlewares=admin-auth@file"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
       - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=ddns"
 
 networks:
   net:
