@@ -27,6 +27,8 @@ services:
       - "--api.dashboard=true"
       # enable log output
       - "--log.level=INFO"
+    volumes:
+      - ./acme:/etc/traefik/acme
     configs:
       - source: dynamic.yml
         target: /etc/traefik/conf/dynamic.yml
