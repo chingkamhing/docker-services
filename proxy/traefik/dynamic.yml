@@ -12,6 +12,19 @@ http:
         users:
           # user / <common user password>
           - "user:$2y$05$n.mHzR7pIM9eqMuRTWAQCew2s7VXgmqThMfvjv2LFtVNF8RJk/ZUa"
+  routers:
+    to-pts-report:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`pts-report.kamching.freemyip.com`)"
+      service: "pts-report"
+      tls:
+        certResolver: ddns
+  services:
+    pts-report:
+      loadBalancer:
+        servers:
+        - url: "http://192.168.8.12:8888/"
 
 tls:
   options:
