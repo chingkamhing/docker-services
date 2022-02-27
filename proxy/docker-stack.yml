@@ -21,9 +21,8 @@ services:
       # acme configurations
       - "--certificatesresolvers.ddns.acme.email=kam_ching@hotmail.com"
       - "--certificatesresolvers.ddns.acme.storage=/etc/traefik/acme/acme.json"
-      # - "--certificatesresolvers.ddns.acme.dnschallenge=true"
-      # - "--certificatesresolvers.ddns.acme.dnschallenge.provider=freemyip"
-      - "--certificatesresolvers.ddns.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.ddns.acme.dnschallenge=true"
+      - "--certificatesresolvers.ddns.acme.dnschallenge.provider=freemyip"
       # enable api and dashboard
       - "--api.dashboard=true"
       # enable log output

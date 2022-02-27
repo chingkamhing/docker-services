@@ -5,6 +5,8 @@ services:
   #
   traefik:
     image: traefik:2.6
+    environment:
+      - FREEMYIP_TOKEN=573c7619cc734e38d6c87598
     networks:
       - net
     ports:
