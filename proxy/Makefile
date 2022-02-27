@@ -23,12 +23,20 @@ docker-up:
 # docker-compose down
 .PHONY: docker-down
 docker-down:
-	docker-compose -f docker-compose-common.yml -f docker-compose.yml down
+	@if [ "$$FREEMYIP_TOKEN" != "" ]; then \
+		docker-compose -f docker-compose-common.yml -f docker-compose.yml down ; \
+	else \
+		echo "Error: .env variables is not set yet! Please source .env properly." ; \
+	fi
 
 # Deploy a docker stack
 .PHONY: stack-up
 stack-up:
-	docker stack deploy -c docker-compose-common.yml -c docker-stack.yml ${project}
+	@if [ "$$FREEMYIP_TOKEN" != "" ]; then \
+		docker stack deploy -c docker-compose-common.yml -c docker-stack.yml ${project} ; \
+	else \
+		echo "Error: .env variables is not set yet! Please source .env properly." ; \
+	fi
 
 # Remove a docker stack
 .PHONY: stack-down
