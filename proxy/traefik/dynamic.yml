@@ -19,7 +19,7 @@ http:
       rule: "Host(`pts-report.kamching.freemyip.com`)"
       service: "pts-report"
       tls:
-        certResolver: ddns
+        certResolver: letsencrypt
   services:
     pts-report:
       loadBalancer:
