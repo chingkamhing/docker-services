@@ -18,16 +18,16 @@ project = proxy
 # docker-compose up
 .PHONY: docker-up
 docker-up:
-	docker-compose -f docker-compose-common.yml -f docker-compose.yml up
+	@if [ "$$FREEMYIP_TOKEN" != "" ]; then \
+		docker-compose -f docker-compose-common.yml -f docker-compose.yml up ; \
+	else \
+		echo "Error: .env variables is not set yet! Please source .env properly." ; \
+	fi
 
 # docker-compose down
 .PHONY: docker-down
 docker-down:
-	@if [ "$$FREEMYIP_TOKEN" != "" ]; then \
-		docker-compose -f docker-compose-common.yml -f docker-compose.yml down ; \
-	else \
-		echo "Error: .env variables is not set yet! Please source .env properly." ; \
-	fi
+	docker-compose -f docker-compose-common.yml -f docker-compose.yml down
 
 # Deploy a docker stack
 .PHONY: stack-up
