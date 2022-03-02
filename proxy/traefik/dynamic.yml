@@ -23,7 +23,8 @@ http:
       tls:
         certResolver: letsencrypt
   services:
-    # internal pts-report server; assume viola server is running
+    # internal pts-report server
+    # - assume viola server is running (refer to project https://github.com/tradelinkpts/pts-report)
     pts-report:
       loadBalancer:
         servers:
