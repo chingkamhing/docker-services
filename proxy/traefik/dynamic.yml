@@ -12,23 +12,6 @@ http:
         users:
           # user / <common user password>
           - "user:$2y$05$n.mHzR7pIM9eqMuRTWAQCew2s7VXgmqThMfvjv2LFtVNF8RJk/ZUa"
-  routers:
-    # route https://pts-report.kamching.freemyip.com/ to internal server http://192.168.8.12:8888/
-    to-pts-report:
-      entryPoints:
-        - "websecure"
-      rule: "Host(`pts-report.kamching.freemyip.com`)"
-      middlewares: user-auth@file
-      service: "pts-report"
-      tls:
-        certResolver: letsencrypt
-  services:
-    # internal pts-report server
-    # - assume viola server is running (refer to project https://github.com/tradelinkpts/pts-report)
-    pts-report:
-      loadBalancer:
-        servers:
-        - url: "http://192.168.8.12:8888/"
 
 tls:
   options:
