@@ -15,7 +15,7 @@
   become: true
   become_user: root
   when: loki_status.rc != 0
-  shell: docker plugin install {{ plugin }}:{{ tag }} --alias {{ alias }} {{ item.opts }} 
+  shell: docker plugin install {{ plugin }}:{{ tag }} --alias {{ alias }} {{ opts }} 
   notify:
     - restart docker service
 
