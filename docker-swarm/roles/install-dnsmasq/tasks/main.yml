@@ -13,7 +13,6 @@
     src: dnsmasq.conf
     dest: /etc/dnsmasq.conf
     backup: yes
-    backup_file: /etc/dnsmasq.conf.org
     mode: 0644
 - name: start dnsmasq service
   become: true
