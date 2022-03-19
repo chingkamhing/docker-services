@@ -4,6 +4,10 @@
 #     msg: "hostname: {{ item.0.key }} node_labels: {{ item.1 }}"
 #   loop: "{{ hostvars | dict2items | subelements('value.node_labels') }}"
 
+# Note:
+# - for out-of-box provision, this task keep having "template error while templating string: unexpected '.'" error
+# - tried change the "shell" to "debug: msg:", the debug output has no '.'; copy-and-paste the debug output and invoke in "itms-uat-manager-1" correctly add the label
+# - somehow, ssh to itms-uat-manager-1, add label and remove label to "itms-uat-worker-1" fix the problem
 - name: label docker node
   shell: docker node update --label-add {{ item.1 }} {{ item.0.key }}
   loop: "{{ hostvars | dict2items | subelements('value.node_labels') }}"
