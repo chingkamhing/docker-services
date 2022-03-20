@@ -8,6 +8,8 @@
 # - for out-of-box provision, this task keep having "template error while templating string: unexpected '.'" error
 # - tried change the "shell" to "debug: msg:", the debug output has no '.'; copy-and-paste the debug output and invoke in "itms-uat-manager-1" correctly add the label
 # - somehow, ssh to itms-uat-manager-1, add label and remove label to "itms-uat-worker-1" fix the problem
+# - update 2022-03-20: doing the above cannot fix the error; actually, invoke "ansible-playbook provision-swarm.yml --start-at-task="label docker node"" fix the problem
+# - conclusion: provision from start of the playbooks will have this template error; however, resume from this task after the first provision fail can fix the problem
 - name: label docker node
   shell: docker node update --label-add {{ item.1 }} {{ item.0.key }}
   loop: "{{ hostvars | dict2items | subelements('value.node_labels') }}"
