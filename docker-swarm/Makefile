@@ -2,10 +2,10 @@
 help:
 	@echo "Usage:"
 	@echo "VBox:"
-	@echo "    create-vm     Create VirtualBox VMs base on inventory.ini"
-	@echo "    status        VirtualBox VMs status"
-	@echo "    on            VirtualBox power on"
-	@echo "    off           VirtualBox power off"
+	@echo "    create-vm     Create VirtualBox VMs base on inventory.ini (note: will take 10~15 minutes to install OS)"
+	@echo "    status        VirtualBox show all VMs' status"
+	@echo "    on            VirtualBox power on all VMs"
+	@echo "    off           VirtualBox power off all VMs"
 	@echo "    ssh-config    Print ssh config setting. May append this output to .ssh/config for passwordless login"
 	@echo "Ansible:"
 	@echo "    validate      Check ansible file validity"
@@ -16,7 +16,7 @@ help:
 # VirtualBox
 #
 
-# Create VirtualBox VMs base on inventory.ini
+# Create VirtualBox VMs base on inventory.ini (note: will take 10~15 minutes to install OS)
 .PHONY: create-vm
 create-vm:
 	@if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
@@ -26,7 +26,7 @@ create-vm:
 		exit 1 ; \
 	fi
 
-# VirtualBox VMs status
+# VirtualBox show all VMs' status
 .PHONY: status
 status:
 	@echo All VMs:
@@ -34,17 +34,17 @@ status:
 	@echo Running VMs:
 	VBoxManage list runningvms
 
-# VirtualBox power on
+# VirtualBox power on all VMs
 .PHONY: on
 on:
 	@./script/power-vm.sh on
 
-# VirtualBox power off
+# VirtualBox power off all VMs
 .PHONY: off
 off:
 	@./script/power-vm.sh off
 
-# ssh config
+# Print ssh config setting. May append this output to .ssh/config for passwordless login
 .PHONY: ssh-config
 ssh-config:
 	@./script/ssh-config.sh inventory.ini
@@ -53,17 +53,17 @@ ssh-config:
 # Ansible
 #
 
-# validate Vagrantfile
+# Check ansible file validity
 .PHONY: validate
 validate:
 	@ansible-playbook --syntax-check provision-swarm.yml
 
-# ansible dry-run provision docker swarm nodes
+# Ansible dry-run provision docker swarm nodes
 .PHONY: dry
 dry:
 	@ansible-playbook --check provision-swarm.yml
 
-# ansible provision docker swarm nodes
+# Ansible provision docker swarm nodes
 .PHONY: provision
 provision:
 	@if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
