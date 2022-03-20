@@ -1,0 +1,22 @@
+# References:
+# - https://blog.ruanbekker.com/blog/2020/09/20/setup-a-nfs-server-with-docker/
+# - https://hub.docker.com/r/itsthenetwork/nfs-server-alpine
+version: "3.8"
+services:
+  #
+  # nfs
+  #
+  nfs:
+    image: itsthenetwork/nfs-server-alpine:12
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - SHARED_DIRECTORY=/data
+    volumes:
+      - storage:/data
+    ports:
+      - 2049:2049
+
+volumes:
+  storage:
+    driver: local

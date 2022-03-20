@@ -1,0 +1,37 @@
+# References:
+# - https://phoenixnap.com/kb/nfs-docker-volumes#:~:text=Volumes%20are%20existing%20directories%20on,NFS%20remote%20file%2Dsharing%20system.
+# - https://blog.stefandroid.com/2021/03/03/mount-nfs-share-in-docker-compose.html
+# - https://github.com/ContainX/docker-volume-netshare
+version: "3.8"
+services:
+  #
+  # app-1
+  #
+  app-1:
+    image: alpine:3.15
+    command: sleep 100m
+    volumes:
+      - type: volume
+        source: share
+        target: /mnt/nfs
+        volume:
+          nocopy: true
+  #
+  # app-2
+  #
+  app-2:
+    image: alpine:3.15
+    command: sleep 100m
+    volumes:
+      - type: volume
+        source: share
+        target: /mnt/nfs
+        volume:
+          nocopy: true
+
+volumes:
+  share:
+    driver_opts:
+      type: nfs
+      o: nfsvers=4,addr=localhost,nolock,soft,rw
+      device: ":"
