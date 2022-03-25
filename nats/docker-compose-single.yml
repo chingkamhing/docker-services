@@ -10,8 +10,6 @@ x-env:
       - NATS_PASSWORD=${NATS_PASSWORD}
       - MQTT_USERNAME=${MQTT_USERNAME}
       - MQTT_PASSWORD=${MQTT_PASSWORD}
-    networks:
-      - backend
     restart:
       unless-stopped
 
@@ -31,11 +29,6 @@ services:
     volumes:
       - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
       - data:/data/jetstream
-
-# networks
-networks:
-  backend:
-    driver: bridge
 
 volumes:  
   data:
