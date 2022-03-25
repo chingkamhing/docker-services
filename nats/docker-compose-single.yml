@@ -1,0 +1,41 @@
+version: "3.8"
+
+x-env:
+  nats: &nats
+    image: nats:2.7.4-alpine3.15
+    environment:
+      - NATS_ROUTE_USERNAME=${NATS_ROUTE_USERNAME}
+      - NATS_ROUTE_PASSWORD=${NATS_ROUTE_PASSWORD}
+      - NATS_USERNAME=${NATS_USERNAME}
+      - NATS_PASSWORD=${NATS_PASSWORD}
+      - MQTT_USERNAME=${MQTT_USERNAME}
+      - MQTT_PASSWORD=${MQTT_PASSWORD}
+    networks:
+      - backend
+    restart:
+      unless-stopped
+
+services:
+  nats:
+    <<: *nats
+    command: "--name nats -c /etc/nats/nats-server.conf -js -D"
+    ports:
+      # for clients
+      - 4222:4222
+      # an HTTP management port for information reporting
+      - 8222:8222
+      # mqtt
+      - 1883:1883
+      # websocket
+      - 8080:8080
+    volumes:
+      - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
+      - data:/data/jetstream
+
+# networks
+networks:
+  backend:
+    driver: bridge
+
+volumes:  
+  data:

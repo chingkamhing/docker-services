@@ -5,16 +5,19 @@ help:
 	@echo "    docker-up             docker-compose deploy for local development"
 	@echo "    docker-down           docker-compose remove"
 
+# nats deploy mode: single, cluster
+MODE ?= cluster
+
 # validate and view the compose file
 .PHONY: config
 config:
-	docker-compose -f docker-compose.yml config
+	docker-compose -f docker-compose-$(MODE).yml config
 
 # docker docker-up
 .PHONY: docker-up
 docker-up:
 	@if [ "$$NATS_ROUTE_USERNAME" != "" ] && [ "$$NATS_ROUTE_PASSWORD" != "" ] && [ "$$NATS_USERNAME" != "" ] && [ "$$MQTT_USERNAME" != "" ]; then \
-		docker-compose -f docker-compose.yml up ; \
+		docker-compose -f docker-compose-$(MODE).yml up ; \
 	else \
 		echo "Error: .env variables is not set yet! Please source .env properly." ; \
 		exit 1 ; \
@@ -23,4 +26,4 @@ docker-up:
 # docker compose down
 .PHONY: docker-down
 docker-down:
-	docker-compose -f docker-compose.yml down
+	docker-compose -f docker-compose-$(MODE).yml down
