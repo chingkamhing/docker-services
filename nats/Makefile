@@ -4,6 +4,7 @@ help:
 	@echo "    config                Validate and view the compose file"
 	@echo "    docker-up             docker-compose deploy for local development"
 	@echo "    docker-down           docker-compose remove"
+	@echo "    status                nats status"
 
 # nats deploy mode: single, cluster
 MODE ?= cluster
@@ -27,3 +28,11 @@ docker-up:
 .PHONY: docker-down
 docker-down:
 	docker-compose -f docker-compose-$(MODE).yml down
+
+# nats status
+.PHONY: status
+status:
+	@echo Stream info:
+	@./script/stream-info.sh
+	@echo Consumer info:
+	@./script/consumer-info.sh
