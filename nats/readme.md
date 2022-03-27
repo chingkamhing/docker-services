@@ -28,7 +28,7 @@
     + deliver-group (load-balance amount different instances)
     + instant replay
     + no ack
-    + e.g. 'create-log-consumer.sh itms log'
+    + e.g. 'create-push-consumer.sh itms log'
 * load-balance microservice subscribe
     + subscribe to the same "target subject" as the push-based consumer
     + subscribe to the same "deliver-group" as the push-based consumer

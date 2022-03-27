@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script file to create a log consumer that is push-based, instant replay and no ack.
+# Script file to create a push-based consumer that is push-based, instant replay and no ack.
 #
 
 URL="localhost:4222"
@@ -15,7 +15,7 @@ SCRIPT_NAME=${0##*/}
 Usage () {
 	echo
 	echo "Description:"
-	echo "Script file to create a log consumer that is push-based, instant replay and no ack."
+	echo "Script file to create a push-based consumer that is push-based, instant replay and no ack."
 	echo
 	echo "Usage: $SCRIPT_NAME [stream name] [consumer name]"
 	echo "Options:"
@@ -78,7 +78,7 @@ else
 	CONSUMER_NAME=""
 fi
 
-# create event log consumer
+# create push-based consumer
 # - push-based (which then publish the messages to a target subject and anyone who subscribes to the subject will get them)
 # - deliver-group (load-balance amount different instances)
 # - instant replay
