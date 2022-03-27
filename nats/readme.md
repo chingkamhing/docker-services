@@ -3,6 +3,49 @@
 * have the nats jetstream working now
     + [JetStream Walkthrough](https://docs.nats.io/nats-concepts/jetstream/js_walkthrough)
 
+## JetStream
+
+* jetstream
+    + retention policy
+    + acknowledgement models
+    + exactly once delivery
+* consumer
+    + durable or ephemeral
+    + push or pull based
+    + replay policy
+    + acknowledgement policy
++ subscribe from a consumer
+    + acknowledging messages
+
+### Usage in microservice
+
+* create a stream for microservice
+    + set retention to limits
+    + set ack to explicit
+    + e.g. 'create-stream.sh itms "itms.>"'
+* create log consumer
+    + push-based (which then publish the messages to a target subject and anyone who subscribes to the subject will get them)
+    + deliver-group (load-balance amount different instances)
+    + instant replay
+    + no ack
+    + e.g. 'create-log-consumer.sh itms log'
+* load-balance microservice subscribe
+    + subscribe to the same "target subject" as the push-based consumer
+    + subscribe to the same "deliver-group" as the push-based consumer
+    + e.g. 'subscribe.sh -q EventLog System.EventLog'
+* all instances microservice subscribe
+    + subscribe to the same "target subject" as the push-based consumer
+    + e.g. 'subscribe.sh User.Permission.Changed'
+
+### References
+
+* [JetStream](https://docs.nats.io/using-nats/developer/develop_jetstream)
+* [JetStream Model Deep Dive](https://docs.nats.io/using-nats/developer/develop_jetstream/model_deep_dive)
+* [Consumers](https://docs.nats.io/running-a-nats-service/nats_admin/jetstream_admin/consumers)
+* [Example](https://docs.nats.io/nats-concepts/jetstream/consumers/example_configuration)
+* [What's New](https://docs.nats.io/release-notes/whats_new#jetstream)
+* [Managing JetStream](https://docs.nats.io/running-a-nats-service/nats_admin/jetstream_admin)
+
 ## Add authentication
 
 ### Server Configuration Authentication/Authorization
@@ -56,6 +99,13 @@
 * [NATS Server Clients](https://docs.nats.io/running-a-nats-service/clients)
 * [The NATS Command Line Interface](https://github.com/nats-io/natscli)
 * [Golang client for NATS](https://github.com/nats-io/nats.go)
+* jetstream
+    + [JetStream](https://docs.nats.io/using-nats/developer/develop_jetstream)
+    + [JetStream Model Deep Dive](https://docs.nats.io/using-nats/developer/develop_jetstream/model_deep_dive)
+    + [Consumers](https://docs.nats.io/running-a-nats-service/nats_admin/jetstream_admin/consumers)
+    + [Example](https://docs.nats.io/nats-concepts/jetstream/consumers/example_configuration)
+    + [What's New](https://docs.nats.io/release-notes/whats_new#jetstream)
+    + [Managing JetStream](https://docs.nats.io/running-a-nats-service/nats_admin/jetstream_admin)
 * open source projects
     + [pitaya](https://github.com/topfreegames/pitaya)
     + [goserver](https://github.com/0990/goserver)
