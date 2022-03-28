@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script file to subscribe to a nats subject.
+# Script file to subscribe to a nats subject. If queue group is specified, act as queue; if queue is not specified, act as pubsub.
 #
 
 URL="localhost:4222"
@@ -15,7 +15,7 @@ SCRIPT_NAME=${0##*/}
 Usage () {
 	echo
 	echo "Description:"
-	echo "Script file to subscribe to a nats subject."
+	echo "Script file to subscribe to a nats subject. If queue group is specified, act as queue; if queue is not specified, act as pubsub."
 	echo
 	echo "Usage: $SCRIPT_NAME [subject]"
 	echo "Options:"
