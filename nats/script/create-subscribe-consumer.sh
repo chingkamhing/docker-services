@@ -85,8 +85,8 @@ fi
 # - no ack
 $DEBUG nats consumer add \
 	$OPTS \
-	--target="System.EventLog" \
-	--deliver-group="EventLog" \
+	--target="SubscribeSubject.$CONSUMER_NAME" \
+	--deliver-group="SubscribeGroup.$CONSUMER_NAME" \
 	--filter="" \
 	--ack=none \
 	--deliver=new \
