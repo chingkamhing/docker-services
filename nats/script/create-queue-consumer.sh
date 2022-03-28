@@ -20,6 +20,7 @@ Usage () {
 	echo "Usage: $SCRIPT_NAME [stream name] [consumer name]"
 	echo "Options:"
 	echo " -e                           Ephemeral consumer (i.e. not durable)"
+	echo " -f  [filter]                 Filter Stream by subjects"
 	echo " -u  [url]                    NATS server URL"
 	echo " -n  [username]               NATS login username"
 	echo " -p  [password]               NATS login password"
@@ -34,6 +35,10 @@ while [ "${1:0:1}" == "-" ]; do
 	"e")
 		EPHEMERAL="yes"
 		OPTS="$OPTS --ephemeral"
+		;;
+	"f")
+		FILTER=$2
+		shift
 		;;
 	"u")
 		URL=$2
@@ -80,14 +85,14 @@ fi
 
 # create push-based consumer
 # - push-based (which then publish the messages to a target subject and anyone who subscribes to the subject will get them)
-# - deliver-group (load-balance amount different instances)
+# - deliver group (load-balance amount different instances)
 # - instant replay
 # - no ack
 $DEBUG nats consumer add \
 	$OPTS \
-	--target="SubscribeSubject.$CONSUMER_NAME" \
-	--deliver-group="SubscribeGroup.$CONSUMER_NAME" \
-	--filter="" \
+	--target="QueueSubject.$CONSUMER_NAME" \
+	--deliver-group="QueueGroup.$CONSUMER_NAME" \
+	--filter=$FILTER \
 	--ack=none \
 	--deliver=new \
 	--replay=instant \
