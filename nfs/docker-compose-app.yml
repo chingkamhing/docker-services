@@ -15,8 +15,6 @@ services:
       - type: volume
         source: share
         target: /mnt/nfs
-        volume:
-          nocopy: true
   #
   # app-2
   #
