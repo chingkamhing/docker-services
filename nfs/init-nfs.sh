@@ -4,4 +4,4 @@
 #
 
 # create directory "app" to be shared amoung applications
-mkdir /mnt/nfs/app
+mkdir -p /mnt/nfs/app
