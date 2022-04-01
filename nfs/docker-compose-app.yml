@@ -27,12 +27,10 @@ services:
       - type: volume
         source: share
         target: /mnt/nfs
-        volume:
-          nocopy: true
 
 volumes:
   share:
     driver_opts:
       type: nfs
       o: nfsvers=4,addr=localhost,nolock,soft,rw
-      device: ":"
+      device: ":/app"

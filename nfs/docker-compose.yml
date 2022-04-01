@@ -16,7 +16,28 @@ services:
       - storage:/data
     ports:
       - 2049:2049
+  #
+  # init-nfs
+  #
+  init-nfs:
+    image: alpine:3.15
+    command: /root/init-nfs.sh
+    depends_on:
+      - nfs
+    restart: on-failure
+    volumes:
+      - ./init-nfs.sh:/root/init-nfs.sh:ro
+      - type: volume
+        source: root
+        target: /mnt/nfs
+        volume:
+          nocopy: true
 
 volumes:
   storage:
     driver: local
+  root:
+    driver_opts:
+      type: nfs
+      o: nfsvers=4,addr=localhost,nolock,soft,rw
+      device: ":"
