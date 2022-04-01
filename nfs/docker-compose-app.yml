@@ -2,6 +2,7 @@
 # - https://phoenixnap.com/kb/nfs-docker-volumes#:~:text=Volumes%20are%20existing%20directories%20on,NFS%20remote%20file%2Dsharing%20system.
 # - https://blog.stefandroid.com/2021/03/03/mount-nfs-share-in-docker-compose.html
 # - https://github.com/ContainX/docker-volume-netshare
+# - https://www.thegeekdiary.com/common-nfs-mount-options-in-linux/
 version: "3.8"
 services:
   #
