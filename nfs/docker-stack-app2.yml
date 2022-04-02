@@ -1,0 +1,37 @@
+# References:
+# - https://blog.ruanbekker.com/blog/2020/09/20/setup-a-nfs-server-with-docker/
+# - https://hub.docker.com/r/itsthenetwork/nfs-server-alpine
+# - https://sysadmins.co.za/docker-swarm-persistent-storage-with-nfs/
+version: "3.8"
+services:
+  #
+  # app-2a
+  #
+  app-2a:
+    image: alpine:3.15
+    command: sleep 100m
+    volumes:
+      - app2:/mnt/nfs
+    networks:
+      - app2
+  #
+  # app-2b
+  #
+  app-2b:
+    image: alpine:3.15
+    command: sleep 100m
+    volumes:
+      - app2:/mnt/nfs
+    networks:
+      - app2
+
+volumes:
+  app2:
+    driver: nfs
+    driver_opts:
+      share: localhost:/
+
+# networks
+networks:
+  app2:
+    driver: overlay

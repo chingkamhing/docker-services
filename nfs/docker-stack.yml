@@ -1,0 +1,55 @@
+# References:
+# - https://blog.ruanbekker.com/blog/2020/09/20/setup-a-nfs-server-with-docker/
+# - https://hub.docker.com/r/itsthenetwork/nfs-server-alpine
+# - https://sysadmins.co.za/docker-swarm-persistent-storage-with-nfs/
+version: "3.8"
+services:
+  #
+  # nfs
+  #
+  nfs:
+    image: itsthenetwork/nfs-server-alpine:12
+    privileged: true
+    environment:
+      - SHARED_DIRECTORY=/data
+    volumes:
+      - nfs:/data
+    ports:
+      - 2049:2049
+    deploy:
+      restart_policy:
+        condition: on-failure
+  #
+  # init-nfs
+  #
+  init-nfs:
+    image: alpine:3.15
+    command: /root/init-nfs.sh
+    depends_on:
+      - nfs
+    configs:
+      - source: init-nfs.sh
+        target: /root/init-nfs.sh
+        mode: 0544
+    volumes:
+      - type: volume
+        source: nfsroot
+        target: /mnt/nfs
+        volume:
+          nocopy: true
+    deploy:
+      restart_policy:
+        condition: "none"
+
+# config file
+configs:
+  init-nfs.sh:
+    file: init-nfs.sh
+
+volumes:
+  nfs:
+    driver: local
+  nfsroot:
+    driver: nfs
+    driver_opts:
+      share: localhost:/
