@@ -12,9 +12,7 @@ services:
     image: alpine:3.15
     command: sleep 100m
     volumes:
-      - type: volume
-        source: app1
-        target: /mnt/nfs
+      - app1:/mnt/nfs
     networks:
       - app1
   #
@@ -24,9 +22,7 @@ services:
     image: alpine:3.15
     command: sleep 100m
     volumes:
-      - type: volume
-        source: app1
-        target: /mnt/nfs
+      - app1:/mnt/nfs
     networks:
       - app1
 
