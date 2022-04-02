@@ -6,29 +6,38 @@
 version: "3.8"
 services:
   #
-  # app-1
+  # app-1a
   #
-  app-1:
+  app-1a:
     image: alpine:3.15
     command: sleep 100m
     volumes:
       - type: volume
-        source: share
+        source: app1
         target: /mnt/nfs
+    networks:
+      - app1
   #
-  # app-2
+  # app-1b
   #
-  app-2:
+  app-1b:
     image: alpine:3.15
     command: sleep 100m
     volumes:
       - type: volume
-        source: share
+        source: app1
         target: /mnt/nfs
+    networks:
+      - app1
 
 volumes:
-  share:
+  app1:
     driver_opts:
       type: nfs
       o: nfsvers=4,addr=localhost,nolock,soft,rw
       device: ":/app"
+
+# networks
+networks:
+  app1:
+    driver: bridge
