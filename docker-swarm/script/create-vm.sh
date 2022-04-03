@@ -39,6 +39,8 @@ Usage () {
 	echo " -c  [num cpus]               Number of CPUs (default: $VM_CPUS)"
 	echo " -m  [memory size]            Memory size in MB (default: $VM_MEMORY)"
 	echo " -b  [bridge adapter]         Network bridge adapter device name (default: $VM_BRIDGE_ADAPTER)"
+	echo " -u  [username]               VM username or pass through env VM_USERNAME"
+	echo " -p  [password]               VM password or pass through env VM_PASSWORD"
 	echo " -h                           This help message"
 	echo
 }
@@ -106,6 +108,14 @@ while [ "${1:0:1}" == "-" ]; do
 		;;
 	"b")
 		VM_BRIDGE_ADAPTER=$2
+		shift
+		;;
+	"u")
+		VM_USERNAME=$2
+		shift
+		;;
+	"p")
+		VM_PASSWORD=$2
 		shift
 		;;
 	"h")
