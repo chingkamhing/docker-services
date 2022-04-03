@@ -56,21 +56,41 @@ fi
 # first argument is the container name
 CONTAINER_NAME=$1
 
-# find the container
+# try find the running or exited container
 CONTAINER=$(docker ps -a --filter name=${CONTAINER_NAME} --format {{.ID}})
-if [ "$CONTAINER" == "" ]; then
-	echo "Container \"$CONTAINER_NAME\" is not running!"
-	exit 1
-fi
-if [ "$(echo $CONTAINER | wc -w)" != "1" ]; then
-	docker ps -a --filter name=${CONTAINER_NAME}
-	is_proceed=$(Prompt "More than one containers are running, select the first one?")
-	if [ "$is_proceed" != "Y" ]; then
-		echo "Abort docker inspect."
-		exit
+if [ "$CONTAINER" != "" ]; then
+	if [ "$(echo $CONTAINER | wc -w)" != "1" ]; then
+		docker ps -a --filter name=${CONTAINER_NAME}
+		is_proceed=$(Prompt "More than one containers are running, select the first one?")
+		if [ "$is_proceed" != "Y" ]; then
+			echo "Abort docker inspect."
+			exit
+		fi
+		CONTAINER=$(echo $CONTAINER | head -n 1 | awk '{print $1;}')
 	fi
-	CONTAINER=$(echo $CONTAINER | head -n 1 | awk '{print $1;}')
+	# inspect the specified container
+	$DEBUG docker inspect $CONTAINER
+	exit
 fi
 
-# inspect the specified container
-$DEBUG docker inspect $CONTAINER
+# try find the docker service list
+# note: seems docker service filter search the name from start of word only
+CONTAINER=$(docker service ls --filter name=${CONTAINER_NAME} --format {{.ID}})
+if [ "$CONTAINER" != "" ]; then
+	if [ "$(echo $CONTAINER | wc -w)" != "1" ]; then
+		docker service ls --filter name=${CONTAINER_NAME}
+		is_proceed=$(Prompt "More than one docker services are running, select the first one?")
+		if [ "$is_proceed" != "Y" ]; then
+			echo "Abort docker inspect."
+			exit
+		fi
+		CONTAINER=$(echo $CONTAINER | head -n 1 | awk '{print $1;}')
+	fi
+	# inspect the specified container
+	$DEBUG docker service ps $CONTAINER
+	$DEBUG docker service inspect $CONTAINER
+	exit
+fi
+
+echo "Container \"$CONTAINER_NAME\" is not running!"
+exit 1
