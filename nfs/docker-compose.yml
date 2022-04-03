@@ -28,11 +28,7 @@ services:
       - nfs
     volumes:
       - ./init-nfs.sh:/root/init-nfs.sh:ro
-      - type: volume
-        source: nfsroot
-        target: /mnt/nfs
-        volume:
-          nocopy: true
+      - nfsroot:/mnt/nfs:rw
     networks:
       - net
     restart: on-failure
