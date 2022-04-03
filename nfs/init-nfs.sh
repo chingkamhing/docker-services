@@ -5,3 +5,6 @@
 
 # create directory "app" to be shared amoung applications
 mkdir -p /mnt/nfs/app
+
+#FIXME, for debug only
+sleep 3000
