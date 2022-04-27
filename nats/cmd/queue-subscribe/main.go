@@ -77,6 +77,7 @@ func main() {
 	{
 		opts := []nats.SubOpt{
 			nats.AckExplicit(),
+			nats.DeliverNew(),
 		}
 		_, err = js.QueueSubscribe(
 			topic,
