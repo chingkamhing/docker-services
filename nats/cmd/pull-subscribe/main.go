@@ -26,8 +26,8 @@ type TestMessage struct {
 
 const url = "localhost:4222"
 
-var username = os.Getenv("ITMS_NATS_USERNAME")
-var password = os.Getenv("ITMS_NATS_PASSWORD")
+var username = os.Getenv("NATS_USERNAME")
+var password = os.Getenv("NATS_PASSWORD")
 
 func main() {
 	stream := uuid.NewV4().String()
