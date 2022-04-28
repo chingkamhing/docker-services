@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"math"
@@ -29,8 +30,9 @@ func init() {
 }
 
 func main() {
-	stream := os.Args[1]
-	topic := os.Args[2]
+	flag.Parse()
+	stream := flag.Arg(0)
+	topic := flag.Arg(1)
 	queue := stream + "Queue"
 	// consumer := stream + "Consumer"
 	// deliverSubject := stream + "Deliver"
