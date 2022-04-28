@@ -33,7 +33,6 @@ func main() {
 	flag.Parse()
 	stream := flag.Arg(0)
 	topic := flag.Arg(1)
-	queue := stream + "Queue"
 	// consumer := stream + "Consumer"
 	// deliverSubject := stream + "Deliver"
 
@@ -77,6 +76,7 @@ func main() {
 		)
 	}
 	{
+		queue := stream + "Queue"
 		opts := []nats.SubOpt{
 			nats.AckExplicit(),
 			nats.DeliverNew(),
