@@ -39,7 +39,6 @@ func main() {
 	flag.Parse()
 	stream := flag.Arg(0)
 	topic := flag.Arg(1)
-	// consumer := stream + "Consumer"
 	// deliverSubject := stream + "Deliver"
 
 	nc, err := nats.Connect(url, nats.UserInfo(username, password))
@@ -62,15 +61,15 @@ func main() {
 	}
 
 	{
-		opts := []nats.SubOpt{
-			nats.AckNone(),
-			nats.DeliverNew(),
+		consumer := stream + "Consumer"
+		info, err := createPushConsumer(js, stream, consumer, "")
+		if err != nil {
+			log.Fatalf("createPushConsumer: %v", err)
 		}
 		for i := 0; i < numPubsub; i++ {
-			_, err = js.Subscribe(
-				topic,
+			nc.Subscribe(
+				info.Config.DeliverSubject,
 				callbackSubscribe(i),
-				opts...,
 			)
 		}
 	}
@@ -81,7 +80,7 @@ func main() {
 			nats.DeliverNew(),
 		}
 		for i := 0; i < numQueue; i++ {
-			_, err = js.QueueSubscribe(
+			js.QueueSubscribe(
 				topic,
 				queue,
 				callbackQueue(i),
@@ -112,6 +111,63 @@ func main() {
 	}
 	cancel()
 	log.Printf("done stream %q testing", stream)
+}
+
+func createPushConsumer(js nats.JetStreamContext, stream, consumer string, filter string) (*nats.ConsumerInfo, error) {
+	deliverSubject := "DeliverTopic." + consumer
+	deliverGroup := "DeliverGroup." + consumer
+	log.Printf("broker create push-based consumer %v > %v with filter %q; message will then be delivered to topic %v group %v", stream, consumer, filter, deliverSubject, deliverGroup)
+	cfg := &nats.ConsumerConfig{
+		Durable:        consumer,
+		Description:    fmt.Sprintf("Durable push-based subscribe consumer %v > %v with filter %q", stream, consumer, filter),
+		DeliverSubject: deliverSubject,
+		DeliverGroup:   "",
+		DeliverPolicy:  nats.DeliverNewPolicy,
+		AckPolicy:      nats.AckNonePolicy,
+		MaxDeliver:     -1,
+		FilterSubject:  filter,
+		ReplayPolicy:   nats.ReplayInstantPolicy,
+		FlowControl:    false,
+		Heartbeat:      30 * time.Second,
+		HeadersOnly:    false,
+	}
+	// log stream info
+	streamInfo, err := js.StreamInfo(stream)
+	if err != nil {
+		return nil, fmt.Errorf("broker StreamInfo(): %w", err)
+	}
+	log.Printf("stream %v info: description %v subjects %v", streamInfo.Config.Name, streamInfo.Config.Description, streamInfo.Config.Subjects)
+	// Q: check if the stream consumer already exist, skip if it does
+	info, err := js.ConsumerInfo(stream, consumer)
+	switch {
+	case errors.Is(err, nats.ErrConsumerNotFound):
+	case err == nil:
+		log.Printf("consumer %v info: stream %v NumAckPending %v NumRedelivered %v NumWaiting %v NumPending %v", info.Name, info.Stream, info.NumAckPending, info.NumRedelivered, info.NumWaiting, info.NumPending)
+		log.Printf("broker consumer %v > %v already exist, skip creating consumer", stream, consumer)
+		return info, nil
+	default:
+		return nil, fmt.Errorf("broker ConsumerInfo(): %w", err)
+	}
+	opts := []nats.JSOpt{}
+	isSuccess := false
+	for i := 0; i < 2 && !isSuccess; i++ {
+		info, err = js.AddConsumer(stream, cfg, opts...)
+		switch {
+		case err == nil:
+			log.Printf("consumer %v > %v just created", stream, consumer)
+			isSuccess = true
+		case err.Error() == "filter subject can not be updated":
+			// need to delete the consumer first before filter can be changed
+			log.Printf("broker delete consumer %v before it can change the filter", consumer)
+			err := js.DeleteConsumer(stream, consumer)
+			if err != nil {
+				return nil, fmt.Errorf("broker DeleteConsumer(): %w", err)
+			}
+		default:
+			return nil, fmt.Errorf("broker AddConsumer(): %w", err)
+		}
+	}
+	return info, nil
 }
 
 func callbackSubscribe(index int) func(m *nats.Msg) {
