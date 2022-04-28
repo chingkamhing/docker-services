@@ -19,17 +19,23 @@ import (
 //
 
 const url = "localhost:4222"
-const interval = 100 * time.Millisecond
-const duration = 3 * time.Second
 
 var username = os.Getenv("NATS_USERNAME")
 var password = os.Getenv("NATS_PASSWORD")
+var numPubsub int
+var numQueue int
+var interval time.Duration
+var duration time.Duration
 
 func init() {
 	log.SetFlags(0)
 }
 
 func main() {
+	flag.IntVar(&numPubsub, "pubsub", 2, "Number of pubsub subscriber")
+	flag.IntVar(&numQueue, "queue", 2, "Number of queue subscriber")
+	flag.DurationVar(&interval, "interval", 100*time.Millisecond, "Publish interval")
+	flag.DurationVar(&duration, "duration", 3*time.Second, "Publish duration")
 	flag.Parse()
 	stream := flag.Arg(0)
 	topic := flag.Arg(1)
@@ -60,20 +66,13 @@ func main() {
 			nats.AckNone(),
 			nats.DeliverNew(),
 		}
-		_, err = js.Subscribe(
-			topic,
-			func(m *nats.Msg) {
-				log.Printf("Sub 1: %s", m.Data)
-			},
-			opts...,
-		)
-		_, err = js.Subscribe(
-			topic,
-			func(m *nats.Msg) {
-				log.Printf("Sub 2: %s", m.Data)
-			},
-			opts...,
-		)
+		for i := 0; i < numPubsub; i++ {
+			_, err = js.Subscribe(
+				topic,
+				callbackSubscribe(i),
+				opts...,
+			)
+		}
 	}
 	{
 		queue := stream + "Queue"
@@ -81,22 +80,14 @@ func main() {
 			nats.AckExplicit(),
 			nats.DeliverNew(),
 		}
-		_, err = js.QueueSubscribe(
-			topic,
-			queue,
-			func(m *nats.Msg) {
-				log.Printf("Queue 1: %s", m.Data)
-			},
-			opts...,
-		)
-		_, err = js.QueueSubscribe(
-			topic,
-			queue,
-			func(m *nats.Msg) {
-				log.Printf("Queue 2: %s", m.Data)
-			},
-			opts...,
-		)
+		for i := 0; i < numQueue; i++ {
+			_, err = js.QueueSubscribe(
+				topic,
+				queue,
+				callbackQueue(i),
+				opts...,
+			)
+		}
 	}
 
 	// our publisher thread
@@ -104,7 +95,7 @@ func main() {
 	defer cancel()
 	go func() {
 		for i := 0; i < math.MaxInt; i++ {
-			msg := fmt.Sprintf(`{"key": "%d"}`, i)
+			msg := fmt.Sprintf("key %d", i)
 			_, err = js.Publish(topic, []byte(msg))
 			if err != nil {
 				if errors.Is(err, context.DeadlineExceeded) {
@@ -121,4 +112,16 @@ func main() {
 	}
 	cancel()
 	log.Printf("done stream %q testing", stream)
+}
+
+func callbackSubscribe(index int) func(m *nats.Msg) {
+	return func(m *nats.Msg) {
+		log.Printf("Sub %d: %s", index, m.Data)
+	}
+}
+
+func callbackQueue(index int) func(m *nats.Msg) {
+	return func(m *nats.Msg) {
+		log.Printf("Queue %d: %s", index, m.Data)
+	}
 }
