@@ -7,7 +7,7 @@ help:
 	@echo "    status                nats status"
 
 # nats deploy mode: single, cluster
-MODE ?= cluster
+MODE ?= single
 
 # validate and view the compose file
 .PHONY: config
