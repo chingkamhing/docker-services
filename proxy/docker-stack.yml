@@ -28,7 +28,7 @@ services:
       # enable log output
       - "--log.level=INFO"
     volumes:
-      - ./acme:/etc/traefik/acme
+      - traefik:/etc/traefik/acme
     configs:
       - source: dynamic.yml
         target: /etc/traefik/conf/dynamic.yml
@@ -57,6 +57,10 @@ services:
 configs:
   dynamic.yml:
     file: ./traefik/dynamic.yml
+
+# volumes
+volumes:
+  traefik:
 
 networks:
   net:
