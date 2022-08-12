@@ -28,6 +28,8 @@ var clientID string
 var username string
 var password string
 var topic string
+var qos int
+var retained bool
 var count int
 var interval time.Duration
 
@@ -40,6 +42,8 @@ func main() {
 	flag.StringVar(&password, "password", "", "MQTT client connection password")
 	flag.StringVar(&topic, "topic", "test/msg", "MQTT publish/subscribe topic")
 	flag.IntVar(&count, "count", 5, "MQTT publish loop count")
+	flag.IntVar(&qos, "qos", 0, "MQTT qos of 0, 1 or 2")
+	flag.BoolVar(&retained, "retained", false, "MQTT message retained in broker")
 	flag.DurationVar(&interval, "interval", 1*time.Second, "MQTT publish loop interval")
 	flag.Parse()
 	log.Printf("mqtt")
@@ -63,7 +67,7 @@ func main() {
 	for i := 0; i < count; i++ {
 		log.Printf("publish msg: %v", i)
 		message := fmt.Sprintf("MQTT message #%d", i)
-		token := client.Publish(topic, 0, false, message)
+		token := client.Publish(topic, qos, retained, message)
 		fmt.Println("publish msg: ", message)
 		token.Wait()
 		time.Sleep(interval)
