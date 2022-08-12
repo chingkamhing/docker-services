@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -20,18 +22,32 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 	log.Printf("Connect lost: %v", err)
 }
 
-const broker = "127.0.0.1"
-const port = 1883
-const clientID = "go_mqtt_client"
-const username = "mqtt_user"
-const password = ""
+var host string
+var port int
+var clientID string
+var username string
+var password string
+var topic string
+var count int
+var interval time.Duration
 
 func main() {
+	// flags
+	flag.StringVar(&host, "host", "127.0.0.1", "MQTT broker host address")
+	flag.IntVar(&port, "port", 1883, "MQTT broker port number")
+	flag.StringVar(&clientID, "id", "my_mqtt_client", "MQTT client ID")
+	flag.StringVar(&username, "username", "mqtt_user", "MQTT client connection username")
+	flag.StringVar(&password, "password", "", "MQTT client connection password")
+	flag.StringVar(&topic, "topic", "test/msg", "MQTT publish/subscribe topic")
+	flag.IntVar(&count, "count", 5, "MQTT publish loop count")
+	flag.DurationVar(&interval, "interval", 1*time.Second, "MQTT publish loop interval")
+	flag.Parse()
 	log.Printf("mqtt")
+	// connect mqtt
 	mqtt.DEBUG = log.New(os.Stdout, "", 0)
 	mqtt.ERROR = log.New(os.Stdout, "", 0)
 	opts := mqtt.NewClientOptions()
-	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", broker, port))
+	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", host, port))
 	opts.SetClientID(clientID)
 	opts.SetUsername(username)
 	opts.SetPassword(password)
@@ -42,5 +58,14 @@ func main() {
 	token := client.Connect()
 	if token.Wait() && token.Error() != nil {
 		panic(token.Error())
+	}
+	// mqtt publish messages to topic
+	for i := 0; i < count; i++ {
+		log.Printf("publish msg: %v", i)
+		message := fmt.Sprintf("MQTT message #%d", i)
+		token := client.Publish(topic, 0, false, message)
+		fmt.Println("publish msg: ", message)
+		token.Wait()
+		time.Sleep(interval)
 	}
 }
