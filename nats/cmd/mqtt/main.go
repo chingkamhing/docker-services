@@ -22,9 +22,14 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 	log.Printf("Connect lost: %v", err)
 }
 
+var receiveHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
+	log.Printf("Received from %q: %v", msg.Topic(), string(msg.Payload()))
+}
+
 var host string
 var port int
 var clientID string
+var keepAlive time.Duration
 var username string
 var password string
 var topic string
@@ -38,6 +43,7 @@ func main() {
 	flag.StringVar(&host, "host", "127.0.0.1", "MQTT broker host address")
 	flag.IntVar(&port, "port", 1883, "MQTT broker port number")
 	flag.StringVar(&clientID, "id", "my_mqtt_client", "MQTT client ID")
+	flag.DurationVar(&keepAlive, "alive", 60*time.Second, "MQTT keep alive time")
 	flag.StringVar(&username, "username", "mqtt_user", "MQTT client connection username")
 	flag.StringVar(&password, "password", "", "MQTT client connection password")
 	flag.StringVar(&topic, "topic", "test/msg", "MQTT publish/subscribe topic")
@@ -56,20 +62,29 @@ func main() {
 	opts.SetUsername(username)
 	opts.SetPassword(password)
 	opts.SetDefaultPublishHandler(messagePubHandler)
+	opts.SetKeepAlive(keepAlive)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
 	client := mqtt.NewClient(opts)
 	token := client.Connect()
 	if token.Wait() && token.Error() != nil {
-		panic(token.Error())
+		log.Fatalf("client.Connect() error: %v", token.Error())
+	}
+	// mqtt subscribe to topic
+	token = client.Subscribe(topic, byte(qos), receiveHandler)
+	if token.Wait() && token.Error() != nil {
+		log.Fatalf("client.Subscribe() error: %v", token.Error())
 	}
 	// mqtt publish messages to topic
 	for i := 0; i < count; i++ {
 		log.Printf("publish msg: %v", i)
 		message := fmt.Sprintf("MQTT message #%d", i)
-		token := client.Publish(topic, qos, retained, message)
-		fmt.Println("publish msg: ", message)
+		token := client.Publish(topic, byte(qos), retained, message)
+		log.Printf("publish msg: %v", message)
 		token.Wait()
 		time.Sleep(interval)
 	}
+	// disconnect
+	client.Disconnect(250)
+	time.Sleep(1 * time.Second)
 }
