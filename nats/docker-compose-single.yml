@@ -16,7 +16,7 @@ x-env:
 services:
   nats:
     <<: *nats
-    command: "--name nats -c /etc/nats/nats-server.conf -js -D"
+    command: "--name nats -c /etc/nats/nats-single.conf -js -D"
     ports:
       # for clients
       - 4222:4222
@@ -27,7 +27,7 @@ services:
       # websocket
       - 8080:8080
     volumes:
-      - $PWD/nats-server.conf:/etc/nats/nats-server.conf:ro
+      - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
       - data:/data/jetstream
 
 volumes:  
