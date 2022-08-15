@@ -1,41 +1,39 @@
 package main
 
 import (
+	"flag"
 	"log"
-	"sync"
+	"os"
 
 	"github.com/nats-io/nats.go"
 )
 
+var host string
+var port int
+var username = os.Getenv("NATS_USERNAME")
+var password = os.Getenv("NATS_PASSWORD")
+
 func main() {
+	// flags
+	flag.StringVar(&host, "host", "127.0.0.1", "NATS broker host address")
+	flag.IntVar(&port, "port", 1883, "NATS broker port number")
+	flag.StringVar(&username, "username", username, "NATS client connection username")
+	flag.StringVar(&password, "password", password, "NATS client connection password")
+	flag.Parse()
+	subject := flag.Args()[0]
+	message := flag.Args()[1]
 	// Set a user and plain text password
-	natsConn, err := nats.Connect("127.0.0.1", nats.UserCredentials("../../TestUser.creds"))
+	opts := []nats.Option{
+		nats.UserInfo(username, password),
+	}
+	natsConn, err := nats.Connect(host, opts...)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer natsConn.Close()
-
-	// Do something with the connection
-	log.Printf("natsConn.Status(): %v", natsConn.Status())
-	log.Printf("natsConn.Stats(): %#v", natsConn.Stats())
-
-	// Use a WaitGroup to wait for a message to arrive
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-
-	// Subscribe
-	_, err = natsConn.Subscribe("test", testHandler(&wg))
+	// publish message
+	err = natsConn.Publish(subject, []byte(message))
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Wait for a message to come in
-	wg.Wait()
-}
-
-func testHandler(wg *sync.WaitGroup) nats.MsgHandler {
-	return func(msg *nats.Msg) {
-		log.Printf("data: %v", string(msg.Data))
-		wg.Done()
+		log.Fatalf("Publish() error: %v", err)
 	}
 }

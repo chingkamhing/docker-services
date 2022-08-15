@@ -2,3 +2,4 @@
 .vagrant
 *.log
 nats/cmd/mqtt/mqtt
+nats/cmd/publish/publish
