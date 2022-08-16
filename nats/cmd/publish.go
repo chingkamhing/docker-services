@@ -35,5 +35,5 @@ func runPublish(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("Publish() error: %v", err)
 	}
-	log.Printf("Published %q to %q", message, subject)
+	log.Printf("Published [%v] %q", subject, message)
 }
