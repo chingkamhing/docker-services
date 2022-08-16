@@ -32,19 +32,19 @@ var cmdMqttTest = &cobra.Command{
 }
 
 func init() {
-	cmdMqttTest.Flags().String("mqtt.host", "127.0.0.1", "MQTT connection host address")
-	cmdMqttTest.Flags().Int("mqtt.port", 1883, "MQTT connection port number")
-	cmdMqttTest.Flags().String("mqtt.username", "", "MQTT connection username")
-	cmdMqttTest.Flags().String("mqtt.password", "", "MQTT connection password")
-	cmdMqttTest.Flags().String("mqtt.id", "my_mqtt_client", "MQTT client ID")
-	cmdMqttTest.Flags().Duration("mqtt.alive", 60*time.Second, "MQTT keep alive time")
-	cmdMqttTest.Flags().String("mqtt.topic", "test/msg", "MQTT publish/subscribe topic")
-	cmdMqttTest.Flags().Int("mqtt.count", 5, "MQTT publish loop count")
-	cmdMqttTest.Flags().Int("mqtt.qos", 0, "MQTT qos of 0, 1 or 2")
-	cmdMqttTest.Flags().Bool("mqtt.retained", false, "MQTT message retained in broker")
-	cmdMqttTest.Flags().Duration("mqtt.interval", 1*time.Second, "MQTT publish loop interval")
 	cmdMqtt.AddCommand(cmdMqttTest)
 
+	cmdMqtt.PersistentFlags().String("mqtt.host", "127.0.0.1", "MQTT connection host address")
+	cmdMqtt.PersistentFlags().Int("mqtt.port", 1883, "MQTT connection port number")
+	cmdMqtt.PersistentFlags().String("mqtt.username", "", "MQTT connection username")
+	cmdMqtt.PersistentFlags().String("mqtt.password", "", "MQTT connection password")
+	cmdMqtt.PersistentFlags().String("mqtt.id", "my_mqtt_client", "MQTT client ID")
+	cmdMqtt.PersistentFlags().Duration("mqtt.alive", 60*time.Second, "MQTT keep alive time")
+	cmdMqtt.PersistentFlags().String("mqtt.topic", "test/msg", "MQTT publish/subscribe topic")
+	cmdMqtt.PersistentFlags().Int("mqtt.count", 5, "MQTT publish loop count")
+	cmdMqtt.PersistentFlags().Int("mqtt.qos", 0, "MQTT qos of 0, 1 or 2")
+	cmdMqtt.PersistentFlags().Bool("mqtt.retained", false, "MQTT message retained in broker")
+	cmdMqtt.PersistentFlags().Duration("mqtt.interval", 1*time.Second, "MQTT publish loop interval")
 	rootCmd.AddCommand(cmdMqtt)
 }
 
