@@ -50,6 +50,7 @@ var cmdMqttTest = &cobra.Command{
 
 func init() {
 	cmdMqtt.AddCommand(cmdMqttPub)
+	cmdMqttSub.Flags().IntVar(&subIntervalCount, "interval", 1, "Subscribe print receive message interval count. Used to avoid excessive print message by skipping this count number.")
 	cmdMqtt.AddCommand(cmdMqttSub)
 	cmdMqtt.AddCommand(cmdMqttTest)
 
@@ -103,8 +104,12 @@ func runMqttSub(cmd *cobra.Command, args []string) {
 	}()
 	// mqtt subscribe to subject
 	subject := args[0]
+	count := 0
 	token := client.Subscribe(subject, byte(config.Mqtt.Qos), func(client mqtt.Client, msg mqtt.Message) {
-		log.Printf("[%v] %q", msg.Topic(), string(msg.Payload()))
+		if count%subIntervalCount == 0 {
+			log.Printf("[%v] %q", msg.Topic(), string(msg.Payload()))
+		}
+		count++
 	})
 	if token.Wait() && token.Error() != nil {
 		log.Fatalf("client.Subscribe() error: %v", token.Error())
