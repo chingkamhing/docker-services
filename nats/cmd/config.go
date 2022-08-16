@@ -35,9 +35,9 @@ type Mqtt struct {
 	Port      int           `mapstructure:"port"`     // MQTT port number
 	Username  string        `mapstructure:"username"` // MQTT connection username
 	Password  string        `mapstructure:"password"` // MQTT connection password
+	Log       string        `mapstructure:"log"`      // MQTT log level of: DEBUG, ERROR
 	ClientID  string        `mapstructure:"client_id"`
 	KeepAlive time.Duration `mapstructure:"keep_alive"`
-	Topic     string        `mapstructure:"topic"`
 	Qos       int           `mapstructure:"qos"`
 	Retained  bool          `mapstructure:"retained"`
 	Count     int           `mapstructure:"count"`

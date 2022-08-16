@@ -2,11 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/url"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -24,23 +27,39 @@ var cmdMqtt = &cobra.Command{
 	},
 }
 
-var cmdMqttTest = &cobra.Command{
-	Use:   "test",
+var cmdMqttPub = &cobra.Command{
+	Use:   "pub [subject] [message]",
 	Short: "Test MQTT publish and subscribe message",
-	Args:  cobra.ExactArgs(0),
+	Args:  cobra.ExactArgs(2),
+	Run:   runMqttPub,
+}
+
+var cmdMqttSub = &cobra.Command{
+	Use:   "sub [subject]",
+	Short: "Test MQTT publish and subscribe message",
+	Args:  cobra.ExactArgs(1),
+	Run:   runMqttSub,
+}
+
+var cmdMqttTest = &cobra.Command{
+	Use:   "test [subject]",
+	Short: "Test MQTT publish and subscribe message",
+	Args:  cobra.ExactArgs(1),
 	Run:   runMqttTest,
 }
 
 func init() {
+	cmdMqtt.AddCommand(cmdMqttPub)
+	cmdMqtt.AddCommand(cmdMqttSub)
 	cmdMqtt.AddCommand(cmdMqttTest)
 
 	cmdMqtt.PersistentFlags().String("mqtt.host", "127.0.0.1", "MQTT connection host address")
 	cmdMqtt.PersistentFlags().Int("mqtt.port", 1883, "MQTT connection port number")
 	cmdMqtt.PersistentFlags().String("mqtt.username", "", "MQTT connection username")
 	cmdMqtt.PersistentFlags().String("mqtt.password", "", "MQTT connection password")
+	cmdMqtt.PersistentFlags().String("mqtt.log", "ERROR", "MQTT log level of: DEBUG, ERROR")
 	cmdMqtt.PersistentFlags().String("mqtt.id", "my_mqtt_client", "MQTT client ID")
 	cmdMqtt.PersistentFlags().Duration("mqtt.alive", 60*time.Second, "MQTT keep alive time")
-	cmdMqtt.PersistentFlags().String("mqtt.topic", "test/msg", "MQTT publish/subscribe topic")
 	cmdMqtt.PersistentFlags().Int("mqtt.count", 5, "MQTT publish loop count")
 	cmdMqtt.PersistentFlags().Int("mqtt.qos", 0, "MQTT qos of 0, 1 or 2")
 	cmdMqtt.PersistentFlags().Bool("mqtt.retained", false, "MQTT message retained in broker")
@@ -48,14 +67,99 @@ func init() {
 	rootCmd.AddCommand(cmdMqtt)
 }
 
-func runMqttTest(cmd *cobra.Command, args []string) {
-	_ = args
+func runMqttPub(cmd *cobra.Command, args []string) {
 	config, err := configInit(cmd)
 	if err != nil {
 		log.Fatalf("configInit() error: %v", err)
 	}
 	// connect mqtt
-	mqtt.DEBUG = log.New(os.Stdout, "DEBUG ", 0)
+	client, err := mqttConnect(config)
+	if err != nil {
+		log.Fatalf("mqttConnect() error: %v", err)
+	}
+	defer func() {
+		client.Disconnect(250)
+	}()
+	// mqtt publish messages to subject
+	subject := args[0]
+	message := args[1]
+	token := client.Publish(subject, byte(config.Mqtt.Qos), config.Mqtt.Retained, message)
+	log.Printf("Published [%v] %q", subject, message)
+	token.Wait()
+}
+
+func runMqttSub(cmd *cobra.Command, args []string) {
+	config, err := configInit(cmd)
+	if err != nil {
+		log.Fatalf("configInit() error: %v", err)
+	}
+	// connect mqtt
+	client, err := mqttConnect(config)
+	if err != nil {
+		log.Fatalf("mqttConnect() error: %v", err)
+	}
+	defer func() {
+		client.Disconnect(250)
+	}()
+	// mqtt subscribe to subject
+	subject := args[0]
+	token := client.Subscribe(subject, byte(config.Mqtt.Qos), func(client mqtt.Client, msg mqtt.Message) {
+		log.Printf("[%v] %q", msg.Topic(), string(msg.Payload()))
+	})
+	if token.Wait() && token.Error() != nil {
+		log.Fatalf("client.Subscribe() error: %v", token.Error())
+	}
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-sigs
+		fmt.Println()
+		done <- true
+	}()
+	log.Println("Awaiting MQTT message...")
+	<-done
+	log.Println("Exit MQTT receive message.")
+}
+
+func runMqttTest(cmd *cobra.Command, args []string) {
+	config, err := configInit(cmd)
+	if err != nil {
+		log.Fatalf("configInit() error: %v", err)
+	}
+	// connect mqtt
+	client, err := mqttConnect(config)
+	if err != nil {
+		log.Fatalf("mqttConnect() error: %v", err)
+	}
+	// mqtt subscribe to topic
+	subject := args[0]
+	token := client.Subscribe(subject, byte(config.Mqtt.Qos), func(client mqtt.Client, msg mqtt.Message) {
+		log.Printf("Received from %q: %v", msg.Topic(), string(msg.Payload()))
+	})
+	if token.Wait() && token.Error() != nil {
+		log.Fatalf("client.Subscribe() error: %v", token.Error())
+	}
+	// mqtt publish messages to topic
+	for i := 0; i < config.Mqtt.Count; i++ {
+		log.Printf("publish msg: %v", i)
+		message := fmt.Sprintf("MQTT message #%d", i)
+		token := client.Publish(subject, byte(config.Mqtt.Qos), config.Mqtt.Retained, message)
+		log.Printf("publish msg: %v", message)
+		token.Wait()
+		time.Sleep(config.Mqtt.Interval)
+	}
+	// disconnect
+	client.Disconnect(250)
+	time.Sleep(1 * time.Second)
+}
+
+func mqttConnect(config *Configuration) (mqtt.Client, error) {
+	if config.Mqtt.Log == "DEBUG" {
+		mqtt.DEBUG = log.New(os.Stdout, "DEBUG ", 0)
+	} else {
+		mqtt.DEBUG = log.New(ioutil.Discard, "", 0)
+	}
 	mqtt.ERROR = log.New(os.Stdout, "ERROR ", 0)
 	opts := mqtt.NewClientOptions()
 	u, _ := url.Parse("")
@@ -72,39 +176,19 @@ func runMqttTest(cmd *cobra.Command, args []string) {
 	client := mqtt.NewClient(opts)
 	token := client.Connect()
 	if token.Wait() && token.Error() != nil {
-		log.Fatalf("client.Connect() error: %v", token.Error())
+		return nil, fmt.Errorf("client.Connect(): %w", token.Error())
 	}
-	// mqtt subscribe to topic
-	token = client.Subscribe(config.Mqtt.Topic, byte(config.Mqtt.Qos), receiveHandler)
-	if token.Wait() && token.Error() != nil {
-		log.Fatalf("client.Subscribe() error: %v", token.Error())
-	}
-	// mqtt publish messages to topic
-	for i := 0; i < config.Mqtt.Count; i++ {
-		log.Printf("publish msg: %v", i)
-		message := fmt.Sprintf("MQTT message #%d", i)
-		token := client.Publish(config.Mqtt.Topic, byte(config.Mqtt.Qos), config.Mqtt.Retained, message)
-		log.Printf("publish msg: %v", message)
-		token.Wait()
-		time.Sleep(config.Mqtt.Interval)
-	}
-	// disconnect
-	client.Disconnect(250)
-	time.Sleep(1 * time.Second)
+	return client, nil
 }
 
 var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	log.Printf("Received message: %s from topic: %s", msg.Payload(), msg.Topic())
+	log.Printf("Published MQTT message %q to %q", msg.Payload(), msg.Topic())
 }
 
 var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
-	log.Printf("Connected")
+	log.Printf("MQTT connected")
 }
 
 var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
-	log.Printf("Connect lost: %v", err)
-}
-
-var receiveHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	log.Printf("Received from %q: %v", msg.Topic(), string(msg.Payload()))
+	log.Printf("MQTT connect lost: %v", err)
 }
