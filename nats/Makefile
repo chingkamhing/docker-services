@@ -3,13 +3,17 @@ help:
 	@echo "Usage:"
 	@echo "    run                	 Run the program"
 	@echo "    build                 Build the program"
+	@echo "    test                  Perform go test"
+	@echo "    benchmark             Perform go benchmark test"
 	@echo "    config                Validate and view the compose file"
-	@echo "    docker-up             docker-compose deploy for local development"
+	@echo "    docker-up             docker-compose deploy for local development; deploy MODE of: single (default), cluster"
 	@echo "    docker-down           docker-compose remove"
 	@echo "    status                Print nats status"
 
 # nats deploy mode: single, cluster
 MODE ?= single
+# output binary file name
+output_name = broker
 
 # Run the program
 .PHONY: run
@@ -19,7 +23,18 @@ run:
 # Build the program
 .PHONY: build
 build:
-	go build -o broker *.go
+	go build -o $(output_name) *.go
+
+# Perform go test
+.PHONY: test
+test:
+	go test -v ./auth
+
+# Perform go benchmark test
+.PHONY: benchmark
+benchmark:
+	go test -bench=_MqttPublish ./cmd
+	go test -bench=_NatsPublish ./cmd
 
 # validate and view the compose file
 .PHONY: config
