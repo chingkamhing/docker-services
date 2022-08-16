@@ -21,7 +21,26 @@ var mqttConfig = &Configuration{
 	},
 }
 
-func Benchmark_MqttPublish(b *testing.B) {
+func Benchmark_MqttQos0Publish(b *testing.B) {
+	mqttConfig.Mqtt.Qos = 0
+	// connect mqtt
+	client, err := mqttConnect(mqttConfig)
+	if err != nil {
+		log.Fatalf("mqttConnect() error: %v", err)
+	}
+	defer func() {
+		client.Disconnect(1000)
+	}()
+	// mqtt publish messages to subject
+	const subject = "test/mqtt"
+	const message = "MQTT test message."
+	for n := 0; n < b.N; n++ {
+		client.Publish(subject, byte(mqttConfig.Mqtt.Qos), mqttConfig.Mqtt.Retained, message)
+	}
+}
+
+func Benchmark_MqttQos1Publish(b *testing.B) {
+	mqttConfig.Mqtt.Qos = 1
 	// connect mqtt
 	client, err := mqttConnect(mqttConfig)
 	if err != nil {

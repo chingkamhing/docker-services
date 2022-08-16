@@ -33,7 +33,8 @@ test:
 # Perform go benchmark test
 .PHONY: benchmark
 benchmark:
-	go test -bench=_MqttPublish ./cmd
+	go test -bench=_MqttQos0Publish ./cmd
+	go test -bench=_MqttQos1Publish ./cmd
 	go test -bench=_NatsPublish ./cmd
 
 # validate and view the compose file
