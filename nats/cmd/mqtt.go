@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"net/url"
@@ -159,7 +159,7 @@ func mqttConnect(config *Configuration) (mqtt.Client, error) {
 	if config.Mqtt.Log == "DEBUG" {
 		mqtt.DEBUG = log.New(os.Stdout, "DEBUG ", 0)
 	} else {
-		mqtt.DEBUG = log.New(ioutil.Discard, "", 0)
+		mqtt.DEBUG = log.New(io.Discard, "", 0)
 	}
 	mqtt.ERROR = log.New(os.Stdout, "ERROR ", 0)
 	opts := mqtt.NewClientOptions()
