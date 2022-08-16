@@ -19,7 +19,7 @@ import (
 
 var cmdMqtt = &cobra.Command{
 	Use:   "mqtt",
-	Short: "iTMS mongodb related sub-commands",
+	Short: "MQTT related sub-commands",
 	Run: func(cmd *cobra.Command, args []string) {
 		_ = args
 		// default command: print usage
@@ -29,14 +29,14 @@ var cmdMqtt = &cobra.Command{
 
 var cmdMqttPub = &cobra.Command{
 	Use:   "pub [subject] [message]",
-	Short: "Test MQTT publish and subscribe message",
+	Short: "MQTT publish message",
 	Args:  cobra.ExactArgs(2),
 	Run:   runMqttPub,
 }
 
 var cmdMqttSub = &cobra.Command{
 	Use:   "sub [subject]",
-	Short: "Test MQTT publish and subscribe message",
+	Short: "MQTT subscribe message",
 	Args:  cobra.ExactArgs(1),
 	Run:   runMqttSub,
 }
