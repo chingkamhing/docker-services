@@ -16,6 +16,7 @@ var config Configuration
 type Configuration struct {
 	Nats Nats
 	Mqtt Mqtt
+	Tls  Tls
 }
 
 // Nats define all nats settings structure
@@ -31,7 +32,7 @@ type Nats struct {
 	Topics        string        `mapstructure:"topics"`         // comma-seperated NATS stream topics
 }
 
-// Mqtt holds gRPC server info
+// Mqtt holds mqtt settings
 type Mqtt struct {
 	Host      string        `mapstructure:"host"`     // MQTT host address
 	Port      int           `mapstructure:"port"`     // MQTT port number
@@ -44,6 +45,13 @@ type Mqtt struct {
 	Retained  bool          `mapstructure:"retained"`
 	Count     int           `mapstructure:"count"`
 	Interval  time.Duration `mapstructure:"interval"`
+}
+
+// Tls holds tls cert file settings
+type Tls struct {
+	CaFilename   string `mapstructure:"ca_filename"`   // NATS connection CA filename
+	CertFilename string `mapstructure:"cert_filename"` // NATS connection client cert filename
+	KeyFilename  string `mapstructure:"key_filename"`  // NATS connection client key filename
 }
 
 // configInit load config setting from file name stored in flag "config"

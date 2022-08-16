@@ -29,6 +29,9 @@ func init() {
 	rootCmd.PersistentFlags().Duration("nats.retry_interval", 3*time.Second, "NATS connection retry interval")
 	rootCmd.PersistentFlags().String("nats.stream", "my-test-stream", "NATS stream name")
 	rootCmd.PersistentFlags().String("nats.topics", "my-test.>", "comma-seperated NATS stream topics")
+	rootCmd.PersistentFlags().String("tls.ca_filename", "", "TLS CA filename")
+	rootCmd.PersistentFlags().String("tls.cert_filename", "", "TLS cert filename")
+	rootCmd.PersistentFlags().String("tls.key_filename", "", "TLS key filename")
 	rootCmd.InitDefaultVersionFlag()
 }
 

@@ -19,6 +19,11 @@ var natsConfig = &Configuration{
 		Stream:        "my-test-stream",
 		Topics:        "my-test.>",
 	},
+	Tls: Tls{
+		CaFilename:   "../cert/my-domain.com/ca.crt",
+		CertFilename: "../cert/my-domain.com/client.crt",
+		KeyFilename:  "../cert/my-domain.com/client.key",
+	},
 }
 
 func Benchmark_NatsPublish(b *testing.B) {

@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io"
 	"log"
@@ -161,6 +163,7 @@ func runMqttTest(cmd *cobra.Command, args []string) {
 }
 
 func mqttConnect(config *Configuration) (mqtt.Client, error) {
+	isTls := config.Tls.CaFilename != "" && config.Tls.CertFilename != "" && config.Tls.KeyFilename != ""
 	if config.Mqtt.Log == "DEBUG" {
 		mqtt.DEBUG = log.New(os.Stdout, "DEBUG ", 0)
 	} else {
@@ -169,7 +172,11 @@ func mqttConnect(config *Configuration) (mqtt.Client, error) {
 	mqtt.ERROR = log.New(os.Stdout, "ERROR ", 0)
 	opts := mqtt.NewClientOptions()
 	u, _ := url.Parse("")
-	u.Scheme = "tcp"
+	if isTls {
+		u.Scheme = "tcps"
+	} else {
+		u.Scheme = "tcp"
+	}
 	u.Host = net.JoinHostPort(config.Mqtt.Host, strconv.Itoa(config.Mqtt.Port))
 	opts.AddBroker(u.String())
 	opts.SetClientID(config.Mqtt.ClientID)
@@ -177,6 +184,13 @@ func mqttConnect(config *Configuration) (mqtt.Client, error) {
 	opts.SetPassword(config.Mqtt.Password)
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.SetKeepAlive(config.Mqtt.KeepAlive)
+	if isTls {
+		tlsConfig, err := loadTlsConfig(config.Tls.CaFilename, config.Tls.CertFilename, config.Tls.KeyFilename)
+		if err != nil {
+			return nil, fmt.Errorf("mqttConnect(): %w", err)
+		}
+		opts.SetTLSConfig(tlsConfig)
+	}
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
 	client := mqtt.NewClient(opts)
@@ -185,6 +199,26 @@ func mqttConnect(config *Configuration) (mqtt.Client, error) {
 		return nil, fmt.Errorf("client.Connect(): %w", token.Error())
 	}
 	return client, nil
+}
+
+// load tls cert files
+func loadTlsConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
+	ca, err := os.ReadFile(caFile)
+	if err != nil {
+		return nil, fmt.Errorf("os.ReadFile(): %w", err)
+	}
+	pool := x509.NewCertPool()
+	pool.AppendCertsFromPEM(ca)
+	tlsPair, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		return nil, fmt.Errorf("tls.LoadX509KeyPair(): %w", err)
+	}
+	tlsConfig := &tls.Config{
+		RootCAs:            pool,
+		Certificates:       []tls.Certificate{tlsPair},
+		InsecureSkipVerify: true,
+	}
+	return tlsConfig, nil
 }
 
 var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {

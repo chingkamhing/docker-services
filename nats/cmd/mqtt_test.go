@@ -19,6 +19,11 @@ var mqttConfig = &Configuration{
 		Qos:       0,
 		Retained:  false,
 	},
+	Tls: Tls{
+		CaFilename:   "../cert/my-domain.com/ca.crt",
+		CertFilename: "../cert/my-domain.com/client.crt",
+		KeyFilename:  "../cert/my-domain.com/client.key",
+	},
 }
 
 func Benchmark_MqttQos0Publish(b *testing.B) {
