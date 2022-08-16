@@ -20,7 +20,7 @@ import (
 //
 
 var cmdSubscribe = &cobra.Command{
-	Use:   "subscribe",
+	Use:   "sub",
 	Short: "NATS subscribe related sub-commands",
 	Run: func(cmd *cobra.Command, args []string) {
 		_ = args
