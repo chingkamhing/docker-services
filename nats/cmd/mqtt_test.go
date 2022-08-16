@@ -32,8 +32,8 @@ func Benchmark_MqttQos0Publish(b *testing.B) {
 		client.Disconnect(1000)
 	}()
 	// mqtt publish messages to subject
-	const subject = "test/mqtt"
-	const message = "MQTT test message."
+	const subject = "my-test/mqtt"
+	const message = "MQTT test 0 message."
 	for n := 0; n < b.N; n++ {
 		client.Publish(subject, byte(mqttConfig.Mqtt.Qos), mqttConfig.Mqtt.Retained, message)
 	}
@@ -50,8 +50,8 @@ func Benchmark_MqttQos1Publish(b *testing.B) {
 		client.Disconnect(1000)
 	}()
 	// mqtt publish messages to subject
-	const subject = "test/mqtt"
-	const message = "MQTT test message."
+	const subject = "my-test/mqtt"
+	const message = "MQTT test 1 message."
 	for n := 0; n < b.N; n++ {
 		client.Publish(subject, byte(mqttConfig.Mqtt.Qos), mqttConfig.Mqtt.Retained, message)
 	}

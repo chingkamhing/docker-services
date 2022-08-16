@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/nats-io/nats.go"
 )
 
 var natsConfig = &Configuration{
@@ -14,22 +16,43 @@ var natsConfig = &Configuration{
 		Password:      os.Getenv("MY_NATS_PASSWORD"),
 		Retry:         3,
 		RetryInterval: 2 * time.Second,
+		Stream:        "my-test-stream",
+		Topics:        "my-test.>",
 	},
 }
 
 func Benchmark_NatsPublish(b *testing.B) {
 	// connect NATS
-	natsConn, err := natsConnect(natsConfig)
+	nc, err := natsConnect(natsConfig)
 	if err != nil {
 		log.Fatalf("natsConnect() error: %v", err)
 	}
 	defer func() {
-		natsConn.Drain()
+		nc.Drain()
 	}()
 	// nats publish messages to subject
-	const subject = "test.nats"
-	const message = "NATS test message."
+	const subject = "my-test.nats"
+	const message = "NATS test 0 message."
 	for n := 0; n < b.N; n++ {
-		natsConn.Publish(subject, []byte(message))
+		nc.Publish(subject, []byte(message))
+	}
+}
+
+func Benchmark_JetstreamPublish(b *testing.B) {
+	// connect NATS
+	js, nc, err := jetstreamConnect(natsConfig)
+	if err != nil {
+		log.Fatalf("jetstreamConnect() error: %v", err)
+	}
+	defer func() {
+		nc.Drain()
+	}()
+	// nats publish messages to subject
+	const subject = "my-test.jets"
+	const message = "JetS test 0 message."
+	msg := nats.NewMsg(subject)
+	for n := 0; n < b.N; n++ {
+		msg.Data = []byte(message)
+		js.PublishMsg(msg)
 	}
 }

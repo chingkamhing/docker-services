@@ -34,8 +34,12 @@ test:
 .PHONY: benchmark
 benchmark:
 	go test -bench=_MqttQos0Publish ./cmd
+	sleep 5s
 	go test -bench=_MqttQos1Publish ./cmd
+	sleep 5s
 	go test -bench=_NatsPublish ./cmd
+	sleep 5s
+	go test -bench=_JetstreamPublish ./cmd
 
 # validate and view the compose file
 .PHONY: config
