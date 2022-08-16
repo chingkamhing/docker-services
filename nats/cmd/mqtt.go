@@ -109,6 +109,7 @@ func runMqttSub(cmd *cobra.Command, args []string) {
 	if token.Wait() && token.Error() != nil {
 		log.Fatalf("client.Subscribe() error: %v", token.Error())
 	}
+	// wait receiving till break
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
