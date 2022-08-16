@@ -27,6 +27,8 @@ type Nats struct {
 	Password      string        `mapstructure:"password"`       // NATS connection password
 	Retry         int           `mapstructure:"retry"`          // NATS connection retry max count
 	RetryInterval time.Duration `mapstructure:"retry_interval"` // NATS connection retry interval
+	Stream        string        `mapstructure:"stream"`         // NATS stream name
+	Topics        string        `mapstructure:"topics"`         // comma-seperated NATS stream topics
 }
 
 // Mqtt holds gRPC server info

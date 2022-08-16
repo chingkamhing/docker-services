@@ -27,6 +27,8 @@ func init() {
 	rootCmd.PersistentFlags().String("nats.password", "", "NATS client connection password")
 	rootCmd.PersistentFlags().Int("nats.retry", 10, "NATS connection retry max count")
 	rootCmd.PersistentFlags().Duration("nats.retry_interval", 3*time.Second, "NATS connection retry interval")
+	rootCmd.PersistentFlags().String("nats.stream", "my-test-stream", "NATS stream name")
+	rootCmd.PersistentFlags().String("nats.topics", "my-test.>", "comma-seperated NATS stream topics")
 	rootCmd.InitDefaultVersionFlag()
 }
 

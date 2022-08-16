@@ -7,6 +7,10 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
 	"time"
 
 	"github.com/nats-io/nats.go"
@@ -20,7 +24,7 @@ import (
 //
 
 var cmdJetStream = &cobra.Command{
-	Use:   "jet",
+	Use:   "jets",
 	Short: "NATS jetstream related sub-commands",
 	Run: func(cmd *cobra.Command, args []string) {
 		_ = args
@@ -29,16 +33,30 @@ var cmdJetStream = &cobra.Command{
 	},
 }
 
+var cmdJetStreamPub = &cobra.Command{
+	Use:   "pub [subject] [message]",
+	Short: "NATS jetstream publish message",
+	Args:  cobra.ExactArgs(2),
+	Run:   runJetStreamPub,
+}
+
+var cmdJetStreamSub = &cobra.Command{
+	Use:   "sub [subject]",
+	Short: "NATS jetstream subscribe message",
+	Args:  cobra.ExactArgs(1),
+	Run:   runJetStreamSub,
+}
+
 var cmdJetStreamTestPull = &cobra.Command{
 	Use:   "test-pull",
-	Short: "Test NATS publish and subscribe pull-based message",
+	Short: "Test NATS jetstream publish and subscribe pull-based message",
 	Args:  cobra.ExactArgs(0),
 	Run:   runJetStreamTestPull,
 }
 
 var cmdJetStreamTestQueue = &cobra.Command{
 	Use:   "test-queue [stream] [subject]",
-	Short: "Test NATS publish and subscribe queue message",
+	Short: "Test NATS jetstream publish and subscribe queue message",
 	Args:  cobra.ExactArgs(2),
 	Run:   runJetStreamTestQueue,
 }
@@ -50,6 +68,9 @@ var interval time.Duration
 var duration time.Duration
 
 func init() {
+	cmdJetStream.AddCommand(cmdJetStreamPub)
+	cmdJetStreamSub.Flags().IntVar(&subIntervalCount, "interval", 1, "Subscribe print receive message interval count. Used to avoid excessive print message by skipping this count number.")
+	cmdJetStream.AddCommand(cmdJetStreamSub)
 	cmdJetStream.AddCommand(cmdJetStreamTestPull)
 	cmdJetStreamTestQueue.Flags().IntVar(&numPubsub, "pubsub", 2, "Number of pubsub subscriber")
 	cmdJetStreamTestQueue.Flags().IntVar(&numQueue, "queue", 2, "Number of queue subscriber")
@@ -58,6 +79,74 @@ func init() {
 	cmdJetStream.AddCommand(cmdJetStreamTestQueue)
 
 	rootCmd.AddCommand(cmdJetStream)
+}
+
+func runJetStreamPub(cmd *cobra.Command, args []string) {
+	config, err := configInit(cmd)
+	if err != nil {
+		log.Fatalf("configInit() error: %v", err)
+	}
+	// connect jetstream
+	js, nc, err := jetstreamConnect(config)
+	if err != nil {
+		log.Fatalf("jetstreamConnect() error: %v", err)
+	}
+	defer func() {
+		nc.Drain()
+	}()
+	// mqtt publish messages to subject
+	subject := args[0]
+	message := args[1]
+	msg := nats.NewMsg(subject)
+	msg.Data = []byte(message)
+	_, err = js.PublishMsg(msg)
+	if err != nil {
+		log.Fatalf("js.PublishMsg() error: %v", err)
+	}
+}
+
+func runJetStreamSub(cmd *cobra.Command, args []string) {
+	config, err := configInit(cmd)
+	if err != nil {
+		log.Fatalf("configInit() error: %v", err)
+	}
+	// connect jetstream
+	js, nc, err := jetstreamConnect(config)
+	if err != nil {
+		log.Fatalf("jetstreamConnect() error: %v", err)
+	}
+	defer func() {
+		nc.Drain()
+	}()
+	// jetstream subscribe to subject
+	subject := args[0]
+	count := 0
+	opts := []nats.SubOpt{
+		nats.BindStream(config.Nats.Stream),
+		nats.DeliverLast(),
+		nats.AckNone(),
+	}
+	_, err = js.Subscribe(subject, func(msg *nats.Msg) {
+		if count%subIntervalCount == 0 {
+			log.Printf("[%v] %q", msg.Subject, string(msg.Data))
+		}
+		count++
+	}, opts...)
+	if err != nil {
+		log.Fatalf("js.Subscribe() error: %v", err)
+	}
+	// wait receiving till break
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-sigs
+		fmt.Println()
+		done <- true
+	}()
+	log.Println("Awaiting NATS jetstream message...")
+	<-done
+	log.Println("Exit NATS receive message.")
 }
 
 // TestMessage is a message that can help test timings on jetstream
@@ -380,4 +469,39 @@ func callbackQueue(index int) func(m *nats.Msg) {
 	return func(m *nats.Msg) {
 		log.Printf("Queue %d: %s", index, m.Data)
 	}
+}
+
+func jetstreamConnect(config *Configuration) (nats.JetStreamContext, *nats.Conn, error) {
+	// connect to NATS
+	nc, err := natsConnect(config)
+	if err != nil {
+		return nil, nil, fmt.Errorf("natsConnect(): %w", err)
+	}
+	// get jetstream context
+	js, err := nc.JetStream()
+	if err != nil {
+		return nil, nil, fmt.Errorf("JetStream(): %w", err)
+	}
+	// create nats stream
+	cfg := &nats.StreamConfig{
+		Name:        config.Nats.Stream,
+		Description: fmt.Sprintf("My NATS test stream: %q", config.Nats.Stream),
+		Subjects:    strings.Split(config.Nats.Topics, ","),
+		Retention:   nats.LimitsPolicy,
+		Discard:     nats.DiscardOld,
+		Duplicates:  2 * time.Minute,
+		MaxAge:      24 * time.Hour,
+		Replicas:    1,
+		Storage:     nats.FileStorage,
+	}
+	_, err = js.AddStream(cfg)
+	switch {
+	case err == nil:
+		log.Printf("broker added stream: name %q topics: %q", config.Nats.Stream, config.Nats.Topics)
+	case errors.Is(err, nats.ErrStreamNameAlreadyInUse):
+		log.Printf("broker stream %v already exist", config.Nats.Stream)
+	default:
+		return nil, nil, fmt.Errorf("broker CreateStream: %w", err)
+	}
+	return js, nc, nil
 }
