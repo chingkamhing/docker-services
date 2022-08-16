@@ -34,6 +34,6 @@ func Benchmark_MqttPublish(b *testing.B) {
 	const subject = "test/mqtt"
 	const message = "MQTT test message."
 	for n := 0; n < b.N; n++ {
-		client.Publish(subject, byte(config.Mqtt.Qos), config.Mqtt.Retained, message)
+		client.Publish(subject, byte(mqttConfig.Mqtt.Qos), mqttConfig.Mqtt.Retained, message)
 	}
 }
