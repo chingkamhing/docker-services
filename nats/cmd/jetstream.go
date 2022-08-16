@@ -57,7 +57,6 @@ func init() {
 	cmdJetStreamTestQueue.Flags().DurationVar(&duration, "duration", 3*time.Second, "Publish duration")
 	cmdJetStream.AddCommand(cmdJetStreamTestQueue)
 
-	cmdJetStream.Flags().IntVar(&subIntervalCount, "interval", 1, "JetStream print receive message interval count. Used to avoid excessive print message by skipping this count number.")
 	rootCmd.AddCommand(cmdJetStream)
 }
 
