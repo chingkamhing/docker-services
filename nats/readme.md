@@ -51,8 +51,8 @@
 ### Server Configuration Authentication/Authorization
 
 * route authentication
-    + change NATS_ROUTE_USERNAME and NATS_ROUTE_PASSWORD accordingly in file ".env"
-    + --user ${NATS_ROUTE_USERNAME} --pass ${NATS_ROUTE_PASSWORD}
+    + change MY_NATS_ROUTE_USERNAME and MY_NATS_ROUTE_PASSWORD accordingly in file ".env"
+    + --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD}
 * configure user(s)
     + simply add "authorization: { ... }" block in config file
 * example usage:
