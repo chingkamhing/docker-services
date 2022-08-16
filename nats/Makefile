@@ -5,6 +5,7 @@ help:
 	@echo "    build                 Build the program"
 	@echo "    test                  Perform go test"
 	@echo "    benchmark             Perform go benchmark test"
+	@echo "    nkey                  Generate NATS nkey user and seed"
 	@echo "    config                Validate and view the compose file"
 	@echo "    docker-up             docker-compose deploy for local development; deploy MODE of: single (default), cluster"
 	@echo "    docker-down           docker-compose remove"
@@ -40,6 +41,11 @@ benchmark:
 	go test -bench=_NatsPublish ./cmd
 	sleep 5s
 	go test -bench=_JetstreamPublish ./cmd
+
+# Generate NATS nkey user and seed
+.PHONY: nkey
+nkey:
+	nk --gen user --pubout
 
 # validate and view the compose file
 .PHONY: config
