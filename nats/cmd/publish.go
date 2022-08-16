@@ -8,7 +8,7 @@ import (
 
 var cmdPublish = &cobra.Command{
 	Use:   "pub [subject] [message]",
-	Short: "Publish NATS message",
+	Short: "Publish core NATS message",
 	Args:  cobra.ExactArgs(2),
 	Run:   runPublish,
 }
