@@ -4,8 +4,8 @@
 #
 
 URL="localhost:4222"
-NATS_USERNAME=$NATS_USERNAME
-NATS_PASSWORD=$NATS_PASSWORD
+NATS_USERNAME=$MY_NATS_USERNAME
+NATS_PASSWORD=$MY_NATS_PASSWORD
 NUM_ARGS=2
 OPTS=""
 DEBUG=""
@@ -69,11 +69,11 @@ fi
 if [ "$URL" != "" ]; then
 	OPTS="$OPTS --server $URL"
 fi
-if [ "$NATS_USERNAME" != "" ]; then
-	OPTS="$OPTS --user $NATS_USERNAME"
+if [ "$MY_NATS_USERNAME" != "" ]; then
+	OPTS="$OPTS --user $MY_NATS_USERNAME"
 fi
-if [ "$NATS_PASSWORD" != "" ]; then
-	OPTS="$OPTS --password $NATS_PASSWORD"
+if [ "$MY_NATS_PASSWORD" != "" ]; then
+	OPTS="$OPTS --password $MY_NATS_PASSWORD"
 fi
 
 STREAM_NAME=$1

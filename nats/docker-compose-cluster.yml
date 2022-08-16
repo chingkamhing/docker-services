@@ -11,15 +11,15 @@ x-env:
 services:
   nats1:
     <<: *nats
-    command: "--name ${NATS_SERVER_NAME}1 -c /etc/nats/nats-cluster.conf --user ${NATS_ROUTE_USERNAME} --pass ${NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}1 -c /etc/nats/nats-cluster.conf --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
     environment:
-      NATS_SERVER_NAME: "${NATS_SERVER_NAME}1"
-      NATS_ROUTE_USERNAME: "${NATS_ROUTE_USERNAME}"
-      NATS_ROUTE_PASSWORD: "${NATS_ROUTE_PASSWORD}"
-      NATS_USERNAME: "${NATS_USERNAME}"
-      NATS_PASSWORD: "${NATS_PASSWORD}"
-      MQTT_USERNAME: "${MQTT_USERNAME}"
-      MQTT_PASSWORD: "${MQTT_PASSWORD}"
+      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}1"
+      MY_NATS_ROUTE_USERNAME: "${MY_NATS_ROUTE_USERNAME}"
+      MY_NATS_ROUTE_PASSWORD: "${MY_NATS_ROUTE_PASSWORD}"
+      MY_NATS_USERNAME: "${MY_NATS_USERNAME}"
+      MY_NATS_PASSWORD: "${MY_NATS_PASSWORD}"
+      MY_MQTT_USERNAME: "${MY_MQTT_USERNAME}"
+      MY_MQTT_PASSWORD: "${MY_MQTT_PASSWORD}"
     ports:
       # for clients
       - 4222:4222
@@ -35,15 +35,15 @@ services:
       - data1:/data/jetstream
   nats2:
     <<: *nats
-    command: "--name ${NATS_SERVER_NAME}2 -c /etc/nats/nats-cluster.conf --user ${NATS_ROUTE_USERNAME} --pass ${NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}2 -c /etc/nats/nats-cluster.conf --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
     environment:
-      NATS_SERVER_NAME: "${NATS_SERVER_NAME}2"
-      NATS_ROUTE_USERNAME: "${NATS_ROUTE_USERNAME}"
-      NATS_ROUTE_PASSWORD: "${NATS_ROUTE_PASSWORD}"
-      NATS_USERNAME: "${NATS_USERNAME}"
-      NATS_PASSWORD: "${NATS_PASSWORD}"
-      MQTT_USERNAME: "${MQTT_USERNAME}"
-      MQTT_PASSWORD: "${MQTT_PASSWORD}"
+      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}2"
+      MY_NATS_ROUTE_USERNAME: "${MY_NATS_ROUTE_USERNAME}"
+      MY_NATS_ROUTE_PASSWORD: "${MY_NATS_ROUTE_PASSWORD}"
+      MY_NATS_USERNAME: "${MY_NATS_USERNAME}"
+      MY_NATS_PASSWORD: "${MY_NATS_PASSWORD}"
+      MY_MQTT_USERNAME: "${MY_MQTT_USERNAME}"
+      MY_MQTT_PASSWORD: "${MY_MQTT_PASSWORD}"
     ports:
       # for clients
       - 4223:4222
@@ -59,15 +59,15 @@ services:
       - data2:/data/jetstream
   nats3:
     <<: *nats
-    command: "--name ${NATS_SERVER_NAME}3 -c /etc/nats/nats-cluster.conf --user ${NATS_ROUTE_USERNAME} --pass ${NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${NATS_ROUTE_USERNAME}:${NATS_ROUTE_PASSWORD}@nats2:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}3 -c /etc/nats/nats-cluster.conf --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222"
     environment:
-      NATS_SERVER_NAME: "${NATS_SERVER_NAME}3"
-      NATS_ROUTE_USERNAME: "${NATS_ROUTE_USERNAME}"
-      NATS_ROUTE_PASSWORD: "${NATS_ROUTE_PASSWORD}"
-      NATS_USERNAME: "${NATS_USERNAME}"
-      NATS_PASSWORD: "${NATS_PASSWORD}"
-      MQTT_USERNAME: "${MQTT_USERNAME}"
-      MQTT_PASSWORD: "${MQTT_PASSWORD}"
+      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}3"
+      MY_NATS_ROUTE_USERNAME: "${MY_NATS_ROUTE_USERNAME}"
+      MY_NATS_ROUTE_PASSWORD: "${MY_NATS_ROUTE_PASSWORD}"
+      MY_NATS_USERNAME: "${MY_NATS_USERNAME}"
+      MY_NATS_PASSWORD: "${MY_NATS_PASSWORD}"
+      MY_MQTT_USERNAME: "${MY_MQTT_USERNAME}"
+      MY_MQTT_PASSWORD: "${MY_MQTT_PASSWORD}"
     ports:
       # for clients
       - 4224:4222

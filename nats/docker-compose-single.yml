@@ -4,22 +4,22 @@ x-env:
   nats: &nats
     image: nats:2.8-alpine3.15
     environment:
-      NATS_SERVER_NAME: "${NATS_SERVER_NAME}"
-      NATS_ROUTE_USERNAME: "${NATS_ROUTE_USERNAME}"
-      NATS_ROUTE_PASSWORD: "${NATS_ROUTE_PASSWORD}"
-      NATS_NKEY_USER: "${NATS_NKEY_USER}"
-      NATS_NKEY_SEED: "${NATS_NKEY_SEED}"
-      NATS_USERNAME: "${NATS_USERNAME}"
-      NATS_PASSWORD: "${NATS_PASSWORD}"
-      MQTT_USERNAME: "${MQTT_USERNAME}"
-      MQTT_PASSWORD: "${MQTT_PASSWORD}"
+      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}"
+      MY_NATS_ROUTE_USERNAME: "${MY_NATS_ROUTE_USERNAME}"
+      MY_NATS_ROUTE_PASSWORD: "${MY_NATS_ROUTE_PASSWORD}"
+      MY_NATS_NKEY_USER: "${MY_NATS_NKEY_USER}"
+      MY_NATS_NKEY_SEED: "${MY_NATS_NKEY_SEED}"
+      MY_NATS_USERNAME: "${MY_NATS_USERNAME}"
+      MY_NATS_PASSWORD: "${MY_NATS_PASSWORD}"
+      MY_MQTT_USERNAME: "${MY_MQTT_USERNAME}"
+      MY_MQTT_PASSWORD: "${MY_MQTT_PASSWORD}"
     restart:
       unless-stopped
 
 services:
   nats:
     <<: *nats
-    command: "--name ${NATS_SERVER_NAME} -c /etc/nats/nats-single.conf -js -D"
+    command: "--name ${MY_NATS_SERVER_NAME} -c /etc/nats/nats-single.conf -js -D"
     ports:
       # for clients
       - 4222:4222
