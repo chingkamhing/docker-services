@@ -79,9 +79,10 @@ provision:
 		exit 1 ; \
 	fi
 
-# test ansible task
-.PHONY: test
-test:
+# Ansible provision docker swarm nodes - continue
+# - somehow, ansible keep stuck in "label-nodes : label docker node", need to resume from there manually to finish all the taaks
+.PHONY: provision-continue
+provision-continue:
 	@if [ "$$VM_USERNAME" != "" ] && [ "$$VM_PASSWORD" != "" ]; then \
 		ansible-playbook provision-swarm.yml --start-at-task="label docker node" ; \
 	else \
