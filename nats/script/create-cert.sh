@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Generate self cert for domain(s) and/or IP addresses. (Note: must have at least one domain name as self-signed cert cannot certificate IP address)
+# Generate self cert for domain(s), IP addresses and/or email address. (Note: must have at least one domain name as self-signed cert cannot certificate IP address)
 #
 # Knowledge base:
 # .pem stands for PEM, Privacy Enhanced Mail; it simply indicates a base64 encoding with header and footer lines. Mail traditionally only handles text, not binary which most cryptographic data is, so some kind of encoding is required to make the contents part of a mail message itself (rather than an encoded attachment). The contents of the PEM are detailed in the header and footer line - .pem itself doesn't specify a data type - just like .xml and .html do not specify the contents of a file, they just specify a specific encoding;
@@ -21,10 +21,10 @@
 
 # settings
 COUNTRY="HK"
-STATE="Kowloon"
-LOCATION="Kwai Chung, 63 WO YI HOP RD, 11F & 12F TOWER B REGENT CENTRE"
-ORGANIZATION="Tradelink PayTech Solutions Limited"
-ORGANIZATION_UNIT="PTS"
+STATE="My Home State"
+LOCATION="My Home Location"
+ORGANIZATION="My Home Organization"
+ORGANIZATION_UNIT="DEV"
 RSA_KEY_BITS=2048
 CA_DAYS=3660
 CERT_DAYS=3660
@@ -37,12 +37,12 @@ SCRIPT_NAME=${0##*/}
 Usage () {
     echo
     echo "Description:"
-    echo "Generate self cert for domain(s) and/or IP addresses. (Note: must have at least one domain name as self-signed cert cannot certificate IP address)"
+    echo "Generate self cert for domain(s), IP addresses and/or email address. (Note: must have at least one domain name as self-signed cert cannot certificate IP address)"
     echo "e.g."
     echo "  $SCRIPT_NAME localhost 127.0.0.1"
     echo "  $SCRIPT_NAME tess.hk-tess.com 192.168.223.64"
     echo
-    echo "Usage: $SCRIPT_NAME [domain / ip] ..."
+    echo "Usage: $SCRIPT_NAME [domain / ip / email] ..."
     echo "Options:"
     echo " -r  [bits]                   RSA key bits (e.g. 2048, 4096; default $RSA_KEY_BITS)"
     echo " -a  [days]                   CA valid days (default $CA_DAYS)"
@@ -54,7 +54,7 @@ Usage () {
     echo
 }
 
-# find the type of the SAN of: DNS, IP_ADDRESS, EMAIL
+# find the SAN type of: IP_ADDRESS, EMAIL, DNS
 FindSanType () {
     local input=$1
     if [[ $input =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
