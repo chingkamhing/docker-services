@@ -1,9 +1,9 @@
 ---
-- name: add-manager get docker init maanger
+- name: set init_manager
   set_fact:
     init_manager: "{{ groups['docker_init_manager'][0] }}"
 
-- name: add-manager get docker init maanger info
+- name: set init_manager ip and token
   set_fact:
     init_manager_ip: "{{ hostvars[init_manager]['ansible_default_ipv4']['address'] }}"
     init_manager_token: "{{ hostvars[init_manager]['manager_token']['stdout'] }}"
