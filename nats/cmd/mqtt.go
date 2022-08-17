@@ -125,7 +125,7 @@ func runMqttSub(cmd *cobra.Command, args []string) {
 		fmt.Println()
 		done <- true
 	}()
-	log.Println("Awaiting MQTT message...")
+	log.Printf("Awaiting MQTT message from subject %q...", subject)
 	<-done
 	log.Println("Exit MQTT receive message.")
 }

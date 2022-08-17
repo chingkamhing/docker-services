@@ -144,7 +144,7 @@ func runJetStreamSub(cmd *cobra.Command, args []string) {
 		fmt.Println()
 		done <- true
 	}()
-	log.Println("Awaiting NATS jetstream message...")
+	log.Printf("Awaiting NATS jetstream message from subject %q...", subject)
 	<-done
 	log.Println("Exit NATS receive message.")
 }

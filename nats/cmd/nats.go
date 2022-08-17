@@ -97,7 +97,7 @@ func runNatsSubscribe(cmd *cobra.Command, args []string) {
 		fmt.Println()
 		done <- true
 	}()
-	log.Println("Awaiting NATS core message...")
+	log.Printf("Awaiting NATS core message from subject %q...", subject)
 	<-done
 	log.Println("Exit NATS receive message.")
 }
