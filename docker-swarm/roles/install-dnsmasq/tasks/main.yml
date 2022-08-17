@@ -2,11 +2,9 @@
 - name: install dnsmasq
   become: true
   yum:
-    name: "{{ item }}"
+    name: ['dnsmasq']
     state: latest
     update_cache: yes
-  with_items:
-    - dnsmasq
 - name: copy dnsmasq.conf to dnsmasq server
   become: true
   copy:

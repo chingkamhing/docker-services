@@ -1,11 +1,9 @@
 ---
 - name: install docker dependencies
   yum:
-    name: "{{ item }}"
+    name: ['yum-utils']
     state: latest
     update_cache: yes
-  with_items:
-    - yum-utils
 
 - name: import docker-ce gpg key
   become: true
@@ -20,13 +18,9 @@
   become: true
   become_user: root
   yum:
-    name: "{{ item }}"
+    name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
     state: latest
     update_cache: yes
-  with_items:
-    - docker-ce
-    - docker-ce-cli
-    - containerd.io
 
 - name: firewall open docker swarm ports
   become: true

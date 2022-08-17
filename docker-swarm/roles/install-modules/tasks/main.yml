@@ -2,11 +2,9 @@
 - name: install epel-release
   become: true
   yum:
-    name: "{{ item }}"
+    name: ['epel-release']
     state: latest
     update_cache: yes
-  with_items:
-    - epel-release
 - name: upgrade all packages after installing epel-release
   become: true
   become_user: root
@@ -16,15 +14,6 @@
 - name: install packages
   become: true
   yum:
-    name: "{{ item }}"
+    name: ['openssh-server', 'net-tools', 'tree', 'jq', 'openssl', 'curl', 'python', 'python-pip']
     state: latest
     update_cache: yes
-  with_items:
-    - openssh-server
-    - net-tools
-    - tree
-    - jq
-    - openssl
-    - curl
-    - python
-    - python-pip
