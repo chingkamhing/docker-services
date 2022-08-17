@@ -203,12 +203,14 @@ func mqttConnect(config *Configuration) (mqtt.Client, error) {
 
 // load tls cert files
 func loadTlsConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
-	ca, err := os.ReadFile(caFile)
-	if err != nil {
-		return nil, fmt.Errorf("os.ReadFile(): %w", err)
-	}
 	pool := x509.NewCertPool()
-	pool.AppendCertsFromPEM(ca)
+	if caFile != "" {
+		ca, err := os.ReadFile(caFile)
+		if err != nil {
+			return nil, fmt.Errorf("os.ReadFile(): %w", err)
+		}
+		pool.AppendCertsFromPEM(ca)
+	}
 	tlsPair, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
 		return nil, fmt.Errorf("tls.LoadX509KeyPair(): %w", err)

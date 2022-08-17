@@ -104,7 +104,7 @@ func runNatsSubscribe(cmd *cobra.Command, args []string) {
 
 func natsConnect(config *Configuration) (*nats.Conn, error) {
 	opts := []nats.Option{}
-	// set nats connect options
+	// set nats authentication options
 	switch {
 	case config.Nats.NkeyUser != "" && config.Nats.NkeySeed != "":
 		opts = append(opts, nats.Nkey(config.Nats.NkeyUser, func(nounce []byte) ([]byte, error) {
@@ -118,8 +118,10 @@ func natsConnect(config *Configuration) (*nats.Conn, error) {
 		opts = append(opts, nats.UserInfo(config.Nats.Username, config.Nats.Password))
 	}
 	// set tls connect options
-	if config.Tls.CaFilename != "" && config.Tls.CertFilename != "" && config.Tls.KeyFilename != "" {
+	if config.Tls.CaFilename != "" {
 		opts = append(opts, nats.RootCAs(config.Tls.CaFilename))
+	}
+	if config.Tls.CertFilename != "" && config.Tls.KeyFilename != "" {
 		opts = append(opts, nats.ClientCert(config.Tls.CertFilename, config.Tls.KeyFilename))
 	}
 	// connect nats
