@@ -170,7 +170,7 @@ SUBJECT_CLIENT="/C=${COUNTRY}/ST=${STATE}/L=${LOCATION}/O=${ORGANIZATION}/OU=${O
 # This creates a new private key with a password for the CA (flag aes256 require AES256 password protect)
 $DEBUG openssl genrsa -out $CAKEY $RSA_KEY_BITS
 # Now we can create the root CA certificate using the SHA256 hash algorithm
-$DEBUG openssl req -new -x509 -sha256 -days $CA_DAYS -key $CAKEY -out $CACRT -subj "$SUBJECT_CA"
+$DEBUG openssl req -new -x509 -sha256 -days $CA_DAYS -addext keyUsage=critical,keyCertSign -key $CAKEY -out $CACRT -subj "$SUBJECT_CA"
 
 # use the ca to create server cert and private key
 serial=0x$(openssl rand -hex 16)
