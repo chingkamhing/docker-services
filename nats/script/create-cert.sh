@@ -132,6 +132,7 @@ CONFIG=$(cat <<EOF
 [req]
 distinguished_name=req
 [san]
+extendedKeyUsage=serverAuth,clientAuth
 subjectAltName=$SAN_NAMES
 EOF
 )
