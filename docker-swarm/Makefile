@@ -2,6 +2,7 @@
 help:
 	@echo "Usage:"
 	@echo "VBox:"
+	@echo "    install     	 Install ubuntu packages for this project"
 	@echo "    create-vm     Create VirtualBox VMs base on inventory.ini (note: will take 10~15 minutes to install OS)"
 	@echo "    status        VirtualBox show all VMs' status"
 	@echo "    on            VirtualBox power on all VMs"
@@ -15,6 +16,11 @@ help:
 #
 # VirtualBox
 #
+
+# Install ubuntu packages for this project
+.PHONY: install
+install:
+	sudo apt update -y && sudo apt install -y ansible sshpass
 
 # Create VirtualBox VMs base on inventory.ini (note: will take 10~15 minutes to install OS)
 .PHONY: create-vm
