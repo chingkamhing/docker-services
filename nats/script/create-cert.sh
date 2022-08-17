@@ -40,7 +40,7 @@ Usage () {
     echo "Generate self cert for domain(s), IP addresses and/or email address. (Note: must have at least one domain name as self-signed cert cannot certificate IP address)"
     echo "e.g."
     echo "  $SCRIPT_NAME localhost 127.0.0.1"
-    echo "  $SCRIPT_NAME tess.hk-tess.com 192.168.223.64"
+    echo "  $SCRIPT_NAME my-domain.com localhost 192.168.223.64 127.0.0.1 email@my-domain.com"
     echo
     echo "Usage: $SCRIPT_NAME [domain / ip / email] ..."
     echo "Options:"
