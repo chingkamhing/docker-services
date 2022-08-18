@@ -1,0 +1,120 @@
+#
+# NATS leaf deployment:
+# - there are 2 nats groups:
+#   - internal group (i.e. main cluster nodes) mean to be internal nats core/jetstream pub/sub communication cluster with TLS disabled
+#   - external group (i.e. leaf node) mean to be external core-nats/mqtt pub/sub communication node with TLS enabled
+# - in production, there should be a gateway that route external NATS/MQTT/websocket traffic to the leaf node
+#
+
+version: "3.8"
+
+x-env:
+  nats: &nats
+    image: nats:2.8-alpine3.15
+    networks:
+      - backend
+    restart:
+      unless-stopped
+  environment-maincluster: &environment-maincluster
+    MY_NATS_ROUTE_USERNAME: "${MY_NATS_ROUTE_USERNAME}"
+    MY_NATS_ROUTE_PASSWORD: "${MY_NATS_ROUTE_PASSWORD}"
+    MY_NATS_NKEY_USER: "${MY_NATS_NKEY_USER}"
+    MY_NATS_NKEY_SEED: "${MY_NATS_NKEY_SEED}"
+    MY_NATS_USERNAME: "${MY_NATS_USERNAME}"
+    MY_NATS_PASSWORD: "${MY_NATS_PASSWORD}"
+    MY_LEAFNODE_USERNAME: "${MY_LEAFNODE_USERNAME}"
+    MY_LEAFNODE_PASSWORD: "${MY_LEAFNODE_PASSWORD}"
+  environment-leaf: &environment-leaf
+    URL_NATS1: "nats://${MY_LEAFNODE_USERNAME}:${MY_LEAFNODE_PASSWORD}@nats1"
+    URL_NATS2: "nats://${MY_LEAFNODE_USERNAME}:${MY_LEAFNODE_PASSWORD}@nats2"
+    URL_NATS3: "nats://${MY_LEAFNODE_USERNAME}:${MY_LEAFNODE_PASSWORD}@nats3"
+    MY_NATS_ROUTE_USERNAME: "${MY_NATS_ROUTE_USERNAME}"
+    MY_NATS_ROUTE_PASSWORD: "${MY_NATS_ROUTE_PASSWORD}"
+    MY_LEAFNODE_USERNAME: "${MY_LEAFNODE_USERNAME}"
+    MY_LEAFNODE_PASSWORD: "${MY_LEAFNODE_PASSWORD}"
+    MY_LEAF_USERNAME: "${MY_LEAF_USERNAME}"
+    MY_LEAF_PASSWORD: "${MY_LEAF_PASSWORD}"
+    MY_MQTT_USERNAME: "${MY_MQTT_USERNAME}"
+    MY_MQTT_PASSWORD: "${MY_MQTT_PASSWORD}"
+    MY_WEBSOCKET_USERNAME: "${MY_WEBSOCKET_USERNAME}"
+    MY_WEBSOCKET_PASSWORD: "${MY_WEBSOCKET_PASSWORD}"
+
+services:
+  nats1:
+    <<: *nats
+    command: "--name ${MY_NATS_SERVER_NAME}1 -c /etc/nats/nats-maincluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
+    environment:
+      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}1"
+      <<: *environment-maincluster
+    ports:
+      # for clients
+      - 4223:4222
+      # an HTTP management port for information reporting
+      - 8223:8222
+    volumes:
+      - $PWD/nats-maincluster.conf:/etc/nats/nats-maincluster.conf:ro
+      - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
+      - data1:/data/jetstream
+  nats2:
+    <<: *nats
+    command: "--name ${MY_NATS_SERVER_NAME}2 -c /etc/nats/nats-maincluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
+    environment:
+      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}2"
+      <<: *environment-maincluster
+    ports:
+      # for clients
+      - 4224:4222
+      # an HTTP management port for information reporting
+      - 8224:8222
+    volumes:
+      - $PWD/nats-maincluster.conf:/etc/nats/nats-maincluster.conf:ro
+      - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
+      - data2:/data/jetstream
+  nats3:
+    <<: *nats
+    command: "--name ${MY_NATS_SERVER_NAME}3 -c /etc/nats/nats-maincluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222"
+    environment:
+      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}3"
+      <<: *environment-maincluster
+    ports:
+      # for clients
+      - 4225:4222
+      # an HTTP management port for information reporting
+      - 8225:8222
+    volumes:
+      - $PWD/nats-maincluster.conf:/etc/nats/nats-maincluster.conf:ro
+      - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
+      - data3:/data/jetstream
+  natsleaf:
+    <<: *nats
+    command: "--name ${MY_NATS_SERVER_NAME}Leaf -c /etc/nats/nats-leaf.conf -js -D"
+    environment:
+      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}Leaf"
+      <<: *environment-leaf
+    ports:
+      # for clients
+      - 4222:4222
+      # an HTTP management port for information reporting
+      - 8222:8222
+      # mqtt
+      - 8883:8883
+    volumes:
+      - $PWD/nats-leaf.conf:/etc/nats/nats-leaf.conf:ro
+      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/nats/ca.crt:ro
+      - $PWD/cert/my-domain.com/server.crt:/etc/nats/nats/server.crt:ro
+      - $PWD/cert/my-domain.com/server.key:/etc/nats/nats/server.key:ro
+      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/mqtt/ca.crt:ro
+      - $PWD/cert/my-domain.com/server.crt:/etc/nats/mqtt/server.crt:ro
+      - $PWD/cert/my-domain.com/server.key:/etc/nats/mqtt/server.key:ro
+      - dataleaf:/data/jetstream
+
+# networks
+networks:
+  backend:
+    driver: bridge
+
+volumes:  
+  data1:
+  data2:
+  data3:
+  dataleaf:
