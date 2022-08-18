@@ -52,13 +52,13 @@ func runNatsPublish(cmd *cobra.Command, args []string) {
 	subject := args[0]
 	message := args[1]
 	// connect to NATS
-	natsConn, err := natsConnect(config)
+	nc, err := natsConnect(config)
 	if err != nil {
 		log.Fatalf("Connect() error: %v", err)
 	}
-	defer natsConn.Close()
+	defer nc.Close()
 	// publish message
-	err = natsConn.Publish(subject, []byte(message))
+	err = nc.Publish(subject, []byte(message))
 	if err != nil {
 		log.Fatalf("Publish() error: %v", err)
 	}
@@ -72,14 +72,14 @@ func runNatsSubscribe(cmd *cobra.Command, args []string) {
 	}
 	subject := args[0]
 	// connect to NATS
-	natsConn, err := natsConnect(config)
+	nc, err := natsConnect(config)
 	if err != nil {
 		log.Fatalf("Connect() error: %v", err)
 	}
-	defer natsConn.Close()
+	defer nc.Close()
 	// publish message
 	count := 0
-	_, err = natsConn.Subscribe(subject, func(msg *nats.Msg) {
+	_, err = nc.Subscribe(subject, func(msg *nats.Msg) {
 		if count%subIntervalCount == 0 {
 			log.Printf("[%v] %q", msg.Subject, string(msg.Data))
 		}
@@ -125,9 +125,9 @@ func natsConnect(config *Configuration) (*nats.Conn, error) {
 		opts = append(opts, nats.ClientCert(config.Nats.CertFilename, config.Nats.KeyFilename))
 	}
 	// connect nats
-	natsConn, err := nats.Connect(config.Nats.Url, opts...)
+	nc, err := nats.Connect(config.Nats.Url, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("natsConnect(): %w", err)
 	}
-	return natsConn, nil
+	return nc, nil
 }
