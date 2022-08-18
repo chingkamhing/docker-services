@@ -36,12 +36,6 @@ services:
     volumes:
       - $PWD/nats-cluster.conf:/etc/nats/nats-cluster.conf:ro
       - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/nats/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/nats/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/nats/server.key:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/mqtt/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/mqtt/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/mqtt/server.key:ro
       - data1:/data/jetstream
   nats2:
     <<: *nats
@@ -61,12 +55,6 @@ services:
     volumes:
       - $PWD/nats-cluster.conf:/etc/nats/nats-cluster.conf:ro
       - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/nats/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/nats/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/nats/server.key:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/mqtt/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/mqtt/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/mqtt/server.key:ro
       - data2:/data/jetstream
   nats3:
     <<: *nats
@@ -86,12 +74,6 @@ services:
     volumes:
       - $PWD/nats-cluster.conf:/etc/nats/nats-cluster.conf:ro
       - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/nats/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/nats/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/nats/server.key:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/mqtt/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/mqtt/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/mqtt/server.key:ro
       - data3:/data/jetstream
 
 # networks
