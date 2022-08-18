@@ -6,12 +6,13 @@ help:
 	@echo "    test                  Perform go test"
 	@echo "    benchmark             Perform go benchmark test"
 	@echo "    nkey                  Generate NATS nkey user and seed"
+	@echo "    password              Generate some random passwords"
 	@echo "    config                Validate and view the compose file"
 	@echo "    docker-up             docker-compose deploy for local development; deploy MODE of: single (default), cluster"
 	@echo "    docker-down           docker-compose remove"
 	@echo "    status                Print nats status"
 
-# nats deploy mode: single, cluster
+# nats deploy mode: single, cluster, leaf
 MODE ?= single
 # output binary file name
 output_name = broker
@@ -46,6 +47,11 @@ benchmark:
 .PHONY: nkey
 nkey:
 	nk --gen user --pubout
+
+# Generate some random passwords
+.PHONY: password
+password:
+	./script/generate-password.sh -c 10
 
 # validate and view the compose file
 .PHONY: config
