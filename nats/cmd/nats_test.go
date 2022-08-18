@@ -30,9 +30,7 @@ func Benchmark_NatsPublish(b *testing.B) {
 	if err != nil {
 		log.Fatalf("natsConnect() error: %v", err)
 	}
-	defer func() {
-		nc.Drain()
-	}()
+	defer nc.Close()
 	// nats publish messages to subject
 	const subject = "my-test.nats"
 	const message = "NATS test 0 message."
@@ -47,9 +45,7 @@ func Benchmark_JetstreamPublish(b *testing.B) {
 	if err != nil {
 		log.Fatalf("jetstreamConnect() error: %v", err)
 	}
-	defer func() {
-		nc.Drain()
-	}()
+	defer nc.Close()
 	// nats publish messages to subject
 	const subject = "my-test.jets"
 	const message = "JetS test 0 message."

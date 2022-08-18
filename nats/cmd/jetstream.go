@@ -91,9 +91,7 @@ func runJetStreamPub(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("jetstreamConnect() error: %v", err)
 	}
-	defer func() {
-		nc.Drain()
-	}()
+	defer nc.Close()
 	// mqtt publish messages to subject
 	subject := args[0]
 	message := args[1]
@@ -103,6 +101,7 @@ func runJetStreamPub(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("js.PublishMsg() error: %v", err)
 	}
+	log.Printf("Published [%v] %q", subject, message)
 }
 
 func runJetStreamSub(cmd *cobra.Command, args []string) {
@@ -115,9 +114,7 @@ func runJetStreamSub(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("jetstreamConnect() error: %v", err)
 	}
-	defer func() {
-		nc.Drain()
-	}()
+	defer nc.Close()
 	// jetstream subscribe to subject
 	subject := args[0]
 	count := 0
