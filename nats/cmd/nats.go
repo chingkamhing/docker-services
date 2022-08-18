@@ -118,7 +118,6 @@ func natsConnect(config *Configuration) (*nats.Conn, error) {
 		opts = append(opts, nats.UserInfo(config.Nats.Username, config.Nats.Password))
 	}
 	// set tls connect options
-	log.Printf("config.Nats.CaFilename: %v", config.Nats.CaFilename)
 	if config.Nats.CaFilename != "" {
 		opts = append(opts, nats.RootCAs(config.Nats.CaFilename))
 	}
