@@ -24,7 +24,9 @@ COUNTRY="HK"
 STATE="My Home State"
 LOCATION="My Home Location"
 ORGANIZATION="My Home Organization"
-ORGANIZATION_UNIT="DEV"
+ORGANIZATION_UNIT="Development"
+CERTIFICATION_AUTHORITY="My Home CA"
+CA_MIN_KEY_BITS=3072
 RSA_KEY_BITS=2048
 CA_DAYS=3660
 CERT_DAYS=3660
@@ -44,7 +46,7 @@ Usage () {
     echo
     echo "Usage: $SCRIPT_NAME [domain / ip / email] ..."
     echo "Options:"
-    echo " -r  [bits]                   RSA key bits (e.g. 2048, 4096; default $RSA_KEY_BITS)"
+    echo " -r  [bits]                   RSA key bits (e.g. 2048, 3072, 4096; default $RSA_KEY_BITS)"
     echo " -a  [days]                   CA valid days (default $CA_DAYS)"
     echo " -e  [days]                   Certificate valid days (default $CERT_DAYS)"
     echo " -c                           Generate client certificates as well"
@@ -128,11 +130,21 @@ for arg in "$@"; do
         ;;
     esac
 done
-CONFIG=$(cat <<EOF
+CONFIG_SERVER=$(cat <<EOF
 [req]
 distinguished_name=req
 [san]
-extendedKeyUsage=serverAuth,clientAuth
+keyUsage=critical,digitalSignature,keyEncipherment
+extendedKeyUsage=serverAuth
+subjectAltName=$SAN_NAMES
+EOF
+)
+CONFIG_CLIENT=$(cat <<EOF
+[req]
+distinguished_name=req
+[san]
+keyUsage=critical,digitalSignature,keyEncipherment
+extendedKeyUsage=clientAuth,emailProtection
 subjectAltName=$SAN_NAMES
 EOF
 )
@@ -161,23 +173,27 @@ SERVER_CRT="${OUTPUT_PATH}/server.crt"
 CLIENT_PRIKEY="${OUTPUT_PATH}/client.key"
 CLIENT_CSR="${OUTPUT_PATH}/client.csr"
 CLIENT_CRT="${OUTPUT_PATH}/client.crt"
-CN="$DOMAIN"
 
 # subject for root certificate
-SUBJECT_CA="/C=${COUNTRY}/ST=${STATE}/L=${LOCATION}/CN=${ORGANIZATION}"
-SUBJECT_SERVER="/C=${COUNTRY}/ST=${STATE}/L=${LOCATION}/O=${ORGANIZATION}/OU=${ORGANIZATION_UNIT}/CN=${CN}"
-SUBJECT_CLIENT="/C=${COUNTRY}/ST=${STATE}/L=${LOCATION}/O=${ORGANIZATION}/OU=${ORGANIZATION_UNIT}/CN=${CN}-client"
+SUBJECT_CA="/C=${COUNTRY}/ST=${STATE}/L=${LOCATION}/O=${CERTIFICATION_AUTHORITY}/CN=${ORGANIZATION}"
+SUBJECT_SERVER="/C=${COUNTRY}/ST=${STATE}/L=${LOCATION}/O=${ORGANIZATION}/OU=${ORGANIZATION_UNIT}/CN=${DOMAIN}"
+SUBJECT_CLIENT="/C=${COUNTRY}/ST=${STATE}/L=${LOCATION}/O=${ORGANIZATION}/OU=${ORGANIZATION_UNIT}/CN=${DOMAIN}"
 
 # This creates a new private key with a password for the CA (flag aes256 require AES256 password protect)
-$DEBUG openssl genrsa -out $CAKEY $RSA_KEY_BITS
+if (( $RSA_KEY_BITS < $CA_MIN_KEY_BITS )); then
+    ca_key_bits=$CA_MIN_KEY_BITS
+else
+    ca_key_bits=$RSA_KEY_BITS
+fi
+$DEBUG openssl genrsa -out $CAKEY $ca_key_bits
 # Now we can create the root CA certificate using the SHA256 hash algorithm
-$DEBUG openssl req -new -x509 -sha256 -days $CA_DAYS -addext keyUsage=critical,keyCertSign -key $CAKEY -out $CACRT -subj "$SUBJECT_CA"
+$DEBUG openssl req -new -x509 -sha256 -subj "$SUBJECT_CA" -days $CA_DAYS -addext keyUsage=critical,keyCertSign -key $CAKEY -out $CACRT
 
 # use the ca to create server cert and private key
 serial=0x$(openssl rand -hex 16)
 $DEBUG openssl genrsa -out $SERVER_PRIKEY $RSA_KEY_BITS
-$DEBUG openssl req -new -sha256 -key $SERVER_PRIKEY -subj "$SUBJECT_SERVER" -config <( echo "$CONFIG") -extensions san -out $SERVER_CSR
-$DEBUG openssl x509 -req -sha256 -days $CERT_DAYS -in $SERVER_CSR -CA $CACRT -CAkey $CAKEY -extfile <( echo "$CONFIG") -extensions san -set_serial $serial -out $SERVER_CRT
+$DEBUG openssl req -new -sha256 -subj "$SUBJECT_SERVER" -config <( echo "$CONFIG_SERVER") -extensions san -key $SERVER_PRIKEY -out $SERVER_CSR
+$DEBUG openssl x509 -req -sha256 -days $CERT_DAYS -in $SERVER_CSR -CA $CACRT -CAkey $CAKEY -extfile <( echo "$CONFIG_SERVER") -extensions san -set_serial $serial -out $SERVER_CRT
 
 # verify
 echo "Verify server cert $DOMAIN"
@@ -187,8 +203,8 @@ if [ "$GENERATE_CLIENT_CERT" == "yes" ]; then
     # use the ca to create client cert and private key
     serial=0x$(openssl rand -hex 16)
     $DEBUG openssl genrsa -out $CLIENT_PRIKEY $RSA_KEY_BITS
-    $DEBUG openssl req -new -sha256 -key $CLIENT_PRIKEY -subj "$SUBJECT_CLIENT" -config <( echo "$CONFIG") -extensions san -out $CLIENT_CSR
-    $DEBUG openssl x509 -req -sha256 -days $CERT_DAYS -in $CLIENT_CSR -CA $CACRT -CAkey $CAKEY -extfile <( echo "$CONFIG") -extensions san -set_serial $serial -out $CLIENT_CRT
+    $DEBUG openssl req -new -sha256 -subj "$SUBJECT_CLIENT" -config <( echo "$CONFIG_CLIENT") -extensions san -key $CLIENT_PRIKEY -out $CLIENT_CSR
+    $DEBUG openssl x509 -req -sha256 -days $CERT_DAYS -in $CLIENT_CSR -CA $CACRT -CAkey $CAKEY -extfile <( echo "$CONFIG_CLIENT") -extensions san -set_serial $serial -out $CLIENT_CRT
     # verify
     echo "Verify client cert $DOMAIN"
     $DEBUG openssl verify -CAfile $CACRT $CLIENT_CRT
