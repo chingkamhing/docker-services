@@ -135,7 +135,7 @@ CONFIG_SERVER=$(cat <<EOF
 distinguished_name=req
 [san]
 keyUsage=critical,digitalSignature,keyEncipherment
-extendedKeyUsage=serverAuth
+extendedKeyUsage=serverAuth,emailProtection
 subjectAltName=$SAN_NAMES
 EOF
 )
