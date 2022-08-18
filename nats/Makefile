@@ -12,7 +12,7 @@ help:
 	@echo "    docker-down           docker-compose remove"
 	@echo "    status                Print nats status"
 
-# nats deploy mode: single, cluster, leaf
+# nats deploy mode: single, cluster, leafmaincluster
 MODE ?= single
 # output binary file name
 output_name = broker
