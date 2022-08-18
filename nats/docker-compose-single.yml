@@ -34,8 +34,6 @@ services:
       - $PWD/cert/my-domain.com/ca.crt:/etc/nats/ca.crt:ro
       - $PWD/cert/my-domain.com/server.crt:/etc/nats/server.crt:ro
       - $PWD/cert/my-domain.com/server.key:/etc/nats/server.key:ro
-      - $PWD/cert/my-domain.com/client.crt:/etc/nats/client.crt:ro
-      - $PWD/cert/my-domain.com/client.key:/etc/nats/client.key:ro
       - data:/data/jetstream
 
 volumes:  
