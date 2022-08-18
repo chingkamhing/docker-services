@@ -31,9 +31,7 @@ func Benchmark_MqttQos0Publish(b *testing.B) {
 	if err != nil {
 		log.Fatalf("mqttConnect() error: %v", err)
 	}
-	defer func() {
-		client.Disconnect(1000)
-	}()
+	defer client.Disconnect(1000)
 	// mqtt publish messages to subject
 	const subject = "my-test/mqtt"
 	const message = "MQTT test 0 message."
@@ -49,9 +47,7 @@ func Benchmark_MqttQos1Publish(b *testing.B) {
 	if err != nil {
 		log.Fatalf("mqttConnect() error: %v", err)
 	}
-	defer func() {
-		client.Disconnect(1000)
-	}()
+	defer client.Disconnect(1000)
 	// mqtt publish messages to subject
 	const subject = "my-test/mqtt"
 	const message = "MQTT test 1 message."

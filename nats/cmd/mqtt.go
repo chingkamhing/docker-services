@@ -83,9 +83,7 @@ func runMqttPub(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("mqttConnect() error: %v", err)
 	}
-	defer func() {
-		client.Disconnect(250)
-	}()
+	defer client.Disconnect(250)
 	// mqtt publish messages to subject
 	subject := args[0]
 	message := args[1]
@@ -104,9 +102,7 @@ func runMqttSub(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("mqttConnect() error: %v", err)
 	}
-	defer func() {
-		client.Disconnect(250)
-	}()
+	defer client.Disconnect(250)
 	// mqtt subscribe to subject
 	subject := args[0]
 	count := 0
