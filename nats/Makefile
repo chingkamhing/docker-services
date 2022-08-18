@@ -4,7 +4,7 @@ help:
 	@echo "    run                	 Run the program"
 	@echo "    build                 Build the program"
 	@echo "    test                  Perform go test"
-	@echo "    benchmark             Perform go benchmark test with leafmaincluster deployment"
+	@echo "    benchmark             Perform go benchmark test on leafmaincluster deployment"
 	@echo "    nkey                  Generate NATS nkey user and seed"
 	@echo "    password              Generate some random passwords"
 	@echo "    config                Validate and view the compose file"
