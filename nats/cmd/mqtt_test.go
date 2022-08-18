@@ -9,20 +9,18 @@ import (
 
 var mqttConfig = &Configuration{
 	Mqtt: Mqtt{
-		Host:      "127.0.0.1",
-		Port:      1883,
-		Username:  os.Getenv("MY_MQTT_USERNAME"),
-		Password:  os.Getenv("MY_MQTT_PASSWORD"),
-		Log:       "ERROR",
-		ClientID:  "mqtt-test",
-		KeepAlive: 60 * time.Second,
-		Qos:       0,
-		Retained:  false,
-	},
-	Tls: Tls{
+		Host:         "127.0.0.1",
+		Port:         1883,
 		CaFilename:   "../cert/my-domain.com/ca.crt",
 		CertFilename: "../cert/my-domain.com/client.crt",
 		KeyFilename:  "../cert/my-domain.com/client.key",
+		Username:     os.Getenv("MY_MQTT_USERNAME"),
+		Password:     os.Getenv("MY_MQTT_PASSWORD"),
+		Log:          "ERROR",
+		ClientID:     "mqtt-test",
+		KeepAlive:    60 * time.Second,
+		Qos:          0,
+		Retained:     false,
 	},
 }
 

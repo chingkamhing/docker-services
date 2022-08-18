@@ -12,17 +12,15 @@ import (
 var natsConfig = &Configuration{
 	Nats: Nats{
 		Url:           "127.0.0.1:4222",
+		CaFilename:    "../cert/my-domain.com/ca.crt",
+		CertFilename:  "../cert/my-domain.com/client.crt",
+		KeyFilename:   "../cert/my-domain.com/client.key",
 		Username:      os.Getenv("MY_NATS_USERNAME"),
 		Password:      os.Getenv("MY_NATS_PASSWORD"),
 		Retry:         3,
 		RetryInterval: 2 * time.Second,
 		Stream:        "my-test-stream",
 		Topics:        "my-test.>",
-	},
-	Tls: Tls{
-		CaFilename:   "../cert/my-domain.com/ca.crt",
-		CertFilename: "../cert/my-domain.com/client.crt",
-		KeyFilename:  "../cert/my-domain.com/client.key",
 	},
 }
 

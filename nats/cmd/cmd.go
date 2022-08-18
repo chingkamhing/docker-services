@@ -21,6 +21,9 @@ var rootCmd = &cobra.Command{
 func init() {
 	// database config flags
 	rootCmd.PersistentFlags().String("nats.url", "127.0.0.1:4222", "NATS broker host address")
+	rootCmd.PersistentFlags().String("nats.ca_filename", "", "NATS TLS CA filename")
+	rootCmd.PersistentFlags().String("nats.cert_filename", "", "NATS TLS cert filename")
+	rootCmd.PersistentFlags().String("nats.key_filename", "", "NATS TLS key filename")
 	rootCmd.PersistentFlags().String("nats.nkey_user", "", "NATS connection nkey user")
 	rootCmd.PersistentFlags().String("nats.nkey_seed", "", "NATS connection nkey seed")
 	rootCmd.PersistentFlags().String("nats.username", "", "NATS client connection username")
@@ -29,9 +32,6 @@ func init() {
 	rootCmd.PersistentFlags().Duration("nats.retry_interval", 3*time.Second, "NATS connection retry interval")
 	rootCmd.PersistentFlags().String("nats.stream", "my-test-stream", "NATS stream name")
 	rootCmd.PersistentFlags().String("nats.topics", "my-test.>", "comma-seperated NATS stream topics")
-	rootCmd.PersistentFlags().String("tls.ca_filename", "", "TLS CA filename")
-	rootCmd.PersistentFlags().String("tls.cert_filename", "", "TLS cert filename")
-	rootCmd.PersistentFlags().String("tls.key_filename", "", "TLS key filename")
 	rootCmd.InitDefaultVersionFlag()
 }
 

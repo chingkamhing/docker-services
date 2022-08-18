@@ -16,12 +16,14 @@ var config Configuration
 type Configuration struct {
 	Nats Nats
 	Mqtt Mqtt
-	Tls  Tls
 }
 
 // Nats define all nats settings structure
 type Nats struct {
 	Url           string        `mapstructure:"url"`            // NATS system url (e.g. localhost:4222); comma seperate for multiple urls
+	CaFilename    string        `mapstructure:"ca_filename"`    // NATS connection CA filename
+	CertFilename  string        `mapstructure:"cert_filename"`  // NATS connection client cert filename
+	KeyFilename   string        `mapstructure:"key_filename"`   // NATS connection client key filename
 	NkeyUser      string        `mapstructure:"nkey_user"`      // NATS connection nkey user
 	NkeySeed      string        `mapstructure:"nkey_seed"`      // NATS connection nkey seed
 	Username      string        `mapstructure:"username"`       // NATS connection username
@@ -34,24 +36,20 @@ type Nats struct {
 
 // Mqtt holds mqtt settings
 type Mqtt struct {
-	Host      string        `mapstructure:"host"`     // MQTT host address
-	Port      int           `mapstructure:"port"`     // MQTT port number
-	Username  string        `mapstructure:"username"` // MQTT connection username
-	Password  string        `mapstructure:"password"` // MQTT connection password
-	Log       string        `mapstructure:"log"`      // MQTT log level of: DEBUG, ERROR
-	ClientID  string        `mapstructure:"client_id"`
-	KeepAlive time.Duration `mapstructure:"keep_alive"`
-	Qos       int           `mapstructure:"qos"`
-	Retained  bool          `mapstructure:"retained"`
-	Count     int           `mapstructure:"count"`
-	Interval  time.Duration `mapstructure:"interval"`
-}
-
-// Tls holds tls cert file settings
-type Tls struct {
-	CaFilename   string `mapstructure:"ca_filename"`   // NATS connection CA filename
-	CertFilename string `mapstructure:"cert_filename"` // NATS connection client cert filename
-	KeyFilename  string `mapstructure:"key_filename"`  // NATS connection client key filename
+	Host         string        `mapstructure:"host"`          // MQTT host address
+	Port         int           `mapstructure:"port"`          // MQTT port number
+	CaFilename   string        `mapstructure:"ca_filename"`   // MQTT connection CA filename
+	CertFilename string        `mapstructure:"cert_filename"` // MQTT connection client cert filename
+	KeyFilename  string        `mapstructure:"key_filename"`  // MQTT connection client key filename
+	Username     string        `mapstructure:"username"`      // MQTT connection username
+	Password     string        `mapstructure:"password"`      // MQTT connection password
+	Log          string        `mapstructure:"log"`           // MQTT log level of: DEBUG, ERROR
+	ClientID     string        `mapstructure:"client_id"`
+	KeepAlive    time.Duration `mapstructure:"keep_alive"`
+	Qos          int           `mapstructure:"qos"`
+	Retained     bool          `mapstructure:"retained"`
+	Count        int           `mapstructure:"count"`
+	Interval     time.Duration `mapstructure:"interval"`
 }
 
 // configInit load config setting from file name stored in flag "config"

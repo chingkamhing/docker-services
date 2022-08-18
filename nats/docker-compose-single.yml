@@ -31,9 +31,12 @@ services:
       - 8080:8080
     volumes:
       - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/server.key:ro
+      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/nats/ca.crt:ro
+      - $PWD/cert/my-domain.com/server.crt:/etc/nats/nats/server.crt:ro
+      - $PWD/cert/my-domain.com/server.key:/etc/nats/nats/server.key:ro
+      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/mqtt/ca.crt:ro
+      - $PWD/cert/my-domain.com/server.crt:/etc/nats/mqtt/server.crt:ro
+      - $PWD/cert/my-domain.com/server.key:/etc/nats/mqtt/server.key:ro
       - data:/data/jetstream
 
 volumes:  

@@ -58,6 +58,9 @@ func init() {
 
 	cmdMqtt.PersistentFlags().String("mqtt.host", "127.0.0.1", "MQTT connection host address")
 	cmdMqtt.PersistentFlags().Int("mqtt.port", 1883, "MQTT connection port number")
+	cmdMqtt.PersistentFlags().String("mqtt.ca_filename", "", "MQTT TLS CA filename")
+	cmdMqtt.PersistentFlags().String("mqtt.cert_filename", "", "MQTT TLS cert filename")
+	cmdMqtt.PersistentFlags().String("mqtt.key_filename", "", "MQTT TLS key filename")
 	cmdMqtt.PersistentFlags().String("mqtt.username", "", "MQTT connection username")
 	cmdMqtt.PersistentFlags().String("mqtt.password", "", "MQTT connection password")
 	cmdMqtt.PersistentFlags().String("mqtt.log", "ERROR", "MQTT log level of: DEBUG, ERROR")
@@ -163,7 +166,7 @@ func runMqttTest(cmd *cobra.Command, args []string) {
 }
 
 func mqttConnect(config *Configuration) (mqtt.Client, error) {
-	isTls := config.Tls.CaFilename != "" && config.Tls.CertFilename != "" && config.Tls.KeyFilename != ""
+	isTls := config.Mqtt.CaFilename != "" && config.Mqtt.CertFilename != "" && config.Mqtt.KeyFilename != ""
 	if config.Mqtt.Log == "DEBUG" {
 		mqtt.DEBUG = log.New(os.Stdout, "DEBUG ", 0)
 	} else {
@@ -185,7 +188,7 @@ func mqttConnect(config *Configuration) (mqtt.Client, error) {
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.SetKeepAlive(config.Mqtt.KeepAlive)
 	if isTls {
-		tlsConfig, err := loadTlsConfig(config.Tls.CaFilename, config.Tls.CertFilename, config.Tls.KeyFilename)
+		tlsConfig, err := loadTlsConfig(config.Mqtt.CaFilename, config.Mqtt.CertFilename, config.Mqtt.KeyFilename)
 		if err != nil {
 			return nil, fmt.Errorf("mqttConnect(): %w", err)
 		}

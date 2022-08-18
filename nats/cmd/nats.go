@@ -118,11 +118,12 @@ func natsConnect(config *Configuration) (*nats.Conn, error) {
 		opts = append(opts, nats.UserInfo(config.Nats.Username, config.Nats.Password))
 	}
 	// set tls connect options
-	if config.Tls.CaFilename != "" {
-		opts = append(opts, nats.RootCAs(config.Tls.CaFilename))
+	log.Printf("config.Nats.CaFilename: %v", config.Nats.CaFilename)
+	if config.Nats.CaFilename != "" {
+		opts = append(opts, nats.RootCAs(config.Nats.CaFilename))
 	}
-	if config.Tls.CertFilename != "" && config.Tls.KeyFilename != "" {
-		opts = append(opts, nats.ClientCert(config.Tls.CertFilename, config.Tls.KeyFilename))
+	if config.Nats.CertFilename != "" && config.Nats.KeyFilename != "" {
+		opts = append(opts, nats.ClientCert(config.Nats.CertFilename, config.Nats.KeyFilename))
 	}
 	// connect nats
 	natsConn, err := nats.Connect(config.Nats.Url, opts...)
