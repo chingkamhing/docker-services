@@ -20,7 +20,7 @@ x-env:
 services:
   nats1:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}1 -c /etc/nats/nats-cluster.conf --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}1 -c /etc/nats/nats-cluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}1"
       <<: *environment-cluster
@@ -35,7 +35,7 @@ services:
       - data1:/data/jetstream
   nats2:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}2 -c /etc/nats/nats-cluster.conf --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}2 -c /etc/nats/nats-cluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}2"
       <<: *environment-cluster
@@ -50,7 +50,7 @@ services:
       - data2:/data/jetstream
   nats3:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}3 -c /etc/nats/nats-cluster.conf --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}3 -c /etc/nats/nats-cluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}3"
       <<: *environment-cluster
