@@ -7,7 +7,7 @@ x-env:
       - backend
     restart:
       unless-stopped
-  environment: &environment
+  environment-cluster: &environment-cluster
     MY_NATS_ROUTE_USERNAME: "${MY_NATS_ROUTE_USERNAME}"
     MY_NATS_ROUTE_PASSWORD: "${MY_NATS_ROUTE_PASSWORD}"
     MY_NATS_NKEY_USER: "${MY_NATS_NKEY_USER}"
@@ -23,7 +23,7 @@ services:
     command: "--name ${MY_NATS_SERVER_NAME}1 -c /etc/nats/nats-cluster.conf --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}1"
-      <<: *environment
+      <<: *environment-cluster
     ports:
       # for clients
       - 4223:4222
@@ -38,7 +38,7 @@ services:
     command: "--name ${MY_NATS_SERVER_NAME}2 -c /etc/nats/nats-cluster.conf --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}2"
-      <<: *environment
+      <<: *environment-cluster
     ports:
       # for clients
       - 4224:4222
@@ -53,7 +53,7 @@ services:
     command: "--name ${MY_NATS_SERVER_NAME}3 -c /etc/nats/nats-cluster.conf --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} -js -D --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}3"
-      <<: *environment
+      <<: *environment-cluster
     ports:
       # for clients
       - 4225:4222
