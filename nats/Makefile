@@ -4,7 +4,7 @@ help:
 	@echo "    run                	 Run the program"
 	@echo "    build                 Build the program"
 	@echo "    test                  Perform go test"
-	@echo "    benchmark             Perform go benchmark test on leafmaincluster deployment"
+	@echo "    benchmark             Perform go benchmark test on leafcluster deployment"
 	@echo "    nkey                  Generate NATS nkey user and seed"
 	@echo "    password              Generate some random passwords"
 	@echo "    config                Validate and view the compose file"
@@ -12,7 +12,7 @@ help:
 	@echo "    docker-down           docker-compose remove"
 	@echo "    status                Print nats status"
 
-# nats deploy mode: single, cluster, leafmaincluster
+# nats deploy mode: single, cluster, leafcluster
 MODE ?= single
 # output binary file name
 output_name = broker

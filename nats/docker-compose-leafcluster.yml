@@ -1,5 +1,5 @@
 #
-# NATS leafmaincluster deployment:
+# NATS leafcluster deployment:
 # - there are 2 nats groups:
 #   - external group (i.e. leaf node) mean to be external NATS/MQTT/websocket pub/sub communication node with TLS enabled
 #   - internal group (i.e. main cluster nodes) mean to be internal nats core/jetstream pub/sub communication cluster with TLS disabled
