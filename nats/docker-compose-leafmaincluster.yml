@@ -87,7 +87,7 @@ services:
       - data3:/data/jetstream
   natsleaf:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}Leaf -c /etc/nats/nats-leafmaincluster.conf -js -D"
+    command: "--name ${MY_NATS_SERVER_NAME}Leaf -c /etc/nats/nats-leaf.conf -js -D"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}Leaf"
       <<: *environment-leaf
@@ -99,7 +99,7 @@ services:
       # mqtt
       - 8883:8883
     volumes:
-      - $PWD/nats-leafmaincluster.conf:/etc/nats/nats-leafmaincluster.conf:ro
+      - $PWD/nats-leaf.conf:/etc/nats/nats-leaf.conf:ro
       - $PWD/cert/my-domain.com/ca.crt:/etc/nats/nats/ca.crt:ro
       - $PWD/cert/my-domain.com/server.crt:/etc/nats/nats/server.crt:ro
       - $PWD/cert/my-domain.com/server.key:/etc/nats/nats/server.key:ro
