@@ -11,12 +11,13 @@ services:
       - "--providers.docker.network=proxy_net"
       - "--providers.file.filename=/etc/traefik/conf/dynamic.yml"
       - "--providers.file.watch=true"
-      # configure entrypoint; redirect all http links to https
+      # entrypoint configuration
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # redirect all http links to https
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entryPoint.permanent=true"
-      - "--entrypoints.websecure.address=:443"
       # acme configurations
       - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
