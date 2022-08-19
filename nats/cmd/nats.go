@@ -106,6 +106,8 @@ func natsConnect(config *Configuration) (*nats.Conn, error) {
 	opts := []nats.Option{}
 	// set nats authentication options
 	switch {
+	case config.Nats.Username != "" && config.Nats.Password != "":
+		opts = append(opts, nats.UserInfo(config.Nats.Username, config.Nats.Password))
 	case config.Nats.NkeyUser != "" && config.Nats.NkeySeed != "":
 		opts = append(opts, nats.Nkey(config.Nats.NkeyUser, func(nounce []byte) ([]byte, error) {
 			keyPair, err := nkeys.FromSeed([]byte(config.Nats.NkeySeed))
@@ -114,8 +116,6 @@ func natsConnect(config *Configuration) (*nats.Conn, error) {
 			}
 			return keyPair.Sign(nounce)
 		}))
-	case config.Nats.Username != "" && config.Nats.Password != "":
-		opts = append(opts, nats.UserInfo(config.Nats.Username, config.Nats.Password))
 	}
 	// set tls connect options
 	if config.Nats.CaFilename != "" {
