@@ -4,7 +4,7 @@ services:
   # traefik
   #
   traefik:
-    image: traefik:2.6
+    image: traefik:2.8
     environment:
       - FREEMYIP_TOKEN=$FREEMYIP_TOKEN
     networks:
