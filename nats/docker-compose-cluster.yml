@@ -20,9 +20,9 @@ x-env:
     MY_MQTT_PASSWORD: ${MY_MQTT_PASSWORD}
 
 services:
-  nats1:
+  nats-backend1:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}1 -c /etc/nats/nats-cluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}1 -c /etc/nats/nats-cluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}1"
       <<: *environment-cluster
@@ -35,9 +35,9 @@ services:
       - $PWD/nats-cluster.conf:/etc/nats/nats-cluster.conf:ro
       - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
       - data1:/data/jetstream
-  nats2:
+  nats-backend2:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}2 -c /etc/nats/nats-cluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}2 -c /etc/nats/nats-cluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}2"
       <<: *environment-cluster
@@ -50,9 +50,9 @@ services:
       - $PWD/nats-cluster.conf:/etc/nats/nats-cluster.conf:ro
       - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
       - data2:/data/jetstream
-  nats3:
+  nats-backend3:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}3 -c /etc/nats/nats-cluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats2:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}3 -c /etc/nats/nats-cluster.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}3"
       <<: *environment-cluster
