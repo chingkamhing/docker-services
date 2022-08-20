@@ -25,7 +25,7 @@ run:
 # Build the program
 .PHONY: build
 build:
-	go build -o $(output_name) *.go
+	CGO_ENABLED=0 go build -ldflags="-extldflags=-static" -o $(output_name) .
 
 # Perform go test
 .PHONY: test
