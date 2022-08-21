@@ -15,15 +15,6 @@ x-env:
       - backend
     restart:
       unless-stopped
-  environment-nats-backend: &environment-nats-backend
-    MY_NATS_ROUTE_USERNAME: ${MY_NATS_ROUTE_USERNAME}
-    MY_NATS_ROUTE_PASSWORD: ${MY_NATS_ROUTE_PASSWORD}
-    MY_NATS_NKEY_USER: ${MY_NATS_NKEY_USER}
-    MY_NATS_NKEY_SEED: ${MY_NATS_NKEY_SEED}
-    MY_NATS_USERNAME: ${MY_NATS_USERNAME}
-    MY_NATS_PASSWORD: ${MY_NATS_PASSWORD}
-    MY_LEAFNODE_USERNAME: ${MY_LEAFNODE_USERNAME}
-    MY_LEAFNODE_PASSWORD: ${MY_LEAFNODE_PASSWORD}
   environment-nats-external: &environment-nats-external
     URL_NATS1: nats://${MY_LEAFNODE_USERNAME}:${MY_LEAFNODE_PASSWORD}@nats-backend1
     URL_NATS2: nats://${MY_LEAFNODE_USERNAME}:${MY_LEAFNODE_PASSWORD}@nats-backend2
@@ -38,11 +29,112 @@ x-env:
     MY_MQTT_PASSWORD: ${MY_MQTT_PASSWORD}
     MY_WEBSOCKET_USERNAME: ${MY_WEBSOCKET_USERNAME}
     MY_WEBSOCKET_PASSWORD: ${MY_WEBSOCKET_PASSWORD}
+  environment-nats-backend: &environment-nats-backend
+    MY_NATS_ROUTE_USERNAME: ${MY_NATS_ROUTE_USERNAME}
+    MY_NATS_ROUTE_PASSWORD: ${MY_NATS_ROUTE_PASSWORD}
+    MY_NATS_NKEY_USER: ${MY_NATS_NKEY_USER}
+    MY_NATS_NKEY_SEED: ${MY_NATS_NKEY_SEED}
+    MY_NATS_USERNAME: ${MY_NATS_USERNAME}
+    MY_NATS_PASSWORD: ${MY_NATS_PASSWORD}
+    MY_LEAFNODE_USERNAME: ${MY_LEAFNODE_USERNAME}
+    MY_LEAFNODE_PASSWORD: ${MY_LEAFNODE_PASSWORD}
 
 services:
+  #
+  # traefik
+  #
+  traefik:
+    image: traefik:2.8
+    command:
+      # docker configuration
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.file.filename=/etc/traefik/conf/dynamic.yml"
+      - "--providers.file.watch=true"
+      # entrypoint configuration
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.nats.address=:4222"
+      - "--entrypoints.mqtt.address=:8883"
+      - "--entrypoints.websocket.address=:80"
+      # acme configurations
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=freemyip"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      # enable api and dashboard
+      - "--api.dashboard=true"
+      # enable log output
+      - "--log.level=DEBUG"
+    environment:
+      - FREEMYIP_TOKEN=$FREEMYIP_TOKEN
+    networks:
+      - frontend
+    ports:
+      # https
+      - 443:443
+      # nats
+      - 4222:4222
+      # mqtt
+      - 8883:8883
+      # websocket
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/dynamic.yml:/etc/traefik/conf/dynamic.yml:ro
+      - ./acme:/etc/traefik/acme
+      #FIXME, for debug only
+      - ./broker:/root/broker
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      # traefik dashboard: https://proxy.kamching.freemyip.com/dashboard/
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`proxy.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.middlewares=admin-auth@file"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+  #
+  # nats
+  #
+  nats-external:
+    <<: *nats
+    command: "--name ${MY_NATS_SERVER_NAME}External -c /etc/nats/nats-external.conf -js ${NATS_LOGGINGNATS_LOGGING}"
+    environment:
+      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}External"
+      <<: *environment-nats-external
+    networks:
+      - frontend
+      - backend
+    volumes:
+      - $PWD/nats-external.conf:/etc/nats/nats-external.conf:ro
+      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/nats/ca.crt:ro
+      - $PWD/cert/my-domain.com/server.crt:/etc/nats/nats/server.crt:ro
+      - $PWD/cert/my-domain.com/server.key:/etc/nats/nats/server.key:ro
+      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/mqtt/ca.crt:ro
+      - $PWD/cert/my-domain.com/server.crt:/etc/nats/mqtt/server.crt:ro
+      - $PWD/cert/my-domain.com/server.key:/etc/nats/mqtt/server.key:ro
+      - external:/data/jetstream
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=nats_frontend"
+      # route non-tls tcp 4222 to nats
+      - "traefik.tcp.routers.tcpr-nats.entrypoints=nats"
+      - "traefik.tcp.routers.tcpr-nats.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.tcpr-nats.service=tcpr-nats"
+      - "traefik.tcp.services.tcpr-nats.loadbalancer.server.port=4222"
+      # route non-tls tcp 8883 to mqtt
+      - "traefik.tcp.routers.tcpr-mqtt.entrypoints=mqtt"
+      - "traefik.tcp.routers.tcpr-mqtt.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.tcpr-mqtt.service=tcpr-mqtt"
+      - "traefik.tcp.services.tcpr-mqtt.loadbalancer.server.port=8883"
+      # route non-tls tcp 80 to websocket
+      - "traefik.tcp.routers.tcpr-websocket.entrypoints=websocket"
+      - "traefik.tcp.routers.tcpr-websocket.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.tcpr-websocket.service=tcpr-websocket"
+      - "traefik.tcp.services.tcpr-websocket.loadbalancer.server.port=80"
   nats-backend1:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}Backend1 -c /etc/nats/nats-backend.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}Backend1 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGINGNATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}Backend1"
       <<: *environment-nats-backend
@@ -57,7 +149,7 @@ services:
       - backend1:/data/jetstream
   nats-backend2:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}Backend2 -c /etc/nats/nats-backend.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}Backend2 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGINGNATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}Backend2"
       <<: *environment-nats-backend
@@ -72,7 +164,7 @@ services:
       - backend2:/data/jetstream
   nats-backend3:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}Backend3 -c /etc/nats/nats-backend.conf -js -D --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}Backend3 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGINGNATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}Backend3"
       <<: *environment-nats-backend
@@ -85,31 +177,11 @@ services:
       - $PWD/nats-backend.conf:/etc/nats/nats-backend.conf:ro
       - $PWD/nats-single.conf:/etc/nats/nats-single.conf:ro
       - backend3:/data/jetstream
-  nats-external:
-    <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}External -c /etc/nats/nats-external.conf -js -D"
-    environment:
-      MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}External"
-      <<: *environment-nats-external
-    ports:
-      # for clients
-      - 4222:4222
-      # an HTTP management port for information reporting
-      - 8222:8222
-      # mqtt
-      - 8883:8883
-    volumes:
-      - $PWD/nats-external.conf:/etc/nats/nats-external.conf:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/nats/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/nats/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/nats/server.key:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/mqtt/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/mqtt/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/mqtt/server.key:ro
-      - external:/data/jetstream
 
 # networks
 networks:
+  frontend:
+    driver: bridge
   backend:
     driver: bridge
 
