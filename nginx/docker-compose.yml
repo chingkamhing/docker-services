@@ -1,0 +1,25 @@
+#
+# nginx web server
+#
+
+version: "3.8"
+
+services:
+  #
+  # nginx
+  #
+  nginx:
+    image: nginx:latest
+    networks:
+      - frontend
+    ports:
+      # http
+      - 8080:80
+    volumes:
+      - ./web:/usr/share/nginx/html
+    restart: always
+
+# networks
+networks:
+  frontend:
+    driver: bridge
