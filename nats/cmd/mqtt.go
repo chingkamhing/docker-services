@@ -212,7 +212,7 @@ func loadTlsConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
 	}
 	tlsPair, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
-		return nil, fmt.Errorf("tls.LoadX509KeyPair(): %w", err)
+		return nil, fmt.Errorf("tls.LoadX509KeyPair(%v, %v): %w", certFile, keyFile, err)
 	}
 	tlsConfig := &tls.Config{
 		RootCAs:            pool,
