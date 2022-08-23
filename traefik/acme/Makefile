@@ -9,7 +9,7 @@ help:
 	@echo "    stack-stats          Show a docker stack status"
 
 # project name
-project = proxy
+project = acme
 
 #
 # Docker commands
