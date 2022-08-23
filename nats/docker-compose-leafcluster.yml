@@ -117,17 +117,20 @@ services:
       - "traefik.docker.network=nats_frontend"
       # route non-tls tcp 4222 to nats
       - "traefik.tcp.routers.tcpr-nats.entrypoints=nats"
-      - "traefik.tcp.routers.tcpr-nats.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.tcpr-nats.rule=HostSNI(`nats.kamching.freemyip.com`)"
+      - "traefik.tcp.routers.tcpr-nats.tls.passthrough=true"
       - "traefik.tcp.routers.tcpr-nats.service=tcpr-nats"
       - "traefik.tcp.services.tcpr-nats.loadbalancer.server.port=4222"
       # route non-tls tcp 8883 to mqtt
       - "traefik.tcp.routers.tcpr-mqtt.entrypoints=mqtt"
-      - "traefik.tcp.routers.tcpr-mqtt.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.tcpr-mqtt.rule=HostSNI(`mqtt.kamching.freemyip.com`)"
+      - "traefik.tcp.routers.tcpr-mqtt.tls.passthrough=true"
       - "traefik.tcp.routers.tcpr-mqtt.service=tcpr-mqtt"
       - "traefik.tcp.services.tcpr-mqtt.loadbalancer.server.port=8883"
       # route non-tls tcp 80 to websocket
       - "traefik.tcp.routers.tcpr-websocket.entrypoints=websocket"
-      - "traefik.tcp.routers.tcpr-websocket.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.tcpr-websocket.rule=HostSNI(`ws.kamching.freemyip.com`)"
+      - "traefik.tcp.routers.tcpr-websocket.tls.passthrough=true"
       - "traefik.tcp.routers.tcpr-websocket.service=tcpr-websocket"
       - "traefik.tcp.services.tcpr-websocket.loadbalancer.server.port=80"
   nats-backend1:
