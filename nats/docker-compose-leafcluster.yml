@@ -96,7 +96,7 @@ services:
   #
   nats-external:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}External -c /etc/nats/nats-external.conf -js ${NATS_LOGGINGNATS_LOGGING}"
+    command: "--name ${MY_NATS_SERVER_NAME}External -c /etc/nats/nats-external.conf -js ${NATS_LOGGING}"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}External"
       <<: *environment-nats-external
@@ -132,7 +132,7 @@ services:
       - "traefik.tcp.services.tcpr-websocket.loadbalancer.server.port=80"
   nats-backend1:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}Backend1 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGINGNATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}Backend1 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}Backend1"
       <<: *environment-nats-backend
@@ -147,7 +147,7 @@ services:
       - backend1:/data/jetstream
   nats-backend2:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}Backend2 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGINGNATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}Backend2 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}Backend2"
       <<: *environment-nats-backend
@@ -162,7 +162,7 @@ services:
       - backend2:/data/jetstream
   nats-backend3:
     <<: *nats
-    command: "--name ${MY_NATS_SERVER_NAME}Backend3 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGINGNATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222"
+    command: "--name ${MY_NATS_SERVER_NAME}Backend3 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend1:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222"
     environment:
       MY_NATS_SERVER_NAME: "${MY_NATS_SERVER_NAME}Backend3"
       <<: *environment-nats-backend
