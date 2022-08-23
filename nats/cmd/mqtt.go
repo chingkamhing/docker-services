@@ -209,7 +209,10 @@ func loadTlsConfig(caFile, certFile, keyFile string, insecure bool) (*tls.Config
 		if err != nil {
 			return nil, fmt.Errorf("os.ReadFile(): %w", err)
 		}
-		certPool.AppendCertsFromPEM(ca)
+		ok := certPool.AppendCertsFromPEM(ca)
+		if !ok {
+			return nil, fmt.Errorf("certPool.AppendCertsFromPEM(): %w", err)
+		}
 	}
 	tlsPair, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
