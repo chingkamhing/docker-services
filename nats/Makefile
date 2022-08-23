@@ -1,7 +1,8 @@
 .PHONY: help
 help:
 	@echo "Usage:"
-	@echo "    run                	 Run the program"
+	@echo "    pub                	 Test publish"
+	@echo "    sub                	 Test subscribe"
 	@echo "    build                 Build the program"
 	@echo "    test                  Perform go test"
 	@echo "    benchmark             Perform go benchmark test on leafcluster deployment"
@@ -13,14 +14,19 @@ help:
 	@echo "    status                Print nats status"
 
 # nats deploy mode: single, cluster, leafcluster
-MODE ?= single
+MODE ?= leafcluster
 # output binary file name
 output_name = broker
 
-# Run the program
-.PHONY: run
-run:
-	go run *.go
+# Test publish
+.PHONY: build pub
+pub:
+	./$(output_name) --mqtt.host mqtt.kamching.freemyip.com --mqtt.port 8883 --mqtt.ca_filename cert/kamching.freemyip.com/ca.crt --mqtt.cert_filename cert/kamching.freemyip.com/client.crt --mqtt.key_filename cert/kamching.freemyip.com/client.key --mqtt.insecure=true --mqtt.username $$MY_MQTT_USERNAME --mqtt.password $$MY_MQTT_PASSWORD mqtt pub my-test/mqtt Mqtt-1
+
+# Test subscribe
+.PHONY: build sub
+sub:
+	./$(output_name) --mqtt.host mqtt.kamching.freemyip.com --mqtt.port 8883 --mqtt.ca_filename cert/kamching.freemyip.com/ca.crt --mqtt.cert_filename cert/kamching.freemyip.com/client.crt --mqtt.key_filename cert/kamching.freemyip.com/client.key --mqtt.insecure=true --mqtt.username $$MY_MQTT_USERNAME --mqtt.password $$MY_MQTT_PASSWORD mqtt sub my-test/+
 
 # Build the program
 .PHONY: build
