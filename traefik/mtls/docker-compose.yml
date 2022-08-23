@@ -41,8 +41,8 @@ services:
       - "traefik.enable=true"
       - "traefik.tcp.routers.whoami.entrypoints=whoami"
       - "traefik.tcp.routers.whoami.rule=HostSNI(`whoami.kamching.freemyip.com`)"
-      - "traefik.tcp.routers.whoami.service=whoami"
       - "traefik.tcp.routers.whoami.tls.passthrough=true"
+      - "traefik.tcp.routers.whoami.service=whoami"
       - "traefik.tcp.services.whoami.loadbalancer.server.port=1443"
     deploy:
       replicas: 3
