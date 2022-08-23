@@ -39,11 +39,11 @@ services:
       - ./whoami/cert/kamching.freemyip.com/:/app/cert/kamching.freemyip.com/
     labels:
       - "traefik.enable=true"
-      - "traefik.tcp.routers.whoami.entrypoints=whoami"
-      - "traefik.tcp.routers.whoami.rule=HostSNI(`whoami.kamching.freemyip.com`)"
-      - "traefik.tcp.routers.whoami.tls.passthrough=true"
-      - "traefik.tcp.routers.whoami.service=whoami"
-      - "traefik.tcp.services.whoami.loadbalancer.server.port=1443"
+      - "traefik.tcp.routers.tcp-whoami.entrypoints=whoami"
+      - "traefik.tcp.routers.tcp-whoami.rule=HostSNI(`whoami.kamching.freemyip.com`)"
+      - "traefik.tcp.routers.tcp-whoami.tls.passthrough=true"
+      - "traefik.tcp.routers.tcp-whoami.service=tcp-whoami"
+      - "traefik.tcp.services.tcp-whoami.loadbalancer.server.port=1443"
     deploy:
       replicas: 3
 
