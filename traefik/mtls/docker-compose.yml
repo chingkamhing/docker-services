@@ -40,7 +40,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.tcp.routers.whoami.entrypoints=whoami"
-      - "traefik.tcp.routers.whoami.rule=HostSNI(`nats.kamching.freemyip.com`)"
+      - "traefik.tcp.routers.whoami.rule=HostSNI(`whoami.kamching.freemyip.com`)"
       - "traefik.tcp.routers.whoami.service=whoami"
       - "traefik.tcp.routers.whoami.tls.passthrough=true"
       - "traefik.tcp.services.whoami.loadbalancer.server.port=4222"
