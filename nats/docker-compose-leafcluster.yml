@@ -105,12 +105,12 @@ services:
       - backend
     volumes:
       - $PWD/nats-external.conf:/etc/nats/nats-external.conf:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/nats/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/nats/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/nats/server.key:ro
-      - $PWD/cert/my-domain.com/ca.crt:/etc/nats/mqtt/ca.crt:ro
-      - $PWD/cert/my-domain.com/server.crt:/etc/nats/mqtt/server.crt:ro
-      - $PWD/cert/my-domain.com/server.key:/etc/nats/mqtt/server.key:ro
+      - $PWD/cert/kamching.freemyip.com/ca.crt:/etc/nats/nats/ca.crt:ro
+      - $PWD/cert/kamching.freemyip.com/server.crt:/etc/nats/nats/server.crt:ro
+      - $PWD/cert/kamching.freemyip.com/server.key:/etc/nats/nats/server.key:ro
+      - $PWD/cert/kamching.freemyip.com/ca.crt:/etc/nats/mqtt/ca.crt:ro
+      - $PWD/cert/kamching.freemyip.com/server.crt:/etc/nats/mqtt/server.crt:ro
+      - $PWD/cert/kamching.freemyip.com/server.key:/etc/nats/mqtt/server.key:ro
       - external:/data/jetstream
     labels:
       - "traefik.enable=true"
