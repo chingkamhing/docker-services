@@ -2,7 +2,7 @@
 #
 # Prerequitist:
 # - update /etc/hosts file so that the hostname matches the TLS SAN name
-# - i.e. add "127.0.0.1 my-domain.com nats.my-domain.com mqtt.my-domain.com ws.my-domain.com" in file /etc/hosts
+# - i.e. add "127.0.0.1 kamching.freemyip.com nats.kamching.freemyip.com mqtt.kamching.freemyip.com ws.kamching.freemyip.com" in file /etc/hosts
 #
 
-curl -k --cacert whoami/cert/my-domain.com/ca.crt --cert whoami/cert/my-domain.com/client.crt --key whoami/cert/my-domain.com/client.key https://nats.my-domain.com:1443
+curl -k --cacert whoami/cert/kamching.freemyip.com/ca.crt --cert whoami/cert/kamching.freemyip.com/client.crt --key whoami/cert/kamching.freemyip.com/client.key https://nats.kamching.freemyip.com:4222
