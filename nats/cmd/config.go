@@ -41,6 +41,7 @@ type Mqtt struct {
 	CaFilename   string        `mapstructure:"ca_filename"`   // MQTT connection CA filename
 	CertFilename string        `mapstructure:"cert_filename"` // MQTT connection client cert filename
 	KeyFilename  string        `mapstructure:"key_filename"`  // MQTT connection client key filename
+	Insecure     bool          `mapstructure:"insecure"`      // MQTT TLS not verifies the server's certificate
 	Username     string        `mapstructure:"username"`      // MQTT connection username
 	Password     string        `mapstructure:"password"`      // MQTT connection password
 	Log          string        `mapstructure:"log"`           // MQTT log level of: DEBUG, ERROR

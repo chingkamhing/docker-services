@@ -61,6 +61,7 @@ func init() {
 	cmdMqtt.PersistentFlags().String("mqtt.ca_filename", "", "MQTT TLS CA filename")
 	cmdMqtt.PersistentFlags().String("mqtt.cert_filename", "", "MQTT TLS cert filename")
 	cmdMqtt.PersistentFlags().String("mqtt.key_filename", "", "MQTT TLS key filename")
+	cmdMqtt.PersistentFlags().Bool("mqtt.insecure", false, "MQTT TLS not verifies the server's certificate")
 	cmdMqtt.PersistentFlags().String("mqtt.username", "", "MQTT connection username")
 	cmdMqtt.PersistentFlags().String("mqtt.password", "", "MQTT connection password")
 	cmdMqtt.PersistentFlags().String("mqtt.log", "ERROR", "MQTT log level of: DEBUG, ERROR")
@@ -184,7 +185,7 @@ func mqttConnect(config *Configuration) (mqtt.Client, error) {
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.SetKeepAlive(config.Mqtt.KeepAlive)
 	if isTls {
-		tlsConfig, err := loadTlsConfig(config.Mqtt.CaFilename, config.Mqtt.CertFilename, config.Mqtt.KeyFilename)
+		tlsConfig, err := loadTlsConfig(config.Mqtt.CaFilename, config.Mqtt.CertFilename, config.Mqtt.KeyFilename, config.Mqtt.Insecure)
 		if err != nil {
 			return nil, fmt.Errorf("mqttConnect(): %w", err)
 		}
@@ -201,7 +202,7 @@ func mqttConnect(config *Configuration) (mqtt.Client, error) {
 }
 
 // load tls cert files
-func loadTlsConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
+func loadTlsConfig(caFile, certFile, keyFile string, insecure bool) (*tls.Config, error) {
 	certPool := x509.NewCertPool()
 	if caFile != "" {
 		ca, err := os.ReadFile(caFile)
@@ -217,7 +218,7 @@ func loadTlsConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
 	tlsConfig := &tls.Config{
 		ClientCAs:          certPool,
 		Certificates:       []tls.Certificate{tlsPair},
-		InsecureSkipVerify: true,
+		InsecureSkipVerify: insecure,
 	}
 	return tlsConfig, nil
 }
