@@ -118,11 +118,17 @@ func natsConnect(config *Configuration) (*nats.Conn, error) {
 		}))
 	}
 	// set tls connect options
-	if config.Nats.CaFilename != "" {
-		opts = append(opts, nats.RootCAs(config.Nats.CaFilename))
-	}
-	if config.Nats.CertFilename != "" && config.Nats.KeyFilename != "" {
+	switch {
+	case config.Nats.CaFilename != "" && config.Nats.CertFilename != "" && config.Nats.KeyFilename != "":
+		tlsConfig, err := loadTlsConfig(config.Nats.CaFilename, config.Nats.CertFilename, config.Nats.KeyFilename, config.Nats.Insecure)
+		if err != nil {
+			return nil, fmt.Errorf("loadTlsConfig(): %w", err)
+		}
+		opts = append(opts, nats.Secure(tlsConfig))
+	case config.Nats.CertFilename != "" && config.Nats.KeyFilename != "":
 		opts = append(opts, nats.ClientCert(config.Nats.CertFilename, config.Nats.KeyFilename))
+	case config.Nats.CaFilename != "":
+		opts = append(opts, nats.RootCAs(config.Nats.CaFilename))
 	}
 	// connect nats
 	nc, err := nats.Connect(config.Nats.Url, opts...)
