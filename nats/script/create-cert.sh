@@ -26,7 +26,7 @@ LOCATION="My Home Location"
 ORGANIZATION="My Home Organization"
 ORGANIZATION_UNIT="Development"
 CERTIFICATION_AUTHORITY="My Home CA"
-CA_MIN_KEY_BITS=3072
+CA_MIN_KEY_BITS=4096
 RSA_KEY_BITS=2048
 CA_DAYS=3660
 CERT_DAYS=3660
@@ -46,7 +46,7 @@ Usage () {
     echo
     echo "Usage: $SCRIPT_NAME [domain / ip / email] ..."
     echo "Options:"
-    echo " -r  [bits]                   RSA key bits (e.g. 2048, 3072, 4096; default $RSA_KEY_BITS)"
+    echo " -r  [bits]                   RSA key bits (e.g. 2048, 4096; default $RSA_KEY_BITS)"
     echo " -a  [days]                   CA valid days (default $CA_DAYS)"
     echo " -e  [days]                   Certificate valid days (default $CERT_DAYS)"
     echo " -c                           Generate client certificates as well"
