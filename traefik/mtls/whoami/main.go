@@ -108,15 +108,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 // load tls cert files
 func loadTlsConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
-	clientCAs := x509.NewCertPool()
+	certPool := x509.NewCertPool()
 	if caFile != "" {
 		ca, err := os.ReadFile(caFile)
 		if err != nil {
 			return nil, fmt.Errorf("os.ReadFile(): %w", err)
 		}
-		ok := clientCAs.AppendCertsFromPEM(ca)
+		ok := certPool.AppendCertsFromPEM(ca)
 		if !ok {
-			return nil, fmt.Errorf("clientCAs.AppendCertsFromPEM(): %w", err)
+			return nil, fmt.Errorf("certPool.AppendCertsFromPEM(): %w", err)
 		}
 	}
 	tlsPair, err := tls.LoadX509KeyPair(certFile, keyFile)
@@ -124,7 +124,7 @@ func loadTlsConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
 		return nil, fmt.Errorf("tls.LoadX509KeyPair(%v, %v): %w", certFile, keyFile, err)
 	}
 	tlsConfig := &tls.Config{
-		ClientCAs:    clientCAs,
+		ClientCAs:    certPool,
 		Certificates: []tls.Certificate{tlsPair},
 		ClientAuth:   tls.RequireAndVerifyClientCert,
 	}
