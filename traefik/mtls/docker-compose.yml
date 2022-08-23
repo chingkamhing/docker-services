@@ -29,9 +29,9 @@ services:
   whoami:
     image: ${DOCKER_ID}/whoami:latest
     environment:
-      MY_CA_FILENAME: ""
-      MY_CERT_FILENAME: ""
-      MY_KEY_FILENAME: ""
+      MY_CA_FILENAME: cert/my-domain.com/ca.crt
+      MY_CERT_FILENAME: cert/my-domain.com/server.crt
+      MY_KEY_FILENAME: cert/my-domain.com/server.key
     networks:
       - frontend
     volumes:
@@ -39,8 +39,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.tcp.routers.whoami.entrypoints=whoami"
-      - "traefik.tcp.routers.whoami.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.whoami.rule=HostSNI(`nats.my-domain.com`)"
       - "traefik.tcp.routers.whoami.service=whoami"
+      - "traefik.tcp.routers.whoami.tls.passthrough=true"
       - "traefik.tcp.services.whoami.loadbalancer.server.port=1443"
     deploy:
       replicas: 3
