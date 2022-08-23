@@ -202,20 +202,20 @@ func mqttConnect(config *Configuration) (mqtt.Client, error) {
 
 // load tls cert files
 func loadTlsConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
-	pool := x509.NewCertPool()
+	certPool := x509.NewCertPool()
 	if caFile != "" {
 		ca, err := os.ReadFile(caFile)
 		if err != nil {
 			return nil, fmt.Errorf("os.ReadFile(): %w", err)
 		}
-		pool.AppendCertsFromPEM(ca)
+		certPool.AppendCertsFromPEM(ca)
 	}
 	tlsPair, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
 		return nil, fmt.Errorf("tls.LoadX509KeyPair(%v, %v): %w", certFile, keyFile, err)
 	}
 	tlsConfig := &tls.Config{
-		RootCAs:            pool,
+		ClientCAs:          certPool,
 		Certificates:       []tls.Certificate{tlsPair},
 		InsecureSkipVerify: true,
 	}
