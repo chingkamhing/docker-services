@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  #
+  # traefik
+  #
+  traefik:
+    image: traefik:2.8
+    command:
+      # docker configuration
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.file.filename=/etc/traefik/conf/dynamic.yml"
+      - "--providers.file.watch=true"
+      # entrypoint configuration
+      - "--entrypoints.whoami.address=:1443"
+      # log output of: DEBUG, INFO, WARN, ERROR, PANIC, and FATAL
+      - "--log.level=INFO"
+    networks:
+      - frontend
+    ports:
+      # whoami
+      - 1443:1443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/:/etc/traefik/conf/:ro
+  #
+  # whoami
+  #
+  whoami:
+    image: ${DOCKER_ID}/whoami:latest
+    environment:
+      MY_CA_FILENAME: ""
+      MY_CERT_FILENAME: ""
+      MY_KEY_FILENAME: ""
+    networks:
+      - frontend
+    volumes:
+      - ./whoami/cert/my-domain.com/:/app/cert/my-domain.com/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.whoami.entrypoints=whoami"
+      - "traefik.tcp.routers.whoami.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.whoami.service=whoami"
+      - "traefik.tcp.services.whoami.loadbalancer.server.port=1443"
+    deploy:
+      replicas: 3
+
+# networks
+networks:
+  frontend:
+    driver: bridge

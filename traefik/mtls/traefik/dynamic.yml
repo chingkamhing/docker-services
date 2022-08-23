@@ -1,0 +1,26 @@
+http:
+  middlewares:
+    admin-auth:
+      basicAuth:
+        users:
+          # refer to on how to generate password: https://doc.traefik.io/traefik/middlewares/http/basicauth/#configuration-options
+          # e.g. invoke "htpasswd -nB admin"
+          # admin / <common admin password>
+          - "admin:$2y$05$.rKcxUD3Ge/nGWimjQYf2.u5LoFEEEyv16QVCJ1/q/1RPE7cLzVdS"
+    user-auth:
+      basicAuth:
+        users:
+          # user / <common user password>
+          - "user:$2y$05$n.mHzR7pIM9eqMuRTWAQCew2s7VXgmqThMfvjv2LFtVNF8RJk/ZUa"
+
+tls:
+  options:
+    default:
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+      minVersion: VersionTLS12
