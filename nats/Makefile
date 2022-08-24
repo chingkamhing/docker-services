@@ -21,16 +21,14 @@ output_name = broker
 # Test publish
 .PHONY: pub
 pub:	build
-	# note: somehow, nats does not work, just verified mqtt is working
-	# ./$(output_name) --nats.url nats.kamching.freemyip.com:4222 --nats.ca_filename cert/kamching.freemyip.com/ca.crt --nats.cert_filename cert/kamching.freemyip.com/client.crt --nats.key_filename cert/kamching.freemyip.com/client.key --nats.insecure=true --nats.username $$MY_LEAF_USERNAME --nats.password $$MY_LEAF_PASSWORD nats pub my-test.nats Nats-1
-	./$(output_name) --mqtt.host mqtt.kamching.freemyip.com --mqtt.port 8883 --mqtt.ca_filename cert/kamching.freemyip.com/ca.crt --mqtt.cert_filename cert/kamching.freemyip.com/client.crt --mqtt.key_filename cert/kamching.freemyip.com/client.key --mqtt.insecure=true --mqtt.username $$MY_MQTT_USERNAME --mqtt.password $$MY_MQTT_PASSWORD mqtt pub my-test/mqtt Mqtt-1
+	./$(output_name) --nats.url nats.kamching.freemyip.com:4222 --nats.ca_filename cert/kamching.freemyip.com/ca.crt --nats.cert_filename cert/kamching.freemyip.com/client.crt --nats.key_filename cert/kamching.freemyip.com/client.key --nats.insecure=true --nats.username $$MY_LEAF_USERNAME --nats.password $$MY_LEAF_PASSWORD nats pub my-test.nats Nats-1 & \
+		./$(output_name) --mqtt.host mqtt.kamching.freemyip.com --mqtt.port 8883 --mqtt.ca_filename cert/kamching.freemyip.com/ca.crt --mqtt.cert_filename cert/kamching.freemyip.com/client.crt --mqtt.key_filename cert/kamching.freemyip.com/client.key --mqtt.insecure=true --mqtt.username $$MY_MQTT_USERNAME --mqtt.password $$MY_MQTT_PASSWORD mqtt pub my-test/mqtt Mqtt-1
 
 # Test subscribe
 .PHONY: sub
 sub:	build
-	# note: somehow, nats does not work, just verified mqtt is working
-	# ./$(output_name) --nats.url nats.kamching.freemyip.com:4222 --nats.ca_filename cert/kamching.freemyip.com/ca.crt --nats.cert_filename cert/kamching.freemyip.com/client.crt --nats.key_filename cert/kamching.freemyip.com/client.key --nats.insecure=true --nats.username $$MY_LEAF_USERNAME --nats.password $$MY_LEAF_PASSWORD nats sub my-test.*
-	./$(output_name) --mqtt.host mqtt.kamching.freemyip.com --mqtt.port 8883 --mqtt.ca_filename cert/kamching.freemyip.com/ca.crt --mqtt.cert_filename cert/kamching.freemyip.com/client.crt --mqtt.key_filename cert/kamching.freemyip.com/client.key --mqtt.insecure=true --mqtt.username $$MY_MQTT_USERNAME --mqtt.password $$MY_MQTT_PASSWORD mqtt sub my-test/+
+	./$(output_name) --nats.url nats.kamching.freemyip.com:4222 --nats.ca_filename cert/kamching.freemyip.com/ca.crt --nats.cert_filename cert/kamching.freemyip.com/client.crt --nats.key_filename cert/kamching.freemyip.com/client.key --nats.insecure=true --nats.username $$MY_LEAF_USERNAME --nats.password $$MY_LEAF_PASSWORD nats sub my-test.* & \
+		./$(output_name) --mqtt.host mqtt.kamching.freemyip.com --mqtt.port 8883 --mqtt.ca_filename cert/kamching.freemyip.com/ca.crt --mqtt.cert_filename cert/kamching.freemyip.com/client.crt --mqtt.key_filename cert/kamching.freemyip.com/client.key --mqtt.insecure=true --mqtt.username $$MY_MQTT_USERNAME --mqtt.password $$MY_MQTT_PASSWORD mqtt sub my-test/+
 
 # Test tls connection
 # for debug purpose:
