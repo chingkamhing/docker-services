@@ -18,17 +18,16 @@ MODE ?= leafcluster
 # output binary file name
 output_name = broker
 
-# Test publish
+# Test publish to the external broker
 .PHONY: pub
 pub:	build
 	./$(output_name) --nats.url nats.kamching.freemyip.com:4222 --nats.ca_filename cert/kamching.freemyip.com/ca.crt --nats.cert_filename cert/kamching.freemyip.com/client.crt --nats.key_filename cert/kamching.freemyip.com/client.key --nats.insecure=true --nats.username $$MY_LEAF_USERNAME --nats.password $$MY_LEAF_PASSWORD nats pub my-test.nats Nats-1 & \
 		./$(output_name) --mqtt.host mqtt.kamching.freemyip.com --mqtt.port 8883 --mqtt.ca_filename cert/kamching.freemyip.com/ca.crt --mqtt.cert_filename cert/kamching.freemyip.com/client.crt --mqtt.key_filename cert/kamching.freemyip.com/client.key --mqtt.insecure=true --mqtt.username $$MY_MQTT_USERNAME --mqtt.password $$MY_MQTT_PASSWORD mqtt pub my-test/mqtt Mqtt-1
 
-# Test subscribe
+# Test subscribe to backend broker
 .PHONY: sub
 sub:	build
-	./$(output_name) --nats.url nats.kamching.freemyip.com:4222 --nats.ca_filename cert/kamching.freemyip.com/ca.crt --nats.cert_filename cert/kamching.freemyip.com/client.crt --nats.key_filename cert/kamching.freemyip.com/client.key --nats.insecure=true --nats.username $$MY_LEAF_USERNAME --nats.password $$MY_LEAF_PASSWORD nats sub my-test.* & \
-		./$(output_name) --mqtt.host mqtt.kamching.freemyip.com --mqtt.port 8883 --mqtt.ca_filename cert/kamching.freemyip.com/ca.crt --mqtt.cert_filename cert/kamching.freemyip.com/client.crt --mqtt.key_filename cert/kamching.freemyip.com/client.key --mqtt.insecure=true --mqtt.username $$MY_MQTT_USERNAME --mqtt.password $$MY_MQTT_PASSWORD mqtt sub my-test/+
+	./$(output_name) --nats.url localhost:4223,localhost:4224,localhost:4225 --nats.username $$MY_NATS_USERNAME --nats.password $$MY_NATS_PASSWORD nats sub my-test.*
 
 # Test tls connection
 # for debug purpose:
