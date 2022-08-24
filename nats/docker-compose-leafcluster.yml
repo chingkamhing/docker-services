@@ -12,7 +12,9 @@
 #   - suspect to be nats problem as suggested by "openssl s_client" can pass tls handshake successfully while nats does not even without Traefik in the middle
 #   - also follow the advice of https://docs.nats.io/running-a-nats-service/environment#load-balancers, dropped the idea to proxy any pub/sub traffics (i.e. nats, mqtt and websocket)
 #   - instead, directly expose the pub/sub communication publically
-#   - [updated]: base on [TLS handshake error: EOF](https://github.com/nats-io/nats-server/issues/2804), it is expected to fail on "openssl s_client" connect
+#   - [updated]:
+#     - base on [TLS handshake error: EOF](https://github.com/nats-io/nats-server/issues/2804), it is expected to fail on "openssl s_client" connect
+#     - so, put pub/sub traffics behind traefik again
 #
 
 version: "3.8"
@@ -66,6 +68,9 @@ services:
       - "--providers.file.watch=true"
       # entrypoint configuration
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.nats.address=:4222"
+      - "--entrypoints.mqtt.address=:8883"
+      - "--entrypoints.websocket.address=:8443"
       # acme configurations
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=freemyip"
@@ -82,6 +87,12 @@ services:
     ports:
       # https
       - 443:443
+      # nats
+      - 4222:4222
+      # mqtt
+      - 8883:8883
+      # websocket
+      - 8443:8443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/dynamic.yml:/etc/traefik/conf/dynamic.yml:ro
@@ -107,13 +118,6 @@ services:
     networks:
       - frontend
       - backend
-    ports:
-      # nats
-      - 4222:4222
-      # mqtt
-      - 8883:8883
-      # websocket
-      - 8443:8443
     volumes:
       - $PWD/nats-external.conf:/etc/nats/nats-external.conf:ro
       - $PWD/cert/kamching.freemyip.com/ca.crt:/etc/nats/nats/ca.crt:ro
@@ -123,6 +127,27 @@ services:
       - $PWD/cert/kamching.freemyip.com/server.crt:/etc/nats/mqtt/server.crt:ro
       - $PWD/cert/kamching.freemyip.com/server.key:/etc/nats/mqtt/server.key:ro
       - external:/data/jetstream
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=nats_frontend"
+      # route non-tls tcp 4222 to nats
+      # note: although tls is enabled for nats, base on https://github.com/nats-io/nats-server/issues/2804, it start handshake with plain text; so, no need to passthrough tls traffic for nats
+      - "traefik.tcp.routers.tcpr-nats.entrypoints=nats"
+      - "traefik.tcp.routers.tcpr-nats.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.tcpr-nats.service=tcpr-nats"
+      - "traefik.tcp.services.tcpr-nats.loadbalancer.server.port=4222"
+      # route non-tls tcp 8883 to mqtt
+      - "traefik.tcp.routers.tcpr-mqtt.entrypoints=mqtt"
+      - "traefik.tcp.routers.tcpr-mqtt.rule=HostSNI(`mqtt.kamching.freemyip.com`)"
+      - "traefik.tcp.routers.tcpr-mqtt.tls.passthrough=true"
+      - "traefik.tcp.routers.tcpr-mqtt.service=tcpr-mqtt"
+      - "traefik.tcp.services.tcpr-mqtt.loadbalancer.server.port=8883"
+      # route non-tls tcp 8443 to websocket
+      - "traefik.tcp.routers.tcpr-websocket.entrypoints=websocket"
+      - "traefik.tcp.routers.tcpr-websocket.rule=HostSNI(`ws.kamching.freemyip.com`)"
+      - "traefik.tcp.routers.tcpr-websocket.tls.passthrough=true"
+      - "traefik.tcp.routers.tcpr-websocket.service=tcpr-websocket"
+      - "traefik.tcp.services.tcpr-websocket.loadbalancer.server.port=8443"
   nats-backend1:
     <<: *nats
     command: "--name ${MY_NATS_SERVER_NAME}Backend1 -c /etc/nats/nats-backend.conf -js ${NATS_LOGGING} --user ${MY_NATS_ROUTE_USERNAME} --pass ${MY_NATS_ROUTE_PASSWORD} --routes nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend2:6222,nats-route://${MY_NATS_ROUTE_USERNAME}:${MY_NATS_ROUTE_PASSWORD}@nats-backend3:6222"
