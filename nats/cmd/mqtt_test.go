@@ -9,11 +9,12 @@ import (
 
 var mqttConfig = &Configuration{
 	Mqtt: Mqtt{
-		Host:         "127.0.0.1",
+		Host:         "mqtt.kamching.freemyip.com",
 		Port:         8883,
-		CaFilename:   "../cert/my-domain.com/ca.crt",
-		CertFilename: "../cert/my-domain.com/client.crt",
-		KeyFilename:  "../cert/my-domain.com/client.key",
+		CaFilename:   "../cert/kamching.freemyip.com/ca.crt",
+		CertFilename: "../cert/kamching.freemyip.com/client.crt",
+		KeyFilename:  "../cert/kamching.freemyip.com/client.key",
+		Insecure:     true,
 		Username:     os.Getenv("MY_MQTT_USERNAME"),
 		Password:     os.Getenv("MY_MQTT_PASSWORD"),
 		Log:          "ERROR",

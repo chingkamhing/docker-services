@@ -11,10 +11,11 @@ import (
 
 var natsConfig = &Configuration{
 	Nats: Nats{
-		Url:           "127.0.0.1:4222",
-		CaFilename:    "../cert/my-domain.com/ca.crt",
-		CertFilename:  "../cert/my-domain.com/client.crt",
-		KeyFilename:   "../cert/my-domain.com/client.key",
+		Url:           "nats.kamching.freemyip.com:4222",
+		CaFilename:    "../cert/kamching.freemyip.com/ca.crt",
+		CertFilename:  "../cert/kamching.freemyip.com/client.crt",
+		KeyFilename:   "../cert/kamching.freemyip.com/client.key",
+		Insecure:      true,
 		Username:      os.Getenv("MY_LEAF_USERNAME"),
 		Password:      os.Getenv("MY_LEAF_PASSWORD"),
 		Retry:         3,
