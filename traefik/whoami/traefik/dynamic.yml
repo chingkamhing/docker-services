@@ -1,0 +1,21 @@
+http:
+  middlewares:
+    user-auth:
+      basicAuth:
+        users:
+          # user / 123456
+          - "user:$2y$05$P7fjqfHNYe0SJtyS7p9KoOEPDIR7PjFH0QEsu3KHxZpuGJ4Y5UIjq"
+
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /certs/pubg/pubg.local.crt
+        keyFile: /certs/pubg/pubg.local.key
+  options:
+    prig:
+      clientAuth:
+        # in PEM format. each file can contain multiple CAs.
+        caFiles:
+          - /certs/prig/ca.crt
+        clientAuthType: RequireAndVerifyClientCert

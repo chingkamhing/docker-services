@@ -1,0 +1,154 @@
+version: '3.9'
+services:
+  #
+  # proxy
+  #
+  proxy:
+    image: traefik:2.6
+    command:
+      # docker swarm configuration
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.network=whoami_proxy"
+      - "--providers.file.filename=/etc/traefik/conf/dynamic.yml"
+      - "--providers.file.watch=true"
+      # configure entrypoint
+      - "--entrypoints.web.address=:8000"
+      # enable dashboard
+      - "--api.dashboard=true"
+      # enable log output
+      - "--log.level=INFO"
+    networks:
+      - proxy
+    ports:
+      # docker sends requests on this port to traefik
+      - 8000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    configs:
+      - source: dynamic.yml
+        target: /etc/traefik/conf/dynamic.yml
+    secrets:
+      - source: pubg-ca.crt
+        target: /certs/pubg/ca.crt
+      - source: pubg-pubg.local.crt
+        target: /certs/pubg/pubg.local.crt
+      - source: pubg-pubg.local.key
+        target: /certs/pubg/pubg.local.key
+      - source: prig-ca.crt
+        target: /certs/prig/ca.crt
+      - source: prig-client-prig.local.crt
+        target: /certs/prig/client-prig.local.crt
+      - source: prig-client-prig.local.key
+        target: /certs/prig/client-prig.local.key
+    deploy:
+      mode: replicated
+      replicas: 3
+      restart_policy:
+        condition: any
+        max_attempts: 3
+      update_config:
+        delay: 2s
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefik-dashboard.entrypoints=web"
+        - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.local`)"
+        - "traefik.http.routers.traefik-dashboard.middlewares=user-auth@file"
+        - "traefik.http.routers.traefik-dashboard.service=api@internal"
+        - "traefik.http.routers.traefik-dashboard.tls=true"
+        # base on https://github.com/traefik/traefik/issues/5732, the following dummy server port must be needed
+        - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8000"
+  #
+  # pubg
+  #
+  pubg:
+    image: ${DOCKER_ID}/gateway:latest
+    networks:
+      - proxy
+    deploy:
+      mode: replicated
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      update_config:
+        delay: 2s
+      labels:
+        # Enable Traefik, because we disabled expose a service by default.
+        - "traefik.enable=true"
+        - "traefik.http.routers.pubg.entrypoints=web"
+        - "traefik.http.routers.pubg.rule=Host(`pubg.local`)"
+        - "traefik.http.routers.pubg.tls=true"
+        - "traefik.http.services.pubg.loadbalancer.server.port=8000"
+        - "traefik.http.services.pubg.loadbalancer.sticky.cookie=true"
+        - "traefik.http.services.pubg.loadbalancer.sticky.cookie.name=`pubg_`"
+        - "traefik.http.services.pubg.loadbalancer.sticky.cookie.secure=true"
+        - "traefik.http.services.pubg.loadbalancer.sticky.cookie.httpOnly=true"
+        - "traefik.http.services.pubg.loadbalancer.sticky.cookie.samesite=strict"
+  #
+  # prig
+  #
+  prig:
+    image: ${DOCKER_ID}/gateway:latest
+    networks:
+      - proxy
+    deploy:
+      mode: replicated
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      update_config:
+        delay: 2s
+      labels:
+        # Enable Traefik, because we disabled expose a service by default.
+        - "traefik.enable=true"
+        - "traefik.http.routers.prig.entrypoints=web"
+        - "traefik.http.routers.prig.rule=Host(`prig.local`)"
+        - "traefik.http.routers.prig.tls=true"
+        - "traefik.http.routers.prig.tls.options=prig@file"
+        - "traefik.http.services.prig.loadbalancer.server.port=8000"
+        - "traefik.http.services.prig.loadbalancer.sticky.cookie=true"
+        - "traefik.http.services.prig.loadbalancer.sticky.cookie.name=`prig_`"
+        - "traefik.http.services.prig.loadbalancer.sticky.cookie.secure=true"
+        - "traefik.http.services.prig.loadbalancer.sticky.cookie.httpOnly=true"
+        - "traefik.http.services.prig.loadbalancer.sticky.cookie.samesite=strict"
+  #
+  # whoami
+  #
+  whoami:
+    image: ${DOCKER_ID}/whoami:latest
+    networks:
+      - proxy
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+
+# configs
+configs:
+  dynamic.yml:
+    file: ./traefik/dynamic.yml
+
+# secrets
+secrets:
+  pubg-ca.crt:
+    file: ./certs/pubg/ca.crt
+  pubg-pubg.local.crt:
+    file: ./certs/pubg/pubg.local.crt
+  pubg-pubg.local.key:
+    file: ./certs/pubg/pubg.local.key
+  prig-ca.crt:
+    file: ./certs/prig/ca.crt
+  prig-client-prig.local.crt:
+    file: ./certs/prig/client-prig.local.crt
+  prig-client-prig.local.key:
+    file: ./certs/prig/client-prig.local.key
+
+networks:
+  proxy:
+    driver: overlay

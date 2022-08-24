@@ -1,0 +1,4 @@
+.env
+.cookie
+gateway/gateway
+whoami/whoami

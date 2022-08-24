@@ -1,0 +1,81 @@
+version: '3.9'
+services:
+  #
+  # proxy
+  #
+  proxy:
+    image: traefik:2.6
+    command:
+      # docker configuration
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.network=whoami_proxy"
+      - "--providers.file.filename=/etc/traefik/conf/dynamic.yml"
+      - "--providers.file.watch=true"
+      # configure entrypoint
+      - "--entrypoints.web.address=:8000"
+      # enable dashboard
+      - "--api.dashboard=true"
+      # enable log output
+      - "--log.level=INFO"
+    restart: always
+    networks:
+      - proxy
+    ports:
+      # docker sends requests on this port to traefik
+      - 8000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs:/certs:ro
+      - ./traefik/dynamic.yml:/etc/traefik/conf/dynamic.yml:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=web"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.local`)"
+      - "traefik.http.routers.traefik-dashboard.middlewares=user-auth@file"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+  #
+  # pubg
+  #
+  pubg:
+    build: ./gateway
+    image: ${DOCKER_ID}/gateway:latest
+    restart: always
+    networks:
+      - proxy
+    labels:
+      # Enable Traefik, because we disabled expose a service by default.
+      - "traefik.enable=true"
+      - "traefik.http.routers.pubg.entrypoints=web"
+      - "traefik.http.routers.pubg.rule=Host(`pubg.local`)"
+      - "traefik.http.routers.pubg.tls=true"
+  #
+  # prig
+  #
+  prig:
+    build: ./gateway
+    image: ${DOCKER_ID}/gateway:latest
+    restart: always
+    networks:
+      - proxy
+    labels:
+      # Enable Traefik, because we disabled expose a service by default.
+      - "traefik.enable=true"
+      - "traefik.http.routers.prig.entrypoints=web"
+      - "traefik.http.routers.prig.rule=Host(`prig.local`)"
+      - "traefik.http.routers.prig.tls=true"
+      - "traefik.http.routers.prig.tls.options=prig@file"
+  #
+  # whoami
+  #
+  whoami:
+    build: ./whoami
+    image: ${DOCKER_ID}/whoami:latest
+    restart: always
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    driver: bridge
