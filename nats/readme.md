@@ -99,6 +99,7 @@
 * [NATS Server Clients](https://docs.nats.io/running-a-nats-service/clients)
 * [The NATS Command Line Interface](https://github.com/nats-io/natscli)
 * [Golang client for NATS](https://github.com/nats-io/nats.go)
+* [TLS handshake error: EOF](https://github.com/nats-io/nats-server/issues/2804)
 * jetstream
     + [JetStream](https://docs.nats.io/using-nats/developer/develop_jetstream)
     + [JetStream Model Deep Dive](https://docs.nats.io/using-nats/developer/develop_jetstream/model_deep_dive)
