@@ -6,6 +6,10 @@
         - adminer
         - mysql
         - mongodb
+        - mongodb replica-set
     + redis
     + consuul
     + etcd
+    + traefik
+    + nats
+    + nginx
