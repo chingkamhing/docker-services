@@ -79,7 +79,7 @@ services:
       # enable api and dashboard
       - "--api.dashboard=true"
       # enable log output
-      - "--log.level=DEBUG"
+      - "--log.level=INFO"
     environment:
       - FREEMYIP_TOKEN=$FREEMYIP_TOKEN
     networks:
