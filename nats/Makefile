@@ -32,6 +32,18 @@ sub:	build
 	# ./$(output_name) --nats.url nats.kamching.freemyip.com:4222 --nats.ca_filename cert/kamching.freemyip.com/ca.crt --nats.cert_filename cert/kamching.freemyip.com/client.crt --nats.key_filename cert/kamching.freemyip.com/client.key --nats.insecure=true --nats.username $$MY_LEAF_USERNAME --nats.password $$MY_LEAF_PASSWORD nats sub my-test.*
 	./$(output_name) --mqtt.host mqtt.kamching.freemyip.com --mqtt.port 8883 --mqtt.ca_filename cert/kamching.freemyip.com/ca.crt --mqtt.cert_filename cert/kamching.freemyip.com/client.crt --mqtt.key_filename cert/kamching.freemyip.com/client.key --mqtt.insecure=true --mqtt.username $$MY_MQTT_USERNAME --mqtt.password $$MY_MQTT_PASSWORD mqtt sub my-test/+
 
+# Test tls connection
+# for debug purpose:
+# - debug why Traefik fail to route nats traffic to nats-external while mqtt works
+# - change traefik log level to DEBUG and nats-external log flag to "-DV"
+# - the following command "openssl s_client ..." initiate a tls handshake to nats.kamching.freemyip.com:4222 and Traefik successfully route the tls to nats-external (proven by debug log messages)
+# - however the above pub or sub commands fail to reach traefik with "i/o timeout", also traefik and nats-external show empty log message
+# - although the following command can initiate a tls to nats.kamching.freemyip.com:4222, but have handshake error while mqtt has no error
+.PHONY: connect
+connect:
+	openssl s_client -CAfile cert/kamching.freemyip.com/ca.crt -cert cert/kamching.freemyip.com/client.crt -key cert/kamching.freemyip.com/client.key -connect nats.kamching.freemyip.com:4222
+	openssl s_client -CAfile cert/kamching.freemyip.com/ca.crt -cert cert/kamching.freemyip.com/client.crt -key cert/kamching.freemyip.com/client.key -connect mqtt.kamching.freemyip.com:8883
+
 # Build the program
 .PHONY: build
 build:
