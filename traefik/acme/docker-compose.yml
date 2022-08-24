@@ -25,7 +25,7 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=freemyip"
       # enable api and dashboard
       - "--api.dashboard=true"
-      # enable log output
+      # log output of: DEBUG, INFO, WARN, ERROR, PANIC, and FATAL
       - "--log.level=INFO"
     volumes:
       - ./traefik/dynamic.yml:/etc/traefik/conf/dynamic.yml:ro

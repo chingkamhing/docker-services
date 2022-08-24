@@ -17,7 +17,7 @@ services:
       - "--entrypoints.web.address=:8000"
       # enable dashboard
       - "--api.dashboard=true"
-      # enable log output
+      # log output of: DEBUG, INFO, WARN, ERROR, PANIC, and FATAL
       - "--log.level=INFO"
     networks:
       - proxy
