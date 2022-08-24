@@ -10,6 +10,7 @@
     + redis
     + consuul
     + etcd
+    + gitlab cicd
     + traefik
     + nats
     + nginx
