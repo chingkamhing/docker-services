@@ -15,9 +15,11 @@
         - easier to config (e.g. can config router directly in docker-compose.yml through docker labels)
     + cons
         - high availability feature is limited for community edition
+        - no stick session for mqtt
 * [HAProxy](http://www.haproxy.org/)
     + pros
         - support docker swarm indirectly through docker's DNS
+        - support mqtt-aware sticky session
     + cons
         - compare to traefik, config file is harder to read
 + preliminarily chose to use [Traefik Proxy](https://doc.traefik.io/traefik/)
