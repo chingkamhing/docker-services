@@ -9,12 +9,12 @@
 #   - enable mtls for nats and mqtt traffics
 #   - configure Traefik to passthrough the mtls for the nats and mqtt traffics
 #   - mqtt successfully work while, somehow, nats does not
-#   - suspect to be nats problem as suggested by "openssl s_client" can pass tls handshake successfully while nats does not even without Traefik in the middle
+#   - suspect to be nats problem as suggested by "openssl s_client" mqtt can pass tls handshake successfully while nats does not even without Traefik in the middle
 #   - also follow the advice of https://docs.nats.io/running-a-nats-service/environment#load-balancers, dropped the idea to proxy any pub/sub traffics (i.e. nats, mqtt and websocket)
 #   - instead, directly expose the pub/sub communication publically
 #   - [updated]:
 #     - base on [TLS handshake error: EOF](https://github.com/nats-io/nats-server/issues/2804), it is expected to fail on "openssl s_client" connect
-#     - so, put pub/sub traffics behind traefik again
+#     - so, put pub/sub traffics behind traefik again while treating nats as non-tls traffic
 #
 
 version: "3.8"
