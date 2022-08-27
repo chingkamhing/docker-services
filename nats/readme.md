@@ -3,6 +3,21 @@
 * have the nats jetstream working now
     + [JetStream Walkthrough](https://docs.nats.io/nats-concepts/jetstream/js_walkthrough)
 
+## Nats Study [Updated: 2022-08-25]
+
+* this project was mean to try to setup nats core and jetstream as "hello world" study
+* single node deployment
+    + docker-compose-single.yml was created to setup nats for single deployment
+* cluster node deployment
+    + docker-compose-cluster.yml was created to setup nats for cluster deployment
+* leaf-cluster deployment
+    + docker-compose-leafcluster.yml was created to setup nats for leaf-cluster deployment
+    + the leaf node is mean for external communication (e.g. web UI through websocket, IoT through MQTT or NATS) that need to handle
+        - TLS termination
+        - authentication and authorization
+        - note: the authentication can only handle static user, don't know yet how to dynamically grant different users authn and authz access (i.e. don't know how to make use of JWT in operator mode)
+    + the cluster is mean for internal (i.e. backend) communication (e.g. peer communication between microservices)
+
 ## JetStream
 
 * jetstream
