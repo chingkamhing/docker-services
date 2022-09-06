@@ -17,8 +17,10 @@ services:
       MY_MQTT_USERNAME: ${MY_MQTT_USERNAME}
       MY_MQTT_PASSWORD: ${MY_MQTT_PASSWORD}
     ports:
-      # for clients
+      # nats
       - 4222:4222
+      # mqtt
+      - 1883:1883
       # an HTTP management port for information reporting
       - 8222:8222
     volumes:
