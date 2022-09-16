@@ -12,7 +12,8 @@
 
 LEGO="/home/kamching/workspace/go/bin/lego"
 DOMAIN=""
-PROTOCOL="--http"
+# challenge of: http, tls, dns
+CHALLENGE="--http"
 CERT_PATH=".lego/certificates"
 OPTS=""
 OPTS_CMD=""
@@ -75,4 +76,4 @@ else
     CMD="run $OPTS_CMD"
 fi
 
-$DEBUG $LEGO --domains $DOMAIN $PROTOCOL $OPTS $CMD
+$DEBUG $LEGO --domains $DOMAIN $CHALLENGE $OPTS $CMD
