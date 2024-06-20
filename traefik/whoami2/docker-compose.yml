@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  #
+  # proxy
+  #
+  proxy:
+    image: traefik:3.0
+    restart: unless-stopped
+    networks:
+      - proxy
+    ports:
+      # docker sends requests on this port to traefik
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik:/etc/traefik:ro
+  #
+  # whoami
+  #
+  whoami:
+    image: containous/whoami:latest
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.rule=Host(`wk.ldev.wahkwong.com.hk`)
+
+networks:
+  proxy:
+    driver: bridge
