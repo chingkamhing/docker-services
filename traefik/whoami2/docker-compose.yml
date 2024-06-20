@@ -5,6 +5,17 @@ services:
   #
   proxy:
     image: traefik:3.0
+    command:
+      # docker configuration
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=whoami2_proxy"
+      - "--entryPoints.web.address=:80"
+      # disable dashboard
+      - "--api.dashboard=false"
+      - "--api.insecure=false"
+      # log output of: DEBUG, INFO, WARN, ERROR, PANIC, and FATAL
+      - "--log.level=INFO"
     restart: unless-stopped
     networks:
       - proxy
@@ -14,7 +25,6 @@ services:
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik:/etc/traefik:ro
   #
   # whoami
   #
